@@ -13,6 +13,12 @@ djangorestframework-simplejwt>=5.3.0
 # PostgreSQL database adapter for Python
 psycopg2-binary>=2.9.9
 
+
+
+# for loading environment variables from a .env file
+python-dotenv>=1.0.0
+
+
 # background task processing(async and scheduled)
 celery>=5.3.6
 # message broker
