@@ -13,10 +13,10 @@ class Notification(models.Model):
         on_delete=models.CASCADE
     )
 
-    event = models.ForeignKey(
-        'events.Event',
-        on_delete=models.CASCADE
-    )
+    # event = models.ForeignKey(
+    #     'events.Event',
+    #     on_delete=models.CASCADE
+    # )
 
     message = models.TextField()
     type = models.CharField(max_length=50)
