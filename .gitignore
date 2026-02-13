@@ -1,4 +1,6 @@
+# ======================
 # Python
+# ======================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -8,54 +10,59 @@ venv/
 env/
 ENV/
 
+# ======================
 # Django
+# ======================
+db.sqlite3
 *.log
 *.pot
-*.pyc
-db.sqlite3
 media/
 staticfiles/
 
-# Django migrations cache
+# Migration cache
 **/migrations/__pycache__/
 
-# Environment variables
+# ======================
+# Environment Variables
+# ======================
 .env
 .env.*
 
-# VS Code
+# ======================
+# IDE / Editors
+# ======================
 .vscode/
-
-# PyCharm
 .idea/
+*.swp
 
-# OS files
+# ======================
+# OS Files
+# ======================
 .DS_Store
 Thumbs.db
 
-# Node (if frontend exists)
+# ======================
+# Node / Frontend
+# ======================
 node_modules/
-npm-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-error.log*
 
-# Build files
+# ======================
+# Build Files
+# ======================
 dist/
 build/
 
-# Coverage reports
+# ======================
+# Coverage / Testing
+# ======================
 htmlcov/
 .coverage
 coverage.xml
 
-# Temporary files
-*.swp
+# ======================
+# Temporary Files
+# ======================
 *.tmp
-venv/
-db.sqlite3
-__pycache__/
-*.pyc
-node_modules/
-.env
-# Python
-__pycache__/
-*.pyc
+*.bak
