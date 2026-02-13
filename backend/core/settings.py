@@ -51,10 +51,12 @@ INSTALLED_APPS = [
     'apps.ports',
     'apps.voyages',
     'apps.notifications',
-    # 'apps.events',
+
+    'rest_framework_simplejwt.token_blacklist',
+]
 
   
-]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
