@@ -56,3 +56,6 @@ __pycache__/
 *.pyc
 node_modules/
 .env
+# Python
+__pycache__/
+*.pyc
