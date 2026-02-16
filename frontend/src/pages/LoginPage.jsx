@@ -8,6 +8,7 @@ function LoginPage() {
         <p>
           Review live vessel movement, port congestion, and safety overlays tailored to your role.
         </p>
+        <tittle>Login</tittle>
         <div className="auth-highlight">
           <strong>Next up:</strong> connect live maritime feeds and enable alert subscriptions.
         </div>
