@@ -72,7 +72,7 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'core.urls'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+# jnfdsf
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
