@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
 import "../index.css";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,19 +21,14 @@ export default function Login() {
     });
   };
 
+  const { login } = useAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await api.post("/auth/login/", form);
-
-      if (res.data.access) {
-  localStorage.setItem("token", res.data.access); // store ACCESS token
-  localStorage.setItem("refresh", res.data.refresh);
-  localStorage.setItem("role", res.data.role);
-  navigate("/dashboard");
-}
-
+      await login(form);
+      navigate("/dashboard");
     } catch (err) {
       setMessage("Invalid username, password, or role");
     }

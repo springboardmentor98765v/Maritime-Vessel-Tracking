@@ -19,31 +19,34 @@ const cards = [
 function DashboardPage() {
   const { authState, logout } = useAuth();
 
+  // guard against missing authState (not logged in yet)
+  const profile = authState?.profile || {}; // fallback empty object
+
   return (
     <section className="dashboard">
       <div className="dashboard__header">
         <div>
           <h1>Dashboard</h1>
           <p>
-            Signed in as <strong>{authState.profile?.name}</strong>
+            Signed in as <strong>{profile.username || '—'}</strong>
           </p>
-          <p>Role: {authState.role}</p>
+          <p>Role: {profile.role || '—'}</p>
         </div>
 
-        <button
+        {/* <button
           className="button button--danger"
           onClick={logout}
           type="button"
         >
           Logout
-        </button>
+        </button> */}
       </div>
 
       <div className="dashboard__grid">
         <div className="dashboard-card">
           <h3>Profile</h3>
-          <p>Username: {authState.profile?.name}</p>
-          <p>Role: {authState.role}</p>
+          <p>Username: {profile.username || '—'}</p>
+          <p>Role: {profile.role || '—'}</p>
         </div>
       </div>
     </section>

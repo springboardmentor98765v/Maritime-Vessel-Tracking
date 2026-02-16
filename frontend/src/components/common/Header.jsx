@@ -43,7 +43,7 @@ function Header() {
               className="button button--ghost"
               onClick={logout}
             >
-              Sign out
+              Logout
             </button>
           ) : (
             <NavLink to="/register" className="button button--primary">

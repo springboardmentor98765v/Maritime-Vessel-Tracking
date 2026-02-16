@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { login as loginRequest, register as registerRequest } from '../services/authService'
+import api from '../services/api'
 
 const AuthContext = createContext(null)
 const storageKey = 'mv.auth'
@@ -38,9 +39,16 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (credentials) => {
     const data = await loginRequest(credentials)
+    // backend returns username/role at top level along with access/refresh tokens
+    const profileFromResponse =
+      data.user ||
+      data.profile ||
+      // fall back to fields returned directly
+      (data.username || data.role ? { username: data.username, role: data.role } : null)
+
     const nextState = {
       token: data.token || data.access || '',
-      profile: data.user || data.profile || null,
+      profile: profileFromResponse,
     }
     setAuthState(nextState)
     persistAuth(nextState)
@@ -49,9 +57,14 @@ export function AuthProvider({ children }) {
 
   const register = useCallback(async (payload) => {
     const data = await registerRequest(payload)
+    const profileFromResponse =
+      data.user ||
+      data.profile ||
+      (data.username || data.role ? { username: data.username, role: data.role } : null)
+
     const nextState = {
       token: data.token || data.access || '',
-      profile: data.user || data.profile || null,
+      profile: profileFromResponse,
     }
     setAuthState(nextState)
     persistAuth(nextState)
@@ -62,6 +75,15 @@ export function AuthProvider({ children }) {
     setAuthState(null)
     persistAuth(null)
   }, [])
+
+  // keep axios default header in sync with current token
+  useEffect(() => {
+    if (authState?.token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${authState.token}`
+    } else {
+      delete api.defaults.headers.common['Authorization']
+    }
+  }, [authState?.token])
 
   const value = useMemo(() => {
     return {
