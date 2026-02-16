@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../index.css";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
-    email: "",
+    username: "",
     password: "",
     role: "operator",
   });
@@ -23,16 +25,17 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await api.post("/auth/login", form);
-      setMessage("Login successful!");
-      console.log(res.data);
+      const res = await api.post("/auth/login/", form);
 
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-      }
+      if (res.data.access) {
+  localStorage.setItem("token", res.data.access); // store ACCESS token
+  localStorage.setItem("refresh", res.data.refresh);
+  localStorage.setItem("role", res.data.role);
+  navigate("/dashboard");
+}
+
     } catch (err) {
-      setMessage("Invalid credentials");
-      console.error(err);
+      setMessage("Invalid username, password, or role");
     }
   };
 
@@ -41,26 +44,30 @@ export default function Login() {
       <form className="login-card" onSubmit={handleSubmit}>
         <h2>Sign in</h2>
 
+        {/* Username */}
         <input
-          type="email"
-          name="email"
-          placeholder="Work email"
-          value={form.email}
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={form.username}
           onChange={handleChange}
           required
         />
 
+        {/* Role */}
         <select
           name="role"
           value={form.role}
           onChange={handleChange}
           className="role-select"
+          required
         >
           <option value="operator">Operator</option>
           <option value="analyst">Analyst</option>
           <option value="admin">Admin</option>
         </select>
 
+        {/* Password */}
         <input
           type="password"
           name="password"
@@ -74,10 +81,8 @@ export default function Login() {
 
         {message && <p className="message">{message}</p>}
 
-        {/* Create account link */}
         <p className="register-link">
-          Not registered?{" "}
-          <Link to="/register">Create an account</Link>
+          Not registered? <Link to="/register">Create an account</Link>
         </p>
       </form>
     </div>

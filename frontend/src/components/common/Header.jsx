@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuthContext } from '../../context/AuthContext'
 
 const linkClass = ({ isActive }) =>
   isActive ? 'nav-link nav-link--active' : 'nav-link'
 
 function Header() {
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, logout } = useAuthContext()
 
   return (
     <header className="header">
@@ -17,20 +17,32 @@ function Header() {
             <div className="brand__subtitle">Vessel Intelligence Hub</div>
           </div>
         </div>
+
         <nav className="nav">
           <NavLink to="/" className={linkClass} end>
             Overview
           </NavLink>
-          <NavLink to="/dashboard" className={linkClass}>
-            Dashboard
-          </NavLink>
-          <NavLink to="/login" className={linkClass}>
-            Sign in
-          </NavLink>
+
+          {isAuthenticated && (
+            <NavLink to="/dashboard" className={linkClass}>
+              Dashboard
+            </NavLink>
+          )}
+
+          {!isAuthenticated && (
+            <NavLink to="/login" className={linkClass}>
+              Sign in
+            </NavLink>
+          )}
         </nav>
+
         <div className="header__actions">
           {isAuthenticated ? (
-            <button type="button" className="button button--ghost" onClick={logout}>
+            <button
+              type="button"
+              className="button button--ghost"
+              onClick={logout}
+            >
               Sign out
             </button>
           ) : (

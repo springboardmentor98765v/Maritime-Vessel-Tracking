@@ -15,37 +15,39 @@ const cards = [
   },
 ]
 
+
 function DashboardPage() {
-  const { authState } = useAuth()
+  const { authState, logout } = useAuth();
 
   return (
     <section className="dashboard">
       <div className="dashboard__header">
         <div>
-          <h1>Operator dashboard</h1>
+          <h1>Dashboard</h1>
           <p>
-            {authState?.profile?.name
-              ? `Signed in as ${authState.profile.name}`
-              : 'Signed in and ready to configure live tracking.'}
+            Signed in as <strong>{authState.profile?.name}</strong>
           </p>
+          <p>Role: {authState.role}</p>
         </div>
-        <button className="button button--ghost" type="button">
-          Configure data feeds
+
+        <button
+          className="button button--danger"
+          onClick={logout}
+          type="button"
+        >
+          Logout
         </button>
       </div>
+
       <div className="dashboard__grid">
-        {cards.map((card) => (
-          <article key={card.title} className="dashboard-card">
-            <h3>{card.title}</h3>
-            <p>{card.detail}</p>
-            <button className="button button--link" type="button">
-              Configure
-            </button>
-          </article>
-        ))}
+        <div className="dashboard-card">
+          <h3>Profile</h3>
+          <p>Username: {authState.profile?.name}</p>
+          <p>Role: {authState.role}</p>
+        </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default DashboardPage
+export default DashboardPage;
