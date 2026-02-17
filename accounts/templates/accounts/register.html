@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="login-form-container">
+    <div id="content-main">
+        <h1>{% trans "Register" %}</h1>
+        <form action="" method="post" id="login-form">{% csrf_token %}
+            <div class="form-row">
+                {{ form.as_p }}
+            </div>
+            <div class="submit-row">
+                <input type="submit" value="{% trans 'Register' %}">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

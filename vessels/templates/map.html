@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Vessel Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Real-Time Vessel Visualization</h1>
+    <form action="{% url 'logout' %}" method="post" style="margin: 20px 0;">
+        {% csrf_token %}
+        <button type="submit"
+            style="background-color: #d9534f; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+            Logout from System
+        </button>
+    </form>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([20, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Function to get query parameter
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        const targetVesselId = getQueryParam('vessel_id');
+
+        fetch('/api/vessels/')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(ship => {
+                    var marker = L.marker([ship.latitude, ship.longitude]).addTo(map)
+                        .bindPopup("<b>" + ship.name + "</b><br>Type: " + ship.vessel_type);
+
+                    if (targetVesselId && ship.id == targetVesselId) {
+                        map.setView([ship.latitude, ship.longitude], 10); // Zoom in on the vessel
+                        marker.openPopup();
+                    }
+                });
+            });
+    </script>
+</body>
+
+</html>

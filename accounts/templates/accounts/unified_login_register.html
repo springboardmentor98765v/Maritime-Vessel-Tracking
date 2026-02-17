@@ -1,0 +1,97 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/login.css' %}">
+<style>
+    .login-form-container {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        /* Space between the two forms */
+        max-width: 1000px;
+        /* Increase width to fit both */
+        margin: auto;
+    }
+
+    .auth-section {
+        flex: 1;
+        padding: 20px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-section h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* Adjust form inputs to fill container */
+    .form-row input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-form-container">
+
+    <!-- Login Section -->
+    <div class="auth-section">
+        <h2>{% trans "Login" %}</h2>
+        <form action="" method="post" id="login-form">{% csrf_token %}
+            {% if login_form.non_field_errors %}
+            <div class="errornote">
+                {{ login_form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            {% for field in login_form %}
+            <div class="form-row">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+            </div>
+            {% endfor %}
+
+            <input type="hidden" name="action" value="login">
+
+            <div class="submit-row">
+                <input type="submit" value="{% trans 'Log in' %}">
+            </div>
+        </form>
+    </div>
+
+    <!-- Registration Section -->
+    <div class="auth-section">
+        <h2>{% trans "Register" %}</h2>
+        <form action="" method="post" id="register-form">{% csrf_token %}
+            {% if register_form.non_field_errors %}
+            <div class="errornote">
+                {{ register_form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            {% for field in register_form %}
+            <div class="form-row">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+                {% if field.help_text %}
+                <p class="help">{{ field.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <input type="hidden" name="action" value="register">
+
+            <div class="submit-row">
+                <input type="submit" value="{% trans 'Register' %}">
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
