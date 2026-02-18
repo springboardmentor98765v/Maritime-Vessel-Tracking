@@ -1,13 +1,18 @@
-import axios from 'axios'
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/',
-  timeout: 15000,
-})
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000",
+});
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => Promise.reject(error)
-)
+api.interceptors.request.use((config) => {
+  const stored = localStorage.getItem("mv.auth");
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    if (parsed?.token) {
+      config.headers.Authorization = `Bearer ${parsed.token}`;
+    }
+  }
+  return config;
+});
 
-export default api
+export default api;

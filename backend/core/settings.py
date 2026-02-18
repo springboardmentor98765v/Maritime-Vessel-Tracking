@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
 
-    'apps.authentication',
+'apps.authentication.apps.AuthenticationConfig',
     'apps.vessels',
     'apps.ports',
     'apps.voyages',
@@ -157,6 +157,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 # Static files (CSS, JavaScript, Images)

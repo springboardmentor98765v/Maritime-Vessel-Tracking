@@ -10,6 +10,8 @@ function Header() {
   return (
     <header className="header">
       <div className="container header__inner">
+        
+        {/* Brand Section */}
         <div className="brand">
           <span className="brand__mark">MV</span>
           <div>
@@ -18,15 +20,22 @@ function Header() {
           </div>
         </div>
 
+        {/* Navigation */}
         <nav className="nav">
           <NavLink to="/" className={linkClass} end>
             Overview
           </NavLink>
 
           {isAuthenticated && (
-            <NavLink to="/dashboard" className={linkClass}>
-              Dashboard
-            </NavLink>
+            <>
+              <NavLink to="/dashboard" className={linkClass}>
+                Dashboard
+              </NavLink>
+
+              <NavLink to="/profile" className={linkClass}>
+                My Profile
+              </NavLink>
+            </>
           )}
 
           {!isAuthenticated && (
@@ -36,6 +45,7 @@ function Header() {
           )}
         </nav>
 
+        {/* Action Buttons */}
         <div className="header__actions">
           {isAuthenticated ? (
             <button
@@ -51,6 +61,7 @@ function Header() {
             </NavLink>
           )}
         </div>
+
       </div>
     </header>
   )

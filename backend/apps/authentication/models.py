@@ -13,7 +13,7 @@ class User(AbstractUser):
     ]
 
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
-
+    email = models.EmailField(unique=True)
     is_verified = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -24,8 +24,9 @@ class User(AbstractUser):
 
 
 
-class UserProfile(models.Model):
 
+
+class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -33,11 +34,14 @@ class UserProfile(models.Model):
     )
 
     company = models.CharField(max_length=255, blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    avatar_url = models.TextField(blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    avatar = models.ImageField(
+        upload_to="avatars/",
+        blank=True,
+        null=True,
+        default="avatars/default.png"
+    )
 
-    def __str__(self):
-        return f"{self.user.username} Profile"
+    created_at = models.DateTimeField(auto_now_add=True)
