@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q, F
 
 
 class Voyage(models.Model):
@@ -33,6 +34,17 @@ class Voyage(models.Model):
 
     class Meta:
         ordering = ['-departure_time']
+
+        indexes = [
+            models.Index(fields=['vessel', 'status']),
+        ]
+
+        constraints = [
+            models.CheckConstraint(
+                check=Q(arrival_time__gte=F('departure_time')) | Q(arrival_time__isnull=True),
+                name='arrival_after_departure'
+            )
+        ]
 
     def __str__(self):
         return f"{self.vessel.name} - {self.status}"
