@@ -1,27 +1,24 @@
 from django.shortcuts import render
 
-# Create your views here.
-from rest_framework import generics
-from .serializers import RegisterSerializer
-from .models import User
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdmin
-from rest_framework import status
-from .serializers import ProfileSerializer, ChangePasswordSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
-from .serializers import UserProfileSerializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from .models import User
+from .permissions import IsAdmin
+from .serializers import (
+    RegisterSerializer,
+    ProfileSerializer,
+    ChangePasswordSerializer,
+    CustomTokenObtainPairSerializer,
+    UserProfileSerializer,
+)
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
