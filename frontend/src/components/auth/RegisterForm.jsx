@@ -39,98 +39,110 @@ function RegisterForm() {
   };
 
   return (
-    <form className="auth-card" onSubmit={handleSubmit}>
-      <div>
-        <h2 className="auth-title">Create account</h2>
-        <p className="auth-subtitle">
+    <form className="bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl shadow-slate-950/50" onSubmit={handleSubmit}>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2">Create account</h2>
+        <p className="text-slate-400">
           Start tracking vessels in minutes.
         </p>
       </div>
 
-      <label className="field">
-        <span>Username</span>
-        <input
-          type="text"
-          name="username"
-          placeholder="alexmorgan"
-          value={formState.username}
-          onChange={handleChange}
-          required
-        />
-      </label>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Username</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="alexmorgan"
+            value={formState.username}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+            required
+          />
+        </div>
 
-      <label className="field">
-        <span>First name</span>
-        <input
-          type="text"
-          name="first_name"
-          placeholder="Alex"
-          value={formState.first_name}
-          onChange={handleChange}
-          required
-        />
-      </label>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">First name</label>
+          <input
+            type="text"
+            name="first_name"
+            placeholder="Alex"
+            value={formState.first_name}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+            required
+          />
+        </div>
 
-      <label className="field">
-        <span>Last name</span>
-        <input
-          type="text"
-          name="last_name"
-          placeholder="Morgan"
-          value={formState.last_name}
-          onChange={handleChange}
-          required
-        />
-      </label>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Last name</label>
+          <input
+            type="text"
+            name="last_name"
+            placeholder="Morgan"
+            value={formState.last_name}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+            required
+          />
+        </div>
 
-      <label className="field">
-        <span>Work email</span>
-        <input
-          type="email"
-          name="email"
-          placeholder="analyst@portauthority.com"
-          value={formState.email}
-          onChange={handleChange}
-          required
-        />
-      </label>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Work email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="analyst@portauthority.com"
+            value={formState.email}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+            required
+          />
+        </div>
 
-      <label className="field">
-        <span>Role</span>
-        <select
-          name="role"
-          value={formState.role}
-          onChange={handleChange}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Role</label>
+          <select
+            name="role"
+            value={formState.role}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+          >
+            <option value="operator">Operator</option>
+            <option value="analyst">Analyst</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Create a secure password"
+            value={formState.password}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+            required
+          />
+        </div>
+
+        {error && (
+          <div className="p-3 rounded-xl bg-red-500/15 border border-red-400/40 text-red-200 text-sm">
+            {error}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-900 font-semibold shadow-lg shadow-cyan-500/30 hover:-translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          disabled={status === "loading"}
         >
-          <option value="operator">Operator</option>
-          <option value="analyst">Analyst</option>
-          <option value="admin">Admin</option>
-        </select>
-      </label>
-
-      <label className="field">
-        <span>Password</span>
-        <input
-          type="password"
-          name="password"
-          placeholder="Create a secure password"
-          value={formState.password}
-          onChange={handleChange}
-          required
-        />
-      </label>
-
-      {error && <div className="auth-error">{error}</div>}
-
-      <button
-        type="submit"
-        className="button button--primary"
-        disabled={status === "loading"}
-      >
-        {status === "loading"
-          ? "Creating account..."
-          : "Create account"}
-      </button>
+          {status === "loading"
+            ? "Creating account..."
+            : "Create account"}
+        </button>
+      </div>
     </form>
   );
 }

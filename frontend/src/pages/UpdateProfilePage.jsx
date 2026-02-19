@@ -93,8 +93,8 @@ export default function UpdateProfile() {
   // -------------------- UI --------------------
   return (
     <div className="min-h-[70vh] flex items-start justify-start pt-20">
-      <div className="max-w-lg w-full bg-slate-900/80 backdrop-blur-md
-                      border border-slate-700 rounded-2xl shadow-2xl p-8">
+      <div className="max-w-lg w-full bg-slate-900/90 backdrop-blur-xl
+                      border border-white/10 rounded-2xl shadow-2xl shadow-slate-950/50 p-8">
         <h2 className="text-3xl font-bold text-white mb-2">
           Update Profile
         </h2>
@@ -109,8 +109,7 @@ export default function UpdateProfile() {
               <img
                 src={avatarPreview}
                 alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border border-slate-600"
-
+                className="w-24 h-24 rounded-full object-cover border-4 border-cyan-500/50 shadow-lg shadow-cyan-500/30"
               />
             </div>
           )}
@@ -125,9 +124,11 @@ export default function UpdateProfile() {
               value={form.company}
               onChange={handleChange}
               placeholder="e.g. Maritime Corp"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800
-                         text-white border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full px-4 py-3 rounded-xl bg-slate-800/70
+                         text-white border border-slate-600/50
+                         placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                         transition-all"
             />
           </div>
 
@@ -141,9 +142,11 @@ export default function UpdateProfile() {
               value={form.phone_number}
               onChange={handleChange}
               placeholder="+91 9876543210"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800
-                         text-white border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full px-4 py-3 rounded-xl bg-slate-800/70
+                         text-white border border-slate-600/50
+                         placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                         transition-all"
             />
           </div>
 
@@ -158,9 +161,11 @@ export default function UpdateProfile() {
               onChange={handleChange}
               rows="3"
               placeholder="Tell us about yourself"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800
-                         text-white border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full px-4 py-3 rounded-xl bg-slate-800/70
+                         text-white border border-slate-600/50
+                         placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                         transition-all"
             />
           </div>
 
@@ -177,8 +182,10 @@ export default function UpdateProfile() {
               className="block w-full text-sm text-slate-300
                          file:mr-4 file:py-2 file:px-4
                          file:rounded-lg file:border-0
-                         file:bg-cyan-600 file:text-white
-                         hover:file:bg-cyan-500"
+                         file:bg-gradient-to-r file:from-cyan-400 file:to-blue-500
+                         file:text-slate-900 file:font-semibold
+                         hover:file:shadow-lg hover:file:shadow-cyan-500/30
+                         file:transition-shadow"
             />
           </div>
 
@@ -186,9 +193,9 @@ export default function UpdateProfile() {
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              className="flex-1 py-3 rounded-xl bg-cyan-600
-                         hover:bg-cyan-500 transition
-                         text-white font-semibold"
+              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500
+                         hover:-translate-y-0.5 transition-transform
+                         text-slate-900 font-semibold shadow-lg shadow-cyan-500/30"
             >
               Save Changes
             </button>
@@ -196,8 +203,8 @@ export default function UpdateProfile() {
             <button
               type="button"
               onClick={() => navigate("/profile")}
-              className="flex-1 py-3 rounded-xl border border-slate-600
-                         text-slate-300 hover:bg-slate-800 transition"
+              className="flex-1 py-3 rounded-xl border border-white/30
+                         text-white hover:bg-white/10 transition-colors"
             >
               Cancel
             </button>

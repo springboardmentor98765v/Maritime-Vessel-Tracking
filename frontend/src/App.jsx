@@ -1,4 +1,3 @@
-import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import Header from './components/common/Header'
 import Footer from './components/common/Footer'
@@ -17,11 +16,11 @@ import ChangePasswordPage from './pages/ChangePasswordPage'
 
 function App() {
   return (
-    <div className="app-shell">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="main-content">
-        <div className="container">
+      <main className="flex-1 py-14 px-4">
+        <div className="max-w-7xl mx-auto w-full">
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<HomePage />} />
