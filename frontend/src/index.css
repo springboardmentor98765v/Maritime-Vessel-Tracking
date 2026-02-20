@@ -1,98 +1,31 @@
+@import "tailwindcss";
 
-:root {
-  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #ffffff;
-  background-color: #0b1220;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* ---------- BODY BACKGROUND ---------- */
 body {
   margin: 0;
   min-height: 100vh;
-
-  background:
-    linear-gradient(rgba(0,10,30,0.6), rgba(0,10,30,0.6)),
-    url("/images/background.png") red;
-
+  background: 
+    linear-gradient(rgba(0, 10, 30, 0.7), rgba(0, 10, 30, 0.7)),
+    url("/images/background.png");
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   background-repeat: no-repeat;
 }
 
-
-
-/* Dark overlay */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 10, 30, 0.6);
-  z-index: -1;
+/* Custom scrollbar styling (optional) */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-/* ---------- LOGIN CARD ---------- */
-.login-card {
-  background: #06152b;
-  padding: 60px;
-  border-radius: 20px;
-  width: 420px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
-  text-align: center;
-  color: white;
-
-  position: absolute;
-  left: 10%;
-  top: 50%;
-  transform: translateY(-50%);
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
 }
 
-.login-card h2 {
-  margin-bottom: 25px;
-  font-size: 26px;
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+  border-radius: 5px;
 }
 
-.login-card input,
-.role-select {
-  width: 100%;
-  padding: 14px;
-  margin: 12px 0;
-  border-radius: 8px;
-  border: 1px solid #2e3f63;
-  background: #0b1e3d;
-  color: white;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.7);
 }
-
-.login-card input::placeholder {
-  color: #9fb3d9;
-}
-
-.login-card button {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(90deg, #4da3ff, #7b6cff);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 17px;
-  cursor: pointer;
-}
-
-.message {
-  margin-top: 10px;
-  color: #ff6b6b;
-}
-
-.register-link {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #bcd3ff;
-}
-@tailwind base;
-@tailwind components;
-@tailwind utilities;

@@ -32,17 +32,17 @@ export default function ProfilePage() {
     : DEFAULT_AVATAR;
 
   return (
-    <div className="min-h-[80vh] pt-24 flex justify-center">
-      <div className="max-w-3xl w-full bg-slate-900/80 backdrop-blur-md 
-                      border border-slate-700 rounded-3xl shadow-2xl p-10">
+    <div className="min-h-[80vh] pt-20 flex justify-center">
+      <div className="max-w-3xl w-full bg-slate-900/90 backdrop-blur-xl 
+                      border border-white/10 rounded-2xl shadow-2xl shadow-slate-950/50 p-8">
 
         {/* ================= HEADER ================= */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-10">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
           <img
             src={avatar}
             alt="Profile Avatar"
-            className="w-10 h-10 rounded-full border-4 border-cyan-500 
-                       object-cover shadow-lg"
+            className="w-24 h-24 rounded-full border-4 border-cyan-500/50 
+                       object-cover shadow-lg shadow-cyan-500/30"
           />
 
           <div className="text-center sm:text-left">
@@ -53,7 +53,7 @@ export default function ProfilePage() {
             <p className="text-slate-400 mt-1">{data.email}</p>
 
             <span className="inline-block mt-3 px-4 py-1.5 text-sm 
-                             rounded-full bg-cyan-500/20 text-cyan-400">
+                             rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
               {data.role}
             </span>
           </div>
@@ -61,7 +61,7 @@ export default function ProfilePage() {
 
         {/* ================= BIO ================= */}
         {profile.bio && (
-          <div className="mb-10">
+          <div className="mb-8">
             <h3 className="text-lg font-semibold text-white mb-2">
               About
             </h3>
@@ -73,7 +73,7 @@ export default function ProfilePage() {
 
         {/* ================= DETAILS ================= */}
         {(profile.company || profile.phone_number) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
             
             {profile.company && (
               <div>
@@ -100,17 +100,17 @@ export default function ProfilePage() {
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={() => navigate("/profile/update")}
-            className="flex-1 py-3 rounded-xl bg-cyan-600 
-                       hover:bg-cyan-500 transition 
-                       text-white font-semibold"
+            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 
+                       hover:-translate-y-0.5 transition-transform 
+                       text-slate-900 font-semibold shadow-lg shadow-cyan-500/30"
           >
             Edit Profile
           </button>
 
           <button
             onClick={() => navigate("/profile/change-password")}
-            className="flex-1 py-3 rounded-xl border border-slate-600 
-                       text-slate-300 hover:bg-slate-800 transition"
+            className="flex-1 py-3 rounded-xl border border-white/30 
+                       text-white hover:bg-white/10 transition-colors"
           >
             Change Password
           </button>
