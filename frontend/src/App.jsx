@@ -10,10 +10,17 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import NotFoundPage from './pages/NotFoundPage'
 
-// ✅ NEW PAGES
 import ProfilePage from './pages/ProfilePage'
 import UpdateProfilePage from './pages/UpdateProfilePage'
 import ChangePasswordPage from './pages/ChangePasswordPage'
+
+// ✅ Milestone 2 pages
+import MapPage from './pages/MapPage'
+import VesselsPage from './pages/VesselsPage'
+import VesselDetailPage from './pages/VesselDetailPage'
+
+// ✅ Milestone 3 pages
+import PortsPage from './pages/PortsPage'
 
 function App() {
   return (
@@ -27,6 +34,14 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+
+            {/* ✅ Milestone 2 — public vessel routes */}
+            <Route path="/map" element={<MapPage />} />
+            <Route path="/vessels" element={<VesselsPage />} />
+            <Route path="/vessels/:id" element={<VesselDetailPage />} />
+
+            {/* ✅ Milestone 3 — port congestion routes */}
+            <Route path="/ports" element={<PortsPage />} />
 
             {/* Protected routes */}
             <Route element={<PrivateRoute />}>

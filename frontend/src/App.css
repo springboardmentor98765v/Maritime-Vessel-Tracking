@@ -356,3 +356,558 @@
     text-align: left;
   }
 }
+
+/* =====================================================
+   MILESTONE 2 — VESSELS, MAP, DETAIL PAGES
+   ===================================================== */
+
+/* Utility */
+.mono {
+  font-family: 'Courier New', monospace;
+  font-size: 0.88em;
+}
+
+.text-muted {
+  opacity: 0.55;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+/* Buttons extra */
+.button--sm {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.button--danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+}
+
+/* ---- Vessels Page ---- */
+.vessels-page {
+  color: #f8fbff;
+  display: grid;
+  gap: 2rem;
+}
+
+.vessels-header h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.vessels-subtitle {
+  color: rgba(248, 251, 255, 0.6);
+  margin: 0.3rem 0 0;
+}
+
+.vessel-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  background: rgba(12, 18, 34, 0.8);
+  padding: 1.2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vessel-search-input {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #f8fbff;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.vessel-select {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #f8fbff;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.vessels-loading,
+.vessels-empty {
+  text-align: center;
+  padding: 3rem;
+  opacity: 0.6;
+}
+
+.vessels-table-wrap {
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vessels-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.91rem;
+}
+
+.vessels-table th {
+  background: rgba(12, 18, 34, 0.9);
+  padding: 0.9rem 1rem;
+  text-align: left;
+  color: rgba(248, 251, 255, 0.5);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+}
+
+.vessels-table td {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.vessels-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.vessel-name {
+  font-weight: 600;
+}
+
+.vessels-count {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  opacity: 0.55;
+  margin: 0;
+  background: rgba(12, 18, 34, 0.6);
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge--type {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+}
+
+/* ---- Vessel Detail Page ---- */
+.vessel-detail {
+  color: #f8fbff;
+  display: grid;
+  gap: 2rem;
+  max-width: 960px;
+}
+
+.detail-loading,
+.detail-error {
+  text-align: center;
+  padding: 3rem;
+  opacity: 0.6;
+  color: #f8fbff;
+}
+
+.vessel-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.vessel-detail-name {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.vessel-detail-imo {
+  color: rgba(248, 251, 255, 0.55);
+  margin: 0.3rem 0 0;
+}
+
+.vessel-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.vessel-detail-card {
+  background: rgba(12, 18, 34, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 1.2rem 1.4rem;
+  border-radius: 14px;
+}
+
+.detail-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  margin: 0 0 0.4rem;
+}
+
+.detail-value {
+  font-weight: 600;
+  margin: 0;
+}
+
+.vessel-map-preview {
+  background: rgba(12, 18, 34, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.vessel-map-preview h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.vessel-events h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.events-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.event-card {
+  background: rgba(12, 18, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.event-card--piracy {
+  border-left: 3px solid #ef4444;
+}
+
+.event-card--accident {
+  border-left: 3px solid #f97316;
+}
+
+.event-card--weather {
+  border-left: 3px solid #38bdf8;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-type-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.78rem;
+  text-transform: capitalize;
+}
+
+.event-time {
+  font-size: 0.82rem;
+  opacity: 0.5;
+}
+
+.event-location {
+  font-size: 0.88rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.event-details {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ---- Map Page ---- */
+.map-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: calc(100vh - 80px);
+}
+
+.map-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: rgba(10, 14, 24, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: #f8fbff;
+  flex-shrink: 0;
+}
+
+.map-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.map-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.map-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.map-vessel-count {
+  font-size: 0.85rem;
+  opacity: 0.55;
+}
+
+.map-refresh-time {
+  font-size: 0.82rem;
+  opacity: 0.5;
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+}
+
+.map-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #f8fbff;
+  opacity: 0.6;
+}
+
+/* Leaflet popup custom */
+.map-popup {
+  font-size: 0.88rem;
+  display: grid;
+  gap: 0.2rem;
+  min-width: 160px;
+}
+
+.map-popup strong {
+  font-size: 1rem;
+}
+
+.map-popup p {
+  margin: 0;
+}
+
+.popup-time {
+  opacity: 0.6;
+  font-size: 0.78rem;
+}
+
+.popup-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #38bdf8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.popup-link:hover {
+  text-decoration: underline;
+}
+
+/* =====================================================
+   MILESTONE 3 — PORTS CONGESTION DASHBOARD
+   ===================================================== */
+
+.ports-page {
+  color: #f8fbff;
+  display: grid;
+  gap: 2rem;
+}
+
+.ports-loading,
+.ports-error {
+  text-align: center;
+  padding: 3rem;
+  color: #f8fbff;
+  opacity: 0.6;
+}
+
+.ports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ports-header h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.ports-subtitle {
+  color: rgba(248, 251, 255, 0.55);
+  margin: 0.3rem 0 0;
+}
+
+.ports-refresh {
+  opacity: 0.7;
+}
+
+/* Summary cards */
+.congestion-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.congestion-summary-card {
+  background: rgba(12, 18, 34, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: capitalize;
+}
+
+.congestion-summary-card--critical {
+  border-top: 3px solid #ef4444;
+}
+
+.congestion-summary-card--high {
+  border-top: 3px solid #f97316;
+}
+
+.congestion-summary-card--moderate {
+  border-top: 3px solid #eab308;
+}
+
+.congestion-summary-card--low {
+  border-top: 3px solid #22c55e;
+}
+
+.cs-emoji {
+  font-size: 1.4rem;
+}
+
+.cs-count {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.cs-label {
+  font-size: 0.78rem;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Ports table */
+.ports-table-wrap {
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ports-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.91rem;
+}
+
+.ports-table th {
+  background: rgba(12, 18, 34, 0.9);
+  padding: 0.9rem 1rem;
+  text-align: left;
+  color: rgba(248, 251, 255, 0.5);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+}
+
+.ports-table td {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.ports-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.port-row--alert td {
+  background: rgba(239, 68, 68, 0.04);
+}
+
+.port-name-link {
+  color: #7dd3fc;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.port-name-link:hover {
+  text-decoration: underline;
+}
+
+.port-location-label {
+  font-size: 0.78rem;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+.congestion-badge {
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.score-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 100px;
+}
+
+.score-bar {
+  height: 6px;
+  border-radius: 3px;
+  flex: 1;
+  min-width: 20px;
+  max-width: 80px;
+  transition: width 0.4s ease;
+}
+
+.score-val {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .congestion-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

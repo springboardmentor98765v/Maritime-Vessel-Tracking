@@ -3,7 +3,6 @@ from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
 
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -64,18 +63,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Authenticate username & password
         data = super().validate(attrs)
 
-        request = self.context.get("request")
-        requested_role = request.data.get("role") if request else None
-
-        if not requested_role:
-            raise AuthenticationFailed("Role is required")
-
-        # Role stored in DB
-        user_role = self.user.role
-
-        if requested_role != user_role:
-            raise AuthenticationFailed("Invalid role selected")
-
         # Update last login
         self.user.last_login = timezone.now()
         self.user.save(update_fields=["last_login"])
@@ -114,11 +101,14 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "username",
             "first_name",
             "last_name",
             "email",
+            "role",
             "profile",
         ]
+        read_only_fields = ["username", "role"]
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop("profile", None)

@@ -15,6 +15,15 @@ class Notification(models.Model):
         related_name='notifications'
     )
 
+    # ✅ Added from design diagram (event_id FK)
+    event = models.ForeignKey(
+        'vessels.VesselEvent',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='notifications'
+    )
+
     message = models.TextField()
 
     type = models.CharField(
@@ -30,4 +39,4 @@ class Notification(models.Model):
         ordering = ['-timestamp']
 
     def __str__(self):
-        return f"Notification for {self.user.email}"
+        return f"Notification for {self.user.username} — {self.type}"

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 
 const initialState = {
-  email: '',
+  username: '',
   password: '',
 }
 
@@ -41,12 +41,12 @@ function LoginForm() {
         <p className="auth-subtitle">Access live vessel tracking and alerts.</p>
       </div>
       <label className="field">
-        <span>Email</span>
+        <span>Username</span>
         <input
-          type="email"
-          name="email"
-          placeholder="operator@shippingco.com"
-          value={formState.email}
+          type="text"
+          name="username"
+          placeholder="alexmorgan"
+          value={formState.username}
           onChange={handleChange}
           required
         />

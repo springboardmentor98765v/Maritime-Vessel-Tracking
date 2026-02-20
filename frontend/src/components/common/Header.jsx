@@ -10,7 +10,7 @@ function Header() {
   return (
     <header className="header">
       <div className="container header__inner">
-        
+
         {/* Brand Section */}
         <div className="brand">
           <span className="brand__mark">MV</span>
@@ -24,6 +24,18 @@ function Header() {
         <nav className="nav">
           <NavLink to="/" className={linkClass} end>
             Overview
+          </NavLink>
+
+          <NavLink to="/map" className={linkClass}>
+            🗺 Map
+          </NavLink>
+
+          <NavLink to="/vessels" className={linkClass}>
+            🚢 Vessels
+          </NavLink>
+
+          <NavLink to="/ports" className={linkClass}>
+            ⚓ Ports
           </NavLink>
 
           {isAuthenticated && (

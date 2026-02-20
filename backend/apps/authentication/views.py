@@ -38,9 +38,18 @@ class RegisterView(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        serializer.save()
+        user = serializer.save()
+
+        # Generate JWT tokens so the frontend can log the user in immediately
+        refresh = RefreshToken.for_user(user)
         return Response(
-            {"detail": "User registered successfully"},
+            {
+                "detail": "User registered successfully",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "username": user.username,
+                "role": user.role,
+            },
             status=status.HTTP_201_CREATED
         )
 
