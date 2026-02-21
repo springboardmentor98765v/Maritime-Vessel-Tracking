@@ -1,70 +1,77 @@
 import { NavLink } from 'react-router-dom'
 import { useAuthContext } from '../../context/AuthContext'
 
-const linkClass = ({ isActive }) =>
-  isActive ? 'nav-link nav-link--active' : 'nav-link'
+const links = [
+    { to: '/', label: 'Overview', end: true },
+    { to: '/map', label: 'Map' },
+    { to: '/vessels', label: 'Vessels' },
+    { to: '/ports', label: 'Ports' },
+    { to: '/voyages', label: 'Voyages' },
+    { to: '/analytics', label: 'Analytics' },
+]
+
+const authLinks = [
+    { to: '/dashboard', label: 'Dashboard' },
+    { to: '/admin', label: 'Admin' },
+    { to: '/profile', label: 'Profile' },
+]
 
 function Header() {
-  const { isAuthenticated, logout } = useAuthContext()
+    const { isAuthenticated, logout } = useAuthContext()
 
-  return (
-    <header className="header">
-      <div className="container header__inner">
-        
-        {/* Brand Section */}
-        <div className="brand">
-          <span className="brand__mark">MV</span>
-          <div>
-            <div className="brand__title">Maritime Vista</div>
-            <div className="brand__subtitle">Vessel Intelligence Hub</div>
-          </div>
-        </div>
+    return (
+        <header className="header">
+            <div className="container header__inner">
 
-        {/* Navigation */}
-        <nav className="nav">
-          <NavLink to="/" className={linkClass} end>
-            Overview
-          </NavLink>
+                {/* Brand */}
+                <NavLink to="/" className="brand">
+                    <span className="brand__mark">MV</span>
+                    <div>
+                        <span className="brand__title">Maritime Vista</span>
+                        <span className="brand__subtitle">Vessel Intelligence Hub</span>
+                    </div>
+                </NavLink>
 
-          {isAuthenticated && (
-            <>
-              <NavLink to="/dashboard" className={linkClass}>
-                Dashboard
-              </NavLink>
+                {/* Nav */}
+                <nav className="nav" aria-label="Main navigation">
+                    {links.map(({ to, label, end }) => (
+                        <NavLink
+                            key={to}
+                            to={to}
+                            end={end}
+                            className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}
+                        >
+                            {label}
+                        </NavLink>
+                    ))}
+                    {isAuthenticated && authLinks.map(({ to, label }) => (
+                        <NavLink
+                            key={to}
+                            to={to}
+                            className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}
+                        >
+                            {label}
+                        </NavLink>
+                    ))}
+                </nav>
 
-              <NavLink to="/profile" className={linkClass}>
-                My Profile
-              </NavLink>
-            </>
-          )}
+                {/* Actions */}
+                <div className="header__actions">
+                    {isAuthenticated ? (
+                        <button type="button" className="btn btn--ghost btn--sm" onClick={logout}>
+                            Sign out
+                        </button>
+                    ) : (
+                        <>
+                            <NavLink to="/login" className="btn btn--ghost btn--sm">Sign in</NavLink>
+                            <NavLink to="/register" className="btn btn--primary btn--sm">Get started</NavLink>
+                        </>
+                    )}
+                </div>
 
-          {!isAuthenticated && (
-            <NavLink to="/login" className={linkClass}>
-              Sign in
-            </NavLink>
-          )}
-        </nav>
-
-        {/* Action Buttons */}
-        <div className="header__actions">
-          {isAuthenticated ? (
-            <button
-              type="button"
-              className="button button--ghost"
-              onClick={logout}
-            >
-              Logout
-            </button>
-          ) : (
-            <NavLink to="/register" className="button button--primary">
-              Create account
-            </NavLink>
-          )}
-        </div>
-
-      </div>
-    </header>
-  )
+            </div>
+        </header>
+    )
 }
 
 export default Header

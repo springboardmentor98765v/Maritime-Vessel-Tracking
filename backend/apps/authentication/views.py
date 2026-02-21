@@ -9,7 +9,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User
+from .models import User, UserProfile
 from .permissions import IsAdmin
 from .serializers import (
     RegisterSerializer,
@@ -20,6 +20,10 @@ from .serializers import (
 )
 
 
+# =========================
+# AUTH & REGISTRATION
+# =========================
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -28,22 +32,36 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
 
         if not serializer.is_valid():
-            print("REGISTER ERRORS:", serializer.errors)  # 🔥 KEY LINE
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            print("REGISTER ERRORS:", serializer.errors)
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        serializer.save()
+        user = serializer.save()
+
+        # Generate JWT tokens so the frontend can log the user in immediately
+        refresh = RefreshToken.for_user(user)
         return Response(
-            {"detail": "User registered successfully"},
+            {
+                "detail": "User registered successfully",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "username": user.username,
+                "role": user.role,
+            },
             status=status.HTTP_201_CREATED
         )
 
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-
         refresh_token = request.data.get("refresh")
 
         if not refresh_token:
@@ -55,26 +73,25 @@ class LogoutView(APIView):
         try:
             token = RefreshToken(refresh_token)
             token.blacklist()
-
             return Response({"message": "Logout successful"})
-
         except Exception as e:
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
- 
-
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
 
 
-
-
+# =========================
+# ADMIN
+# =========================
 
 class AdminView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 
+
+# =========================
+# USER PROFILE (AUTH USER)
+# =========================
 
 class ProfileMeView(APIView):
     permission_classes = [IsAuthenticated]
@@ -89,10 +106,9 @@ class ProfileMeView(APIView):
             data=request.data,
             partial=True
         )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class ChangePasswordView(APIView):
@@ -104,13 +120,13 @@ class ChangePasswordView(APIView):
         if serializer.is_valid():
             user = request.user
 
-            if not user.check_password(serializer.validated_data['old_password']):
+            if not user.check_password(serializer.validated_data["old_password"]):
                 return Response(
                     {"old_password": "Wrong password"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            user.set_password(serializer.validated_data['new_password'])
+            user.set_password(serializer.validated_data["new_password"])
             user.save()
 
             return Response(
@@ -118,28 +134,34 @@ class ChangePasswordView(APIView):
                 status=status.HTTP_200_OK
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
-
-
-
-
-
+# =========================
+# USER PROFILE (EXTENDED)
+# =========================
 
 class UpdateUserProfileView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get(self, request):
+        """Fetch profile data for auto-fill"""
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
-        profile = request.user.profile
+        """Update profile data"""
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
         serializer = UserProfileSerializer(
             profile,
             data=request.data,
             partial=True
         )
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-
-        return Response(serializer.errors, status=400)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

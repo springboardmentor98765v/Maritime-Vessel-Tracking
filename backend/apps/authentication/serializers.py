@@ -1,15 +1,22 @@
-from rest_framework import serializers
-from .models import User,UserProfile
-from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.utils import timezone
-from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
+
+from rest_framework import serializers
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from .models import UserProfile
+
 
 User = get_user_model()
 
-class RegisterSerializer(serializers.ModelSerializer):
 
+# =========================
+# REGISTER SERIALIZER
+# =========================
+
+class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -24,12 +31,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username',
-            'password',
-            'email',
-            'first_name',
-            'last_name',
-            'role'
+            "username",
+            "password",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
         ]
 
     def validate_username(self, value):
@@ -46,66 +53,84 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-
+# =========================
+# JWT LOGIN SERIALIZER
+# =========================
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
-        # authenticate username + password first
+        # Authenticate username & password
         data = super().validate(attrs)
 
-        request = self.context.get("request")
-        requested_role = request.data.get("role") if request else None
-
-        if not requested_role:
-            raise AuthenticationFailed("Role is required")
-
-        # role stored in DB
-        user_role = self.user.role
-
-        if requested_role != user_role:
-            raise AuthenticationFailed("Invalid role selected")
-
-        # update last_login
+        # Update last login
         self.user.last_login = timezone.now()
-        self.user.save(update_fields=['last_login'])
+        self.user.save(update_fields=["last_login"])
 
-        # add extra fields to response
-        data['username'] = self.user.username
-        data['role'] = self.user.role
-        data['last_login'] = self.user.last_login
+        # Add extra response data
+        data["username"] = self.user.username
+        data["role"] = self.user.role
+        data["last_login"] = self.user.last_login
 
         return data
 
+
+# =========================
+# USER PROFILE SERIALIZER
+# =========================
+
 class UserProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = UserProfile
         fields = [
-            'company',
-            'phone_number',
-            'avatar',
-            'bio',
-        ] 
+            "company",
+            "phone_number",
+            "avatar",
+            "bio",
+        ]
 
+
+# =========================
+# USER + PROFILE SERIALIZER
+# =========================
 
 class ProfileSerializer(serializers.ModelSerializer):
-    profile = UserProfileSerializer(read_only=True)
+    profile = UserProfileSerializer(required=False)
 
     class Meta:
         model = User
         fields = [
-            'username',
-            'email',
-            'first_name',
-            'last_name',
-            'role',
-            "profile"
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "role",
+            "profile",
         ]
-        read_only_fields = ['username', 'role']
+        read_only_fields = ["username", "role"]
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile", None)
+
+        # Update User fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Update or create UserProfile
+        if profile_data is not None:
+            profile, _ = UserProfile.objects.get_or_create(user=instance)
+            for attr, value in profile_data.items():
+                setattr(profile, attr, value)
+            profile.save()
+
+        return instance
 
 
-
-
+# =========================
+# CHANGE PASSWORD SERIALIZER
+# =========================
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
@@ -113,5 +138,3 @@ class ChangePasswordSerializer(serializers.Serializer):
         required=True,
         validators=[validate_password]
     )
-
-

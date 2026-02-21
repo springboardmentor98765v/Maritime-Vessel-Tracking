@@ -71,7 +71,7 @@ export default function ChangePassword() {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center">
-      <div className="w-full max-w-md bg-slate-900/80 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl p-8">
+      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-slate-950/50 p-8">
         
         <h2 className="text-3xl font-bold text-white mb-2">
           Change Password
@@ -84,7 +84,7 @@ export default function ChangePassword() {
 
           {/* Old Password */}
           <div>
-            <label className="block text-sm text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Old Password
             </label>
             <input
@@ -92,15 +92,17 @@ export default function ChangePassword() {
               name="old_password"
               value={form.old_password}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-slate-600 
-                         focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
+                         placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                         transition-all"
               required
             />
           </div>
 
           {/* New Password */}
           <div>
-            <label className="block text-sm text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               New Password
             </label>
             <input
@@ -108,8 +110,10 @@ export default function ChangePassword() {
               name="new_password"
               value={form.new_password}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-slate-600 
-                         focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
+                         placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                         transition-all"
               required
             />
             <p className="text-xs text-slate-400 mt-1">
@@ -119,7 +123,7 @@ export default function ChangePassword() {
 
           {/* CAPTCHA */}
           <div>
-            <label className="block text-sm text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Captcha: {captcha.a} + {captcha.b} = ?
             </label>
             <input
@@ -127,15 +131,17 @@ export default function ChangePassword() {
               name="captcha"
               value={form.captcha}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-slate-600 
-                         focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
+                         placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                         transition-all"
               required
             />
           </div>
 
           {/* Error */}
           {error && (
-            <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+            <div className="p-3 rounded-xl bg-red-500/15 border border-red-400/40 text-red-200 text-sm">
               {error}
             </div>
           )}
@@ -144,8 +150,9 @@ export default function ChangePassword() {
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              className="flex-1 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 
-                         transition text-white font-semibold"
+              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500
+                         hover:-translate-y-0.5 transition-transform
+                         text-slate-900 font-semibold shadow-lg shadow-cyan-500/30"
             >
               Update Password
             </button>
@@ -153,8 +160,8 @@ export default function ChangePassword() {
             <button
               type="button"
               onClick={() => navigate("/profile")}
-              className="flex-1 py-3 rounded-xl border border-slate-600 
-                         text-slate-300 hover:bg-slate-800 transition"
+              className="flex-1 py-3 rounded-xl border border-white/30
+                         text-white hover:bg-white/10 transition-colors"
             >
               Cancel
             </button>

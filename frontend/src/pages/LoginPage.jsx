@@ -1,85 +1,109 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../index.css";
-import { useAuth } from "../hooks/useAuth";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
-export default function Login() {
-  const navigate = useNavigate();
+export default function LoginPage() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-    role: "operator",
-  });
+  const [form, setForm] = useState({ username: '', password: '', role: 'operator' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const [message, setMessage] = useState("");
-
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const { login } = useAuth();
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
+    e.preventDefault()
+    setError('')
+    setLoading(true)
     try {
-      await login(form);
-      navigate("/dashboard");
-    } catch (err) {
-      setMessage("Invalid username, password, or role");
+      await login(form)
+      navigate('/dashboard')
+    } catch {
+      setError('Invalid username, password, or role. Please try again.')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="login-container">
-      <form className="login-card" onSubmit={handleSubmit}>
-        <h2>Sign in</h2>
+    <div className="auth-wrapper">
+      {/* Info panel */}
+      <div className="auth-info">
+        <h2>Welcome back to<br />Maritime Vista</h2>
+        <p>Sign in to access your maritime intelligence dashboard — vessel tracking, port analytics, and safety overlays in one view.</p>
 
-        {/* Username */}
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
+        <div className="auth-feature">
+          <div className="auth-feature-icon">🚢</div>
+          <div>Real-time vessel positions and event history</div>
+        </div>
+        <div className="auth-feature">
+          <div className="auth-feature-icon">⚓</div>
+          <div>Port congestion scores and wait times</div>
+        </div>
+        <div className="auth-feature">
+          <div className="auth-feature-icon">🛡️</div>
+          <div>Safety overlays: storms, piracy, restricted zones</div>
+        </div>
+      </div>
 
-        {/* Role */}
-        <select
-          name="role"
-          value={form.role}
-          onChange={handleChange}
-          className="role-select"
-          required
-        >
-          <option value="operator">Operator</option>
-          <option value="analyst">Analyst</option>
-          <option value="admin">Admin</option>
-        </select>
+      {/* Auth card */}
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <h2 className="auth-card__title">Sign in</h2>
+          <p className="auth-card__sub">Access your maritime command center</p>
+        </div>
 
-        {/* Password */}
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
+          <div className="field">
+            <label htmlFor="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              name="username"
+              placeholder="Enter your username"
+              value={form.username}
+              onChange={handleChange}
+              required
+              autoComplete="username"
+            />
+          </div>
 
-        <button type="submit">Sign in</button>
+          <div className="field">
+            <label htmlFor="role">Role</label>
+            <select id="role" name="role" value={form.role} onChange={handleChange} required>
+              <option value="operator">Operator</option>
+              <option value="analyst">Analyst</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
 
-        {message && <p className="message">{message}</p>}
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              autoComplete="current-password"
+            />
+          </div>
 
-        <p className="register-link">
-          Not registered? <Link to="/register">Create an account</Link>
+          {error && <div className="form-error">{error}</div>}
+
+          <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+            {loading ? 'Signing in…' : 'Sign in →'}
+          </button>
+        </form>
+
+        <p className="auth-footer-link">
+          Don&apos;t have an account?{' '}
+          <Link to="/register">Create one free</Link>
         </p>
-      </form>
+      </div>
     </div>
-  );
+  )
 }
