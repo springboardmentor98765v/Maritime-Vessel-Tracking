@@ -6,10 +6,13 @@ const links = [
     { to: '/map', label: 'Map' },
     { to: '/vessels', label: 'Vessels' },
     { to: '/ports', label: 'Ports' },
+    { to: '/voyages', label: 'Voyages' },
+    { to: '/analytics', label: 'Analytics' },
 ]
 
 const authLinks = [
     { to: '/dashboard', label: 'Dashboard' },
+    { to: '/admin', label: 'Admin' },
     { to: '/profile', label: 'Profile' },
 ]
 

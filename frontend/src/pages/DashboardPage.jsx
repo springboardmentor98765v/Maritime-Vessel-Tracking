@@ -1,72 +1,148 @@
-import { NavLink } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuthContext } from '../context/AuthContext'
+import api from '../services/api'
 
-const features = [
-  { icon: '🗺️', title: 'Live Vessel Map', detail: 'Real-time positions for all tracked vessels.' },
-  { icon: '⚓', title: 'Port Congestion', detail: 'Berth availability, dwell times & arrival queues.' },
-  { icon: '🛡️', title: 'Safety Overlays', detail: 'Storms, piracy zones and incident alerts on the map.' },
+const FEATURES = [
+  { to: '/map', icon: '🗺️', title: 'Live Vessel Map', desc: 'Real-time positions and safety overlays' },
+  { to: '/vessels', icon: '🚢', title: 'Fleet Search', desc: 'Filter vessels by type, flag, cargo' },
+  { to: '/ports', icon: '⚓', title: 'Port Congestion', desc: 'Arrivals, departures, wait times' },
+  { to: '/voyages', icon: '🎬', title: 'Voyage Replay', desc: 'Animate historical voyage routes' },
+  { to: '/analytics', icon: '📊', title: 'Analytics', desc: 'Charts, trends, and KPIs' },
+  { to: '/admin', icon: '🛠️', title: 'Admin Tools', desc: 'API status, safety events, quick links' },
 ]
 
-function DashboardPage() {
-  const { authState } = useAuth()
-  const profile = authState?.profile || {}
+export default function DashboardPage() {
+  const { user } = useAuthContext()
+  const [notifications, setNotifications] = useState([])
+  const [subscriptions, setSubscriptions] = useState([])
+  const [loadingNotifs, setLoadingNotifs] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/notifications/').then(r => r.data).catch(() => []),
+      api.get('/vessels/subscriptions/').then(r => r.data).catch(() => []),
+    ]).then(([n, s]) => {
+      setNotifications(n)
+      setSubscriptions(s)
+    }).finally(() => setLoadingNotifs(false))
+  }, [])
+
+  const unread = notifications.filter(n => !n.is_read)
+
+  const markRead = async (id) => {
+    try {
+      await api.patch(`/notifications/${id}/read/`)
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
+    } catch { }
+  }
 
   return (
     <div className="dashboard">
-      {/* Header */}
+      {/* Welcome */}
       <div className="dashboard__header">
         <div>
           <h1 className="dashboard__greeting">
-            Welcome back, {profile.username || 'User'} 👋
+            Welcome back{user?.username ? `, ${user.username}` : ''} 👋
           </h1>
-          <p className="dashboard__sub">
-            Role: <strong>{profile.role || '—'}</strong> · Maritime Vista Command Center
-          </p>
+          <p className="dashboard__sub">Your maritime command center — everything in one place.</p>
         </div>
-        <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
-          <NavLink to="/vessels" className="btn btn--ghost btn--sm">Browse Vessels</NavLink>
-          <NavLink to="/map" className="btn btn--primary btn--sm">Live Map →</NavLink>
-        </div>
+        <Link to="/profile" className="btn btn--ghost btn--sm">Edit Profile</Link>
       </div>
 
-      {/* Quick nav cards */}
+      {/* Feature cards grid */}
       <div className="dashboard__grid">
-        {/* Profile summary */}
-        <div className="dash-card">
-          <div className="dash-card__icon">👤</div>
-          <div className="dash-card__title">{profile.username || '—'}</div>
-          <div className="dash-card__detail">
-            Role: {profile.role || '—'}<br />
-            Email: {profile.email || '—'}
-          </div>
-          <NavLink to="/profile" className="btn btn--ghost btn--sm" style={{ marginTop: '.5rem', width: 'fit-content' }}>
-            View profile
-          </NavLink>
-        </div>
-
-        {features.map(({ icon, title, detail }) => (
-          <div key={title} className="dash-card">
-            <div className="dash-card__icon">{icon}</div>
-            <div className="dash-card__title">{title}</div>
-            <div className="dash-card__detail">{detail}</div>
-          </div>
+        {FEATURES.map(f => (
+          <Link key={f.to} to={f.to} className="dash-card" style={{ textDecoration: 'none' }}>
+            <div className="dash-card__icon">{f.icon}</div>
+            <div className="dash-card__title">{f.title}</div>
+            <div className="dash-card__detail">{f.desc}</div>
+          </Link>
         ))}
       </div>
 
-      {/* Quick links */}
-      <div className="card card--glow" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '.25rem' }}>Ready to explore?</h3>
-          <p className="text-muted" style={{ fontSize: '.85rem' }}>Navigate to any section using the links below.</p>
+      {/* Bottom row: notifications + subscriptions */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
+
+        {/* Notifications */}
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.85rem' }}>
+            <h2 style={{ fontSize: '.95rem', fontWeight: 700 }}>
+              🔔 Notifications
+              {unread.length > 0 && <span className="badge badge--red" style={{ marginLeft: '.5rem' }}>{unread.length}</span>}
+            </h2>
+          </div>
+          {loadingNotifs ? (
+            <div style={{ color: 'var(--text-2)', fontSize: '.8rem' }}>Loading…</div>
+          ) : notifications.length === 0 ? (
+            <div style={{ color: 'var(--text-2)', fontSize: '.8rem' }}>No notifications yet. Subscribe to a vessel to receive alerts.</div>
+          ) : (
+            <div style={{ display: 'grid', gap: '.6rem', maxHeight: 260, overflowY: 'auto' }}>
+              {notifications.slice(0, 15).map(n => (
+                <div
+                  key={n.id}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: '.65rem',
+                    opacity: n.is_read ? 0.55 : 1,
+                    background: n.is_read ? 'transparent' : 'rgba(34,211,238,.04)',
+                    borderRadius: 8, padding: '.55rem .65rem',
+                    border: '1px solid var(--border)',
+                  }}
+                >
+                  <span style={{ fontSize: '1rem', marginTop: '.05rem' }}>
+                    {n.type === 'piracy' ? '🏴‍☠️' : n.type === 'weather' ? '🌪️' : n.type === 'accident' ? '💥' : '⚠️'}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '.8rem', fontWeight: n.is_read ? 400 : 600, lineHeight: 1.4 }}>{n.message}</div>
+                    <div style={{ fontSize: '.7rem', color: 'var(--text-2)', marginTop: '.15rem' }}>
+                      {new Date(n.timestamp).toLocaleString()}
+                    </div>
+                  </div>
+                  {!n.is_read && (
+                    <button
+                      className="btn btn--ghost btn--sm"
+                      style={{ flexShrink: 0, fontSize: '.68rem', padding: '.2rem .5rem' }}
+                      onClick={() => markRead(n.id)}
+                    >
+                      ✓
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-        <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
-          <NavLink to="/map" className="btn btn--ghost btn--sm">🗺️ Map</NavLink>
-          <NavLink to="/vessels" className="btn btn--ghost btn--sm">🚢 Vessels</NavLink>
-          <NavLink to="/ports" className="btn btn--ghost btn--sm">⚓ Ports</NavLink>
+
+        {/* Subscribed vessels */}
+        <div className="card">
+          <h2 style={{ fontSize: '.95rem', fontWeight: 700, marginBottom: '.85rem' }}>📡 Subscribed Vessels</h2>
+          {loadingNotifs ? (
+            <div style={{ color: 'var(--text-2)', fontSize: '.8rem' }}>Loading…</div>
+          ) : subscriptions.length === 0 ? (
+            <div style={{ color: 'var(--text-2)', fontSize: '.8rem' }}>
+              No subscriptions yet. Visit a vessel's detail page and click "Subscribe to Alerts".
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gap: '.55rem' }}>
+              {subscriptions.map(sub => (
+                <Link
+                  key={sub.id}
+                  to={`/vessels/${sub.vessel?.id || ''}`}
+                  className="sub-item"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div>
+                    <div className="sub-item__name">{sub.vessel?.name || 'Unknown Vessel'}</div>
+                    <div className="sub-item__meta">IMO: {sub.vessel?.imo_number} · {sub.vessel?.type}</div>
+                  </div>
+                  <span className="badge badge--blue">Watching</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
+
       </div>
     </div>
   )
 }
-
-export default DashboardPage

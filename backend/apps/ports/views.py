@@ -1,3 +1,4 @@
+from django.db.models import Avg, Count
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -62,4 +63,61 @@ class PortCongestionDashboardView(APIView):
                 'alert': score >= 80,
             })
 
-        return Response(data)
+
+
+class PortAnalyticsView(APIView):
+    """
+    GET /ports/analytics/
+    Returns aggregate data for charts: top congested ports, averages, counts.
+    """
+
+    def get(self, request):
+        from apps.vessels.models import Vessel
+        from apps.voyages.models import Voyage
+        from apps.vessels.models import VesselEvent
+
+        ports = Port.objects.all()
+        total_ports = ports.count()
+        avg_congestion = ports.aggregate(avg=Avg('congestion_score'))['avg'] or 0
+
+        # Top 10 ports by congestion score
+        top_ports = list(
+            ports.order_by('-congestion_score')[:10].values(
+                'name', 'country', 'congestion_score', 'avg_wait_time'
+            )
+        )
+
+        # Vessel type breakdown
+        vessel_types = list(
+            Vessel.objects.values('type')
+            .annotate(count=Count('id'))
+            .order_by('-count')[:8]
+        )
+
+        # Voyage status breakdown
+        voyage_statuses = list(
+            Voyage.objects.values('status')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
+
+        # Event type breakdown
+        event_types = list(
+            VesselEvent.objects.values('event_type')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
+
+        return Response({
+            'summary': {
+                'total_vessels': Vessel.objects.count(),
+                'total_ports': total_ports,
+                'total_voyages': Voyage.objects.count(),
+                'total_events': VesselEvent.objects.count(),
+                'avg_congestion_score': round(avg_congestion, 1),
+            },
+            'top_congested_ports': top_ports,
+            'vessel_type_breakdown': vessel_types,
+            'voyage_status_breakdown': voyage_statuses,
+            'event_type_breakdown': event_types,
+        })

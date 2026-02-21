@@ -18,6 +18,9 @@ import MapPage from './pages/MapPage'
 import VesselsPage from './pages/VesselsPage'
 import VesselDetailPage from './pages/VesselDetailPage'
 import PortsPage from './pages/PortsPage'
+import VoyageReplayPage from './pages/VoyageReplayPage'
+import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage'
+import AdminPage from './pages/AdminPage'
 
 function App() {
   return (
@@ -35,6 +38,8 @@ function App() {
             <Route path="/vessels" element={<VesselsPage />} />
             <Route path="/vessels/:id" element={<VesselDetailPage />} />
             <Route path="/ports" element={<PortsPage />} />
+            <Route path="/voyages" element={<VoyageReplayPage />} />
+            <Route path="/analytics" element={<AnalyticsDashboardPage />} />
 
             {/* Protected */}
             <Route element={<PrivateRoute />}>
@@ -42,6 +47,7 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/update" element={<UpdateProfilePage />} />
               <Route path="/profile/change-password" element={<ChangePasswordPage />} />
+              <Route path="/admin" element={<AdminPage />} />
             </Route>
 
             {/* Fallback */}
