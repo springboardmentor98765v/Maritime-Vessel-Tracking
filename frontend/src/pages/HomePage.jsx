@@ -3,85 +3,67 @@ import RadarDisplay from '../components/common/RadarDisplay'
 
 function HomePage() {
   return (
-    <section className="grid lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center text-white">
-      {/* Hero Content */}
-      <div className="space-y-6">
-        <div className="text-xs uppercase tracking-[0.2em] text-cyan-300">
-          Live maritime intelligence
-        </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-          Track every vessel, forecast congestion, and surface safety risks in one command view.
+    <div className="hero">
+      {/* ─── Left: Content ─── */}
+      <div className="hero__content">
+        <span className="hero__eyebrow">
+          <span>●</span> Live maritime intelligence
+        </span>
+
+        <h1 className="hero__title">
+          Track every vessel,<br />
+          forecast congestion,<br />
+          surface safety risks.
         </h1>
-        <p className="text-lg text-slate-300">
-          Maritime Vista unifies live vessel tracking, port analytics, and safety overlays for
-          operators, analysts, and insurers.
+
+        <p className="hero__sub">
+          Maritime Vista unifies live vessel tracking, port analytics, and safety
+          overlays for operators, analysts, and fleet managers — in one command view.
         </p>
-        
-        {/* CTA Buttons */}
-        <div className="flex flex-wrap gap-4">
-          <NavLink 
-            to="/register" 
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 
-                       text-slate-900 font-semibold shadow-lg shadow-cyan-500/50 
-                       hover:-translate-y-0.5 transition-transform"
-          >
-            Get started
+
+        <div className="hero__cta">
+          <NavLink to="/register" className="btn btn--primary btn--lg">
+            Get started free
           </NavLink>
-          <NavLink 
-            to="/login"
-            className="px-6 py-3 rounded-full border border-white/30 text-white 
-                       hover:bg-white/10 transition-colors"
-          >
-            Sign in
+          <NavLink to="/map" className="btn btn--ghost btn--lg">
+            View live map →
           </NavLink>
         </div>
-        
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-6 pt-4">
-          <div>
-            <div className="text-2xl font-bold">24/7</div>
-            <div className="text-sm text-slate-400">Vessel monitoring</div>
+
+        {/* Stats row */}
+        <div className="hero__stats">
+          <div className="stat">
+            <div className="stat__value">24/7</div>
+            <div className="stat__label">Vessel monitoring</div>
           </div>
-          <div>
-            <div className="text-2xl font-bold">180+</div>
-            <div className="text-sm text-slate-400">Ports analyzed</div>
+          <div className="stat">
+            <div className="stat__value">180+</div>
+            <div className="stat__label">Ports analyzed</div>
           </div>
-          <div>
-            <div className="text-2xl font-bold">4</div>
-            <div className="text-sm text-slate-400">Safety overlays</div>
+          <div className="stat">
+            <div className="stat__value">4</div>
+            <div className="stat__label">Safety overlays</div>
           </div>
         </div>
       </div>
-      
-      {/* Info Panel */}
-      <div className="space-y-6">
-        {/* Radar Display */}
-        <div className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 
-                        backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-8">
+
+      {/* ─── Right: Panel ─── */}
+      <div className="hero__panel">
+        <div className="radar-card">
           <RadarDisplay />
         </div>
-        
-        {/* Roles Card */}
-        <div className="bg-gradient-to-br from-indigo-500/20 to-blue-500/20 
-                        backdrop-blur-sm border border-white/10 rounded-2xl p-7">
-          <h3 className="text-xl font-semibold mb-4">Roles supported</h3>
-          <div className="flex flex-wrap gap-3">
-            <span className="inline-flex items-center px-4 py-2 rounded-full 
-                             bg-white/10 text-sm">
-              Operator
-            </span>
-            <span className="inline-flex items-center px-4 py-2 rounded-full 
-                             bg-white/10 text-sm">
-              Analyst
-            </span>
-            <span className="inline-flex items-center px-4 py-2 rounded-full 
-                             bg-white/10 text-sm">
-              Admin
-            </span>
+
+        <div className="roles-card">
+          <h3>Built for maritime professionals</h3>
+          <div className="role-tags">
+            <span className="role-tag">🧭 Fleet Operator</span>
+            <span className="role-tag">📊 Data Analyst</span>
+            <span className="role-tag">🛡️ Safety Officer</span>
+            <span className="role-tag">⚓ Port Manager</span>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 

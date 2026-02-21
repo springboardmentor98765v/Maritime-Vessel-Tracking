@@ -1,19 +1,24 @@
+import { NavLink } from 'react-router-dom'
+
 function Footer() {
   return (
-    <footer className="border-t border-white/10 py-10 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <h3 className="text-white font-bold text-lg mb-1">Maritime Vista</h3>
-            <p className="text-slate-400 text-sm">
-              Real-time vessel tracking, port congestion analytics, and safety overlays.
-            </p>
+    <footer className="footer">
+      <div className="container footer__inner">
+        <div>
+          <div className="footer__brand">Maritime Vista</div>
+          <div className="footer__tagline">
+            Live vessel tracking · Port analytics · Safety overlays
           </div>
-          
-          <div className="text-slate-400 text-sm space-y-1 md:text-right">
-            <p>© 2026 Maritime Vista</p>
-            <p>All rights reserved</p>
-          </div>
+        </div>
+
+        <nav className="footer__links" aria-label="Footer navigation">
+          <NavLink to="/map">Live Map</NavLink>
+          <NavLink to="/vessels">Vessels</NavLink>
+          <NavLink to="/ports">Ports</NavLink>
+        </nav>
+
+        <div className="footer__copy">
+          © 2026 Maritime Vista. All rights reserved.
         </div>
       </div>
     </footer>

@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import './App.css'
 import Header from './components/common/Header'
 import Footer from './components/common/Footer'
 import PrivateRoute from './components/auth/PrivateRoute'
@@ -13,46 +14,34 @@ import ProfilePage from './pages/ProfilePage'
 import UpdateProfilePage from './pages/UpdateProfilePage'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 
-// ✅ Milestone 2 pages
 import MapPage from './pages/MapPage'
 import VesselsPage from './pages/VesselsPage'
 import VesselDetailPage from './pages/VesselDetailPage'
-
-// ✅ Milestone 3 pages
 import PortsPage from './pages/PortsPage'
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="app-shell">
       <Header />
 
-      <main className="flex-1 py-14 px-4">
-        <div className="max-w-7xl mx-auto w-full">
+      <main className="main-content">
+        <div className="container">
           <Routes>
-            {/* Public routes */}
+            {/* Public */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-
-            {/* ✅ Milestone 2 — public vessel routes */}
             <Route path="/map" element={<MapPage />} />
             <Route path="/vessels" element={<VesselsPage />} />
             <Route path="/vessels/:id" element={<VesselDetailPage />} />
-
-            {/* ✅ Milestone 3 — port congestion routes */}
             <Route path="/ports" element={<PortsPage />} />
 
-            {/* Protected routes */}
+            {/* Protected */}
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<DashboardPage />} />
-
-              {/* ✅ Profile routes */}
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/update" element={<UpdateProfilePage />} />
-              <Route
-                path="/profile/change-password"
-                element={<ChangePasswordPage />}
-              />
+              <Route path="/profile/change-password" element={<ChangePasswordPage />} />
             </Route>
 
             {/* Fallback */}

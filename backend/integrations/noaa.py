@@ -97,7 +97,7 @@ def sync_noaa_safety_events():
     Pulls active NOAA marine weather alerts and upserts them into SafetyEvent.
     Only fetches storm / weather type events from NOAA. Piracy data is added manually.
     """
-    from apps.vessels.safety_models import SafetyEvent
+    from apps.vessels.models import SafetyEvent
     from django.utils import timezone as dj_timezone
 
     alerts = fetch_marine_alerts(area_codes=["GM", "PZ", "AN", "AM"])

@@ -1,122 +1,109 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
-export default function Login() {
-  const navigate = useNavigate();
+export default function LoginPage() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-    role: "operator",
-  });
+  const [form, setForm] = useState({ username: '', password: '', role: 'operator' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const [message, setMessage] = useState("");
-
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const { login } = useAuth();
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
+    e.preventDefault()
+    setError('')
+    setLoading(true)
     try {
-      await login(form);
-      navigate("/dashboard");
-    } catch (err) {
-      setMessage("Invalid username, password, or role");
+      await login(form)
+      navigate('/dashboard')
+    } catch {
+      setError('Invalid username, password, or role. Please try again.')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <section className="grid lg:grid-cols-2 gap-10 items-center text-white min-h-[600px]">
-      {/* Info Section */}
-      <div className="space-y-4">
-        <h2 className="text-3xl font-bold">Welcome back</h2>
-        <p className="text-slate-300">Sign in to access your maritime dashboard</p>
-        <div className="p-5 rounded-2xl bg-slate-800/60 border border-slate-600/30">
-          <p className="text-sm">Access live vessel tracking, port analytics, and safety overlays to monitor your fleet operations in real-time.</p>
+    <div className="auth-wrapper">
+      {/* Info panel */}
+      <div className="auth-info">
+        <h2>Welcome back to<br />Maritime Vista</h2>
+        <p>Sign in to access your maritime intelligence dashboard — vessel tracking, port analytics, and safety overlays in one view.</p>
+
+        <div className="auth-feature">
+          <div className="auth-feature-icon">🚢</div>
+          <div>Real-time vessel positions and event history</div>
+        </div>
+        <div className="auth-feature">
+          <div className="auth-feature-icon">⚓</div>
+          <div>Port congestion scores and wait times</div>
+        </div>
+        <div className="auth-feature">
+          <div className="auth-feature-icon">🛡️</div>
+          <div>Safety overlays: storms, piracy, restricted zones</div>
         </div>
       </div>
-      
-      {/* Auth Card */}
-      <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl shadow-slate-950/50">
-        <h2 className="text-2xl font-bold mb-2">Sign in</h2>
-        <p className="text-slate-400 mb-6">Enter your credentials</p>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username Field */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Username</label>
+
+      {/* Auth card */}
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <h2 className="auth-card__title">Sign in</h2>
+          <p className="auth-card__sub">Access your maritime command center</p>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
+          <div className="field">
+            <label htmlFor="username">Username</label>
             <input
+              id="username"
               type="text"
               name="username"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
-              placeholder="Enter username"
+              placeholder="Enter your username"
               value={form.username}
               onChange={handleChange}
               required
+              autoComplete="username"
             />
           </div>
-          
-          {/* Role Field */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Role</label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
-              required
-            >
+
+          <div className="field">
+            <label htmlFor="role">Role</label>
+            <select id="role" name="role" value={form.role} onChange={handleChange} required>
               <option value="operator">Operator</option>
               <option value="analyst">Analyst</option>
               <option value="admin">Admin</option>
             </select>
           </div>
-          
-          {/* Password Field */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Password</label>
+
+          <div className="field">
+            <label htmlFor="password">Password</label>
             <input
+              id="password"
               type="password"
               name="password"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 border border-slate-600/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
-              placeholder="Enter password"
+              placeholder="Enter your password"
               value={form.password}
               onChange={handleChange}
               required
+              autoComplete="current-password"
             />
           </div>
-          
-          {/* Error Message */}
-          {message && (
-            <div className="p-3 rounded-xl bg-red-500/15 border border-red-400/40 text-red-200 text-sm">
-              {message}
-            </div>
-          )}
-          
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-900 font-semibold shadow-lg shadow-cyan-500/30 hover:-translate-y-0.5 transition-transform">
-            Sign in
+
+          {error && <div className="form-error">{error}</div>}
+
+          <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+            {loading ? 'Signing in…' : 'Sign in →'}
           </button>
         </form>
-        
-        {/* Register Link */}
-        <p className="mt-6 text-center text-sm text-slate-400">
-          Not registered?{' '}
-          <Link to="/register" className="text-cyan-400 hover:text-cyan-300 transition-colors">
-            Create an account
-          </Link>
+
+        <p className="auth-footer-link">
+          Don&apos;t have an account?{' '}
+          <Link to="/register">Create one free</Link>
         </p>
       </div>
-    </section>
-  );
+    </div>
+  )
 }
