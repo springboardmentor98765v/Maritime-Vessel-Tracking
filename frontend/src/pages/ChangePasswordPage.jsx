@@ -11,6 +11,9 @@ export default function ChangePassword() {
     captcha: "",
   });
 
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+
   const [error, setError] = useState("");
   const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
 
@@ -87,17 +90,52 @@ export default function ChangePassword() {
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Old Password
             </label>
-            <input
-              type="password"
-              name="old_password"
-              value={form.old_password}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
-                         placeholder-slate-500
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                         transition-all"
-              required
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showOld ? 'text' : 'password'}
+                name="old_password"
+                value={form.old_password}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
+                           placeholder-slate-500
+                           focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                           transition-all"
+                required
+                style={{ paddingRight: 44 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowOld((s) => !s)}
+                style={{
+                  position: 'absolute',
+                  right: 8,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  width: 28,
+                  height: 28,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#6b7280'
+                }}
+                aria-label={showOld ? 'Hide old password' : 'Show old password'}
+              >
+                {showOld ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 013.153-4.278M6.1 6.1L17.9 17.9" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* New Password */}
@@ -105,17 +143,52 @@ export default function ChangePassword() {
             <label className="block text-sm font-medium text-slate-300 mb-2">
               New Password
             </label>
-            <input
-              type="password"
-              name="new_password"
-              value={form.new_password}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
-                         placeholder-slate-500
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                         transition-all"
-              required
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showNew ? 'text' : 'password'}
+                name="new_password"
+                value={form.new_password}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
+                           placeholder-slate-500
+                           focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
+                           transition-all"
+                required
+                style={{ paddingRight: 44 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew((s) => !s)}
+                style={{
+                  position: 'absolute',
+                  right: 8,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  width: 28,
+                  height: 28,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#6b7280'
+                }}
+                aria-label={showNew ? 'Hide new password' : 'Show new password'}
+              >
+                {showNew ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 013.153-4.278M6.1 6.1L17.9 17.9" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+              </button>
+            </div>
             <p className="text-xs text-slate-400 mt-1">
               Min 8 chars, uppercase, lowercase, number & special character
             </p>

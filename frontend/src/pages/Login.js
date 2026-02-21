@@ -12,6 +12,9 @@ function Login() {
     password: ""
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -76,13 +79,38 @@ function Login() {
           required
         />
 
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          onChange={handleChange}
-          required
-        />
+        <div style={{ position: 'relative', width: '100%' }}>
+          <input
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Password"
+            onChange={handleChange}
+            required
+            style={{ paddingRight: 48 }}
+          />
+          <button
+            type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPassword((s) => !s)}
+            style={{
+              position: 'absolute',
+              right: 8,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              // background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              width: 28,
+              height: 28,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#6b7280',
+              zIndex: 2
+            }}
+          >
+          </button>
+        </div>
 
         <button type="submit" className="login-btn">
           Login

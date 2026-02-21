@@ -102,7 +102,9 @@ export default function LoginPage() {
         <p className="auth-footer-link">
           Don&apos;t have an account?{' '}
           <Link to="/register">Create one free</Link>
-        </p>
+            <span style={{ margin: '0 0.5rem' }}>·</span>
+            <Link to="/forgot-password">Forgot password?</Link>
+          </p>
       </div>
     </div>
   )

@@ -165,3 +165,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Email Configuration for Password Reset (development)
+# Use console backend to print emails to the Django terminal.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@maritimevista.com'
+FRONTEND_URL = 'http://localhost:5173'  # React frontend URL for password reset links
