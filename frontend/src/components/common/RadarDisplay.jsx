@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RadarDisplay({
   scanSpeed = 4000,
@@ -10,14 +10,17 @@ export default function RadarDisplay({
   const [time, setTime] = useState(0);
 
   /* ---------------- TARGET GENERATION ---------------- */
-  const targets = useMemo(() => {
-    return Array.from({ length: targetCount }, (_, i) => ({
+  const [targets, setTargets] = useState([]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTargets(Array.from({ length: targetCount }, (_, i) => ({
       id: i,
       angle: Math.random() * 360,
       distance: 25 + Math.random() * 45,
       speed: 0.05 + Math.random() * 0.2,
       alert: Math.random() > 0.7,
-    }));
+    })));
   }, [targetCount]);
 
   /* ---------------- ANIMATION LOOP ---------------- */
@@ -54,7 +57,10 @@ export default function RadarDisplay({
   };
 
   const DETECTION_WIDTH = 8;
-  let beamBoost = false;
+  const beamBoost = targets.some((t) => {
+    const movingAngle = t.angle + time * t.speed * 0.02;
+    return diffAngle(movingAngle) < DETECTION_WIDTH;
+  });
 
   return (
     <>
@@ -71,10 +77,13 @@ export default function RadarDisplay({
         }
       `}</style>
 
-      <div className="relative w-full max-w-md mx-auto aspect-square">
+      <div
+        className="relative w-full max-w-md mx-auto"
+        style={{ aspectRatio: '1 / 1', minHeight: '320px' }}
+      >
         {/* GLASS PANEL */}
         <div
-          className="absolute inset-0 rounded-3xl border backdrop-blur-xl"
+          className="absolute inset-0 rounded-[50%]"
           style={{
             background:
               "linear-gradient(135deg, rgba(15,23,42,.85), rgba(15,23,42,.95))",
@@ -84,7 +93,7 @@ export default function RadarDisplay({
         />
 
         {/* RADAR CIRCLE */}
-        <div className="absolute inset-8 rounded-full overflow-hidden">
+        <div className="absolute inset-2 rounded-full overflow-hidden">
           {/* BASE */}
           <div
             className="absolute inset-0 rounded-full"
@@ -127,8 +136,6 @@ export default function RadarDisplay({
             const movingAngle = t.angle + time * t.speed * 0.02;
             const { x, y } = polarToXY(movingAngle, t.distance);
             const detected = diffAngle(movingAngle) < DETECTION_WIDTH;
-
-            if (detected) beamBoost = true;
 
             const size = detected ? 14 : 7;
             const color = t.alert ? alertColor : radarColor;

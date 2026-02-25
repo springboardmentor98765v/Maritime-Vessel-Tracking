@@ -10,6 +10,7 @@ export default function VesselsPage() {
     const [loading, setLoading] = useState(true)
     const [filters, setFilters] = useState({ name: '', type: '', flag: '', cargo_type: '' })
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { loadVessels() }, [])
 
     const loadVessels = async (f = filters) => {

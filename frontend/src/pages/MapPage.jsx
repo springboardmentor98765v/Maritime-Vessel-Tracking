@@ -64,7 +64,7 @@ export default function MapPage() {
         <div className="map-page">
             <div className="map-toolbar">
                 <div className="map-toolbar-left">
-                    <h1 className="map-title">🌊 Live Vessel Map</h1>
+                    <h1 className="map-title">Live Vessel Map</h1>
                     <span className="map-vessel-count">
                         {vessels.length} vessel{vessels.length !== 1 ? 's' : ''} with known position
                     </span>

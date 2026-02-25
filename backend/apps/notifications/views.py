@@ -17,10 +17,10 @@ class NotificationListView(generics.ListAPIView):
 
 
 class MarkNotificationReadView(APIView):
-    """POST /notifications/<pk>/read/ — Mark a single notification read."""
+    """PATCH /notifications/<pk>/read/ — Mark a single notification read."""
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, pk):
+    def patch(self, request, pk):
         try:
             notif = Notification.objects.get(pk=pk, user=request.user)
         except Notification.DoesNotExist:

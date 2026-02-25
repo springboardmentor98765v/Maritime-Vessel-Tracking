@@ -9,7 +9,15 @@ export default function ProfilePage() {
   useEffect(() => {
     fetchProfile()
       .then(res => setData(res))
-      .catch(err => console.error('Profile fetch failed:', err))
+      .catch(err => {
+        console.error('Profile fetch failed:', err)
+        setData({
+          username: 'Guest User',
+          email: 'Not logged in',
+          role: 'guest',
+          profile: { bio: 'Please log in to edit your profile and preferences.' }
+        })
+      })
   }, [])
 
   if (!data) {

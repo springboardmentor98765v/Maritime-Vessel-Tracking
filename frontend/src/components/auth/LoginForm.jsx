@@ -28,7 +28,7 @@ function LoginForm() {
       await login(formState)
       setStatus('success')
       navigate('/dashboard')
-    } catch (err) {
+    } catch {
       setStatus('error')
       setError('Unable to sign in. Check credentials or API status.')
     }

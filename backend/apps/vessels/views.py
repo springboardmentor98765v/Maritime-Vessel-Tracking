@@ -1,7 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Vessel, VesselEvent, VesselSubscription, SafetyEvent
 from .serializers import VesselSerializer, VesselEventSerializer, VesselSubscriptionSerializer
@@ -14,6 +15,7 @@ class VesselListView(generics.ListAPIView):
     Returns all vessels (or filtered subset). Public read access.
     """
     serializer_class = VesselSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         qs = Vessel.objects.all()
@@ -38,6 +40,7 @@ class VesselDetailView(generics.RetrieveAPIView):
     """GET /vessels/<pk>/ — Full vessel metadata."""
     serializer_class = VesselSerializer
     queryset = Vessel.objects.all()
+    permission_classes = [AllowAny]
 
 
 class VesselPositionUpdateView(APIView):
@@ -83,6 +86,7 @@ class VesselSubscribeView(APIView):
     DELETE /vessels/<pk>/subscribe/   — Unsubscribe
     GET    /vessels/subscriptions/    — List user's subscriptions
     """
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
@@ -109,6 +113,7 @@ class VesselSubscribeView(APIView):
 
 class VesselSubscriptionListView(generics.ListAPIView):
     """GET /vessels/subscriptions/ — All vessels this user watches."""
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = VesselSubscriptionSerializer
 

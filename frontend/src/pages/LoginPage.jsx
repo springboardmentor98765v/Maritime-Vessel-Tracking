@@ -34,15 +34,15 @@ export default function LoginPage() {
         <p>Sign in to access your maritime intelligence dashboard — vessel tracking, port analytics, and safety overlays in one view.</p>
 
         <div className="auth-feature">
-          <div className="auth-feature-icon">🚢</div>
+          <div className="auth-feature-icon">—</div>
           <div>Real-time vessel positions and event history</div>
         </div>
         <div className="auth-feature">
-          <div className="auth-feature-icon">⚓</div>
+          <div className="auth-feature-icon">—</div>
           <div>Port congestion scores and wait times</div>
         </div>
         <div className="auth-feature">
-          <div className="auth-feature-icon">🛡️</div>
+          <div className="auth-feature-icon">—</div>
           <div>Safety overlays: storms, piracy, restricted zones</div>
         </div>
       </div>

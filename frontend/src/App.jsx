@@ -41,14 +41,12 @@ function App() {
             <Route path="/voyages" element={<VoyageReplayPage />} />
             <Route path="/analytics" element={<AnalyticsDashboardPage />} />
 
-            {/* Protected */}
-            <Route element={<PrivateRoute />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/profile/update" element={<UpdateProfilePage />} />
-              <Route path="/profile/change-password" element={<ChangePasswordPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-            </Route>
+            {/* Protected (Now Public) */}
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/update" element={<UpdateProfilePage />} />
+            <Route path="/profile/change-password" element={<ChangePasswordPage />} />
+            <Route path="/admin" element={<AdminPage />} />
 
             {/* Fallback */}
             <Route path="*" element={<NotFoundPage />} />

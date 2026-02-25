@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";   
+import API from "../services/api";
 import "./Dashboard.css";
 
 function Dashboard() {
@@ -11,7 +11,7 @@ function Dashboard() {
       await API.post("auth/logout/", {
         refresh: localStorage.getItem("refresh")
       });
-    } catch (error) {
+    } catch {
       console.log("Logout API failed");
     }
 

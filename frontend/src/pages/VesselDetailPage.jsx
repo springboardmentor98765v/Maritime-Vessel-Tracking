@@ -98,6 +98,9 @@ export default function VesselDetailPage() {
                     ["Type", vessel.type],
                     ["Flag", vessel.flag],
                     ["Cargo Type", vessel.cargo_type],
+                    ["Speed", vessel.speed != null ? `${vessel.speed} knots` : "Unknown"],
+                    ["Heading", vessel.heading != null ? `${vessel.heading}°` : "Unknown"],
+                    ["Destination", vessel.destination || "Unknown"],
                     ["Operator", vessel.operator || "—"],
                     ["Last Updated", vessel.last_update ? new Date(vessel.last_update).toLocaleString() : "Unknown"],
                     ["Position", hasPosition

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell, Legend,
+    PieChart, Pie, Cell,
 } from 'recharts'
 import api from '../services/api'
 
@@ -21,12 +21,10 @@ const CustomTooltip = ({ active, payload, label }) => {
     return null
 }
 
-function SummaryCard({ label, value, icon, color }) {
+function SummaryCard({ label, value, accent }) {
     return (
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, background: color || 'var(--brand-grad)', display: 'grid', placeItems: 'center', fontSize: '1.3rem', flexShrink: 0 }}>
-                {icon}
-            </div>
+            <div style={{ width: 6, height: 48, borderRadius: 99, background: accent || 'var(--brand-grad)', flexShrink: 0 }} />
             <div>
                 <div style={{ fontSize: '1.45rem', fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif" }}>{value}</div>
                 <div style={{ fontSize: '.72rem', color: 'var(--text-2)', marginTop: '.1rem' }}>{label}</div>
@@ -51,7 +49,6 @@ export default function AnalyticsDashboardPage() {
 
     const s = data.summary
 
-    // Recharts-formatted data
     const portChartData = (data.top_congested_ports || []).map(p => ({
         name: p.name.length > 10 ? p.name.slice(0, 10) + '…' : p.name,
         score: Math.round(p.congestion_score),
@@ -72,19 +69,18 @@ export default function AnalyticsDashboardPage() {
 
     return (
         <div style={{ display: 'grid', gap: '2rem', animation: 'fadeUp .38s ease both' }}>
-            {/* Header */}
             <div>
-                <h1 className="page-title">📊 Analytics Dashboard</h1>
+                <h1 className="page-title">Analytics Dashboard</h1>
                 <p className="page-subtitle">Platform-wide maritime intelligence and statistics.</p>
             </div>
 
             {/* Summary cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-                <SummaryCard label="Total Vessels" value={s.total_vessels} icon="🚢" color="rgba(34,211,238,.15)" />
-                <SummaryCard label="Total Ports" value={s.total_ports} icon="⚓" color="rgba(59,130,246,.15)" />
-                <SummaryCard label="Total Voyages" value={s.total_voyages} icon="🗺️" color="rgba(99,102,241,.15)" />
-                <SummaryCard label="Total Events" value={s.total_events} icon="⚠️" color="rgba(249,115,22,.15)" />
-                <SummaryCard label="Avg Congestion" value={`${s.avg_congestion_score}%`} icon="📈" color="rgba(239,68,68,.15)" />
+                <SummaryCard label="Total Vessels" value={s.total_vessels} accent="#22d3ee" />
+                <SummaryCard label="Total Ports" value={s.total_ports} accent="#3b82f6" />
+                <SummaryCard label="Total Voyages" value={s.total_voyages} accent="#6366f1" />
+                <SummaryCard label="Total Events" value={s.total_events} accent="#f59e0b" />
+                <SummaryCard label="Avg Congestion" value={`${s.avg_congestion_score}%`} accent="#ef4444" />
             </div>
 
             {/* Port congestion bar chart */}
@@ -98,8 +94,8 @@ export default function AnalyticsDashboardPage() {
                             <YAxis domain={[0, 100]} tick={{ fill: 'var(--text-2)', fontSize: 11 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="score" name="Congestion Score" radius={[4, 4, 0, 0]}>
-                                {portChartData.map((_, i) => (
-                                    <Cell key={i} fill={_.score >= 80 ? '#ef4444' : _.score >= 60 ? '#f97316' : _.score >= 35 ? '#eab308' : '#22c55e'} />
+                                {portChartData.map((entry, i) => (
+                                    <Cell key={i} fill={entry.score >= 80 ? '#ef4444' : entry.score >= 60 ? '#f97316' : entry.score >= 35 ? '#eab308' : '#22c55e'} />
                                 ))}
                             </Bar>
                         </BarChart>
@@ -114,7 +110,12 @@ export default function AnalyticsDashboardPage() {
                         <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.25rem' }}>Vessel Type Breakdown</h2>
                         <ResponsiveContainer width="100%" height={220}>
                             <PieChart>
-                                <Pie data={vesselPieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                                <Pie
+                                    data={vesselPieData}
+                                    cx="50%" cy="50%" outerRadius={80} dataKey="value"
+                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    labelLine={false}
+                                >
                                     {vesselPieData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                                 </Pie>
                                 <Tooltip content={<CustomTooltip />} />
@@ -128,7 +129,12 @@ export default function AnalyticsDashboardPage() {
                         <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.25rem' }}>Voyage Status Breakdown</h2>
                         <ResponsiveContainer width="100%" height={220}>
                             <PieChart>
-                                <Pie data={voyagePieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                                <Pie
+                                    data={voyagePieData}
+                                    cx="50%" cy="50%" outerRadius={80} dataKey="value"
+                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    labelLine={false}
+                                >
                                     {voyagePieData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                                 </Pie>
                                 <Tooltip content={<CustomTooltip />} />
@@ -138,7 +144,6 @@ export default function AnalyticsDashboardPage() {
                 )}
             </div>
 
-            {/* No data message */}
             {portChartData.length === 0 && vesselPieData.length === 0 && (
                 <div className="vessels-empty">
                     <p>No analytics data yet. Run <code>python manage.py seed_data</code> in your backend to populate sample data.</p>

@@ -7,7 +7,6 @@ const LEVEL_COLORS = {
     moderate: '#eab308',
     low: '#22c55e',
 }
-const LEVEL_EMOJI = { critical: '🔴', high: '🟠', moderate: '🟡', low: '🟢' }
 
 export default function PortsPage() {
     const [ports, setPorts] = useState([])
@@ -36,8 +35,8 @@ export default function PortsPage() {
 
     const criticalCount = ports.filter(p => p.congestion_level === 'critical').length
 
-    if (loading && ports.length === 0) return <div className="ports-loading">⏳ Loading port congestion data…</div>
-    if (error) return <div className="ports-error">⚠️ {error}</div>
+    if (loading && ports.length === 0) return <div className="ports-loading">Loading port congestion data…</div>
+    if (error) return <div className="ports-error">{error}</div>
 
     return (
         <div className="ports-page">
@@ -51,7 +50,7 @@ export default function PortsPage() {
                     </p>
                 </div>
                 <button className="btn btn--ghost btn--sm" onClick={loadData} disabled={loading}>
-                    {loading ? 'Refreshing…' : '⟳ Refresh'}
+                    {loading ? 'Refreshing…' : 'Refresh'}
                 </button>
             </div>
 
@@ -61,7 +60,7 @@ export default function PortsPage() {
                     const count = ports.filter(p => p.congestion_level === level).length
                     return (
                         <div key={level} className={`congestion-summary-card congestion-summary-card--${level}`}>
-                            <span className="cs-emoji">{LEVEL_EMOJI[level]}</span>
+                            <span className="cs-dot" style={{ width: 10, height: 10, borderRadius: '50%', background: LEVEL_COLORS[level], display: 'inline-block', marginRight: '.35rem' }} />
                             <span className="cs-count">{count}</span>
                             <span className="cs-label">{level}</span>
                         </div>
@@ -102,7 +101,7 @@ export default function PortsPage() {
                                             border: `1px solid ${LEVEL_COLORS[port.congestion_level]}44`,
                                         }}
                                     >
-                                        {LEVEL_EMOJI[port.congestion_level]} {port.congestion_level}
+                                        {port.congestion_level}
                                     </span>
                                 </td>
                                 <td>
