@@ -20,15 +20,10 @@ export const fetchProfile = async () => {
 
 // UPDATE EXTRA PROFILE
 export const updateExtraProfile = async (formData) => {
-  const response = await api.put(
-    "/auth/profile/extra/",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  // IMPORTANT: Do NOT set Content-Type manually when sending FormData.
+  // Axios must auto-generate it with the correct multipart boundary.
+  // Manually setting it breaks the boundary and causes Django 400 errors.
+  const response = await api.put("/auth/profile/extra/", formData);
   return response.data;
 };
 
