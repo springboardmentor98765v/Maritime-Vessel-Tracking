@@ -79,7 +79,8 @@ function Header() {
                         <>
                             <div className="notifications-wrapper" style={{ position: 'relative' }}>
                                 <button className="btn btn--ghost btn--sm" onClick={() => setShowDropdown(!showDropdown)}>
-                                    🔔 {unreadCount > 0 && <span style={{ background: 'red', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '0.7rem' }}>{unreadCount}</span>}
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                                    {unreadCount > 0 && <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '0.68rem', marginLeft: '2px' }}>{unreadCount}</span>}
                                 </button>
                                 {showDropdown && (
                                     <div style={{ position: 'absolute', right: 0, top: '40px', width: '300px', background: 'var(--surface-50)', border: '1px solid var(--surface-100)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', zIndex: 1000, maxHeight: '400px', overflowY: 'auto' }}>

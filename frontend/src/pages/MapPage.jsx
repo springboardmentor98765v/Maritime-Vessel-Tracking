@@ -14,9 +14,13 @@ L.Icon.Default.mergeOptions({
 })
 
 const shipIcon = new L.DivIcon({
-    html: `<span style="font-size:22px;filter:drop-shadow(0 2px 4px #0008)">🚢</span>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
+    html: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 2px 4px #0008)">
+      <path d="M10 2L14 8H6L10 2Z" fill="#22d3ee"/>
+      <rect x="8" y="8" width="4" height="8" fill="#22d3ee"/>
+      <path d="M4 14H16L13 18H7L4 14Z" fill="#0ea5e9"/>
+    </svg>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 18],
     className: '',
 })
 
@@ -83,12 +87,12 @@ export default function MapPage() {
                         onClick={() => setShowSafety(s => !s)}
                         style={{ borderColor: showSafety ? '#f97316' : undefined, color: showSafety ? '#f97316' : undefined }}
                     >
-                        {showSafety ? '🛡 Hide Safety' : '🛡 Show Safety'}
+                        {showSafety ? 'Hide Safety Zones' : 'Show Safety Zones'}
                     </button>
                     <button className="btn btn--ghost btn--sm" onClick={loadData} disabled={loading}>
-                        {loading ? 'Refreshing…' : '⟳ Refresh'}
+                        {loading ? 'Refreshing...' : 'Refresh'}
                     </button>
-                    <Link to="/vessels" className="btn btn--primary btn--sm">📋 Browse All</Link>
+                    <Link to="/vessels" className="btn btn--primary btn--sm">Browse Vessels</Link>
                 </div>
             </div>
 
@@ -143,7 +147,7 @@ export default function MapPage() {
                                     <div className="map-popup">
                                         <strong>{v.name}</strong>
                                         <p>IMO: <span className="mono">{v.imo_number}</span></p>
-                                        <p>Type: {v.type}</p>
+                                        <p>Type: {v.vessel_type}</p>
                                         <p>Flag: {v.flag}</p>
                                         <p>Cargo: {v.cargo_type}</p>
                                         {v.operator && <p>Operator: {v.operator}</p>}

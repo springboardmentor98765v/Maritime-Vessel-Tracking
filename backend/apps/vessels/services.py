@@ -71,7 +71,7 @@ def process_vessel_update(ship_data):
 
     # 2. Update model values safely
     vessel.name = ship_data.get("name", vessel.name)
-    vessel.type = ship_data.get("type", vessel.type)
+    vessel.vessel_type = ship_data.get("type", vessel.vessel_type)
     vessel.flag = ship_data.get("flag", vessel.flag)
     vessel.cargo_type = ship_data.get("cargo", vessel.cargo_type)
     

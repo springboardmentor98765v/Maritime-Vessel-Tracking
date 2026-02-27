@@ -63,7 +63,7 @@ export default function VesselDetailPage() {
         }
     };
 
-    if (loading) return <div className="detail-loading">Loading vessel…</div>;
+    if (loading) return <div className="detail-loading">Loading vessel...</div>;
     if (!vessel) return <div className="detail-error">Vessel not found.</div>;
 
     const hasPosition = vessel.last_position_lat != null && vessel.last_position_lon != null;
@@ -87,7 +87,7 @@ export default function VesselDetailPage() {
                         onClick={handleSubscribe}
                         disabled={subLoading}
                     >
-                        {subLoading ? "…" : isSubscribed ? "🔕 Unsubscribe" : "🔔 Subscribe to Alerts"}
+                        {subLoading ? 'Updating...' : isSubscribed ? 'Unsubscribe' : 'Subscribe to Alerts'}
                     </button>
                 )}
             </div>
@@ -95,7 +95,7 @@ export default function VesselDetailPage() {
             {/* Metadata Grid */}
             <div className="vessel-detail-grid">
                 {[
-                    ["Type", vessel.type],
+                    ["Type", vessel.vessel_type],
                     ["Flag", vessel.flag],
                     ["Cargo Type", vessel.cargo_type],
                     ["Speed", vessel.speed != null ? `${vessel.speed} knots` : "Unknown"],
@@ -145,7 +145,7 @@ export default function VesselDetailPage() {
                                     <span className="event-type-badge">{ev.event_type}</span>
                                     <span className="event-time">{new Date(ev.timestamp).toLocaleString()}</span>
                                 </div>
-                                {ev.location && <p className="event-location">📍 {ev.location}</p>}
+                                {ev.location && <p className="event-location">{ev.location}</p>}
                                 {ev.details && <p className="event-details">{ev.details}</p>}
                             </div>
                         ))}

@@ -56,7 +56,7 @@ export default function AnalyticsDashboardPage() {
     }))
 
     const vesselPieData = (data.vessel_type_breakdown || []).map((v, i) => ({
-        name: v.type || 'Unknown',
+        name: v.vessel_type || 'Unknown',
         value: v.count,
         fill: COLORS[i % COLORS.length],
     }))

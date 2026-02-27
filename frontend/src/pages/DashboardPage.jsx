@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 >
                   <div>
                     <div className="sub-item__name">{sub.vessel?.name || 'Unknown Vessel'}</div>
-                    <div className="sub-item__meta">IMO: {sub.vessel?.imo_number} · {sub.vessel?.type}</div>
+                    <div className="sub-item__meta">IMO: {sub.vessel?.imo_number} · {sub.vessel?.vessel_type}</div>
                   </div>
                   <span className="badge badge--blue">Watching</span>
                 </Link>

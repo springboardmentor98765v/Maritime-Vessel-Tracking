@@ -27,7 +27,7 @@ class VesselListView(generics.ListAPIView):
         if name:
             qs = qs.filter(name__icontains=name)
         if vessel_type:
-            qs = qs.filter(type__iexact=vessel_type)
+            qs = qs.filter(vessel_type__iexact=vessel_type)
         if flag:
             qs = qs.filter(flag__iexact=flag)
         if cargo_type:

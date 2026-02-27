@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     imo_number=f"IMO900{i:03d}",
                     defaults={
                         "name": f"Global Voyager {i}",
-                        "type": random.choice(vessel_types),
+                        "vessel_type": random.choice(vessel_types),
                         "flag": random.choice(flags),
                         "cargo_type": "General Cargo" if i % 2 == 0 else "Crude Oil",
                         "operator": f"TransGlobal Line {chr(65 + i % 5)}",

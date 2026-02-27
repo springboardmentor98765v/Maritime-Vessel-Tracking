@@ -14,7 +14,7 @@ class Vessel(models.Model):
         db_index=True
     )
 
-    type = models.CharField(max_length=50, db_index=True)
+    vessel_type = models.CharField(max_length=50, db_index=True)
     flag = models.CharField(max_length=50, db_index=True)
     cargo_type = models.CharField(max_length=50, db_index=True)
 
@@ -35,13 +35,13 @@ class Vessel(models.Model):
         ordering = ['name']
         indexes = [
             models.Index(fields=['imo_number']),
-            models.Index(fields=['type']),
+            models.Index(fields=['vessel_type']),
             models.Index(fields=['flag']),
             models.Index(fields=['last_update']),
             models.Index(fields=['destination']),
             models.Index(fields=['speed']),
             models.Index(fields=['last_update', 'destination']),  # Composite for filtering
-            models.Index(fields=['type', 'flag']),  # Composite for filtering
+            models.Index(fields=['vessel_type', 'flag']),  # Composite for filtering
         ]
 
     def __str__(self):

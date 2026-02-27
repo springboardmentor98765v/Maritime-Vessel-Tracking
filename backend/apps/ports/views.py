@@ -93,7 +93,7 @@ class PortAnalyticsView(APIView):
 
         # Vessel type breakdown
         vessel_types = list(
-            Vessel.objects.values('type')
+            Vessel.objects.values('vessel_type')
             .annotate(count=Count('id'))
             .order_by('-count')[:8]
         )
