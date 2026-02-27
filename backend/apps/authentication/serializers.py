@@ -146,9 +146,5 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
-
-    def validate_email(self, value):
-        if not User.objects.filter(email=value).exists():
-            # For security, don't reveal if email exists or not
-            raise serializers.ValidationError("If that email exists, reset instructions will be sent.")
-        return value
+    # Note: Don't validate existence here — the view handles it silently
+    # (security best practice: never reveal if an email is registered)

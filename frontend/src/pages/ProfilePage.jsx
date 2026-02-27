@@ -58,15 +58,46 @@ export default function ProfilePage() {
 
   const profile = data.profile || {}
   const initials = (data.username || 'U').slice(0, 2).toUpperCase()
-  const avatarSrc = profile.avatar ? `http://127.0.0.1:8000${profile.avatar}` : null
+
+  // Build avatar URL — use backend media if available, else show initials
+  let avatarSrc = null
+  if (profile.avatar && !profile.avatar.endsWith('default.png')) {
+    avatarSrc = profile.avatar.startsWith('http')
+      ? profile.avatar
+      : `http://127.0.0.1:8000${profile.avatar}`
+  }
 
   return (
     <div className="profile-page" style={{ animation: 'fadeUp .38s ease both' }}>
       {/* Header */}
       <div className="profile-header">
-        <div className="profile-avatar">
-          {avatarSrc ? <img src={avatarSrc} alt="Avatar" /> : initials}
+        {/* Clickable avatar — opens the edit page */}
+        <div
+          style={{ position: 'relative', cursor: 'pointer' }}
+          onClick={() => navigate('/profile/update')}
+          title="Edit avatar"
+        >
+          <div className="profile-avatar">
+            {avatarSrc
+              ? <img src={avatarSrc} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+              : initials
+            }
+          </div>
+          {/* camera hover overlay */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '50%',
+            background: 'rgba(0,0,0,.5)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            opacity: 0, transition: 'opacity .2s',
+          }} className="avatar-cam-overlay">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+            <span style={{ fontSize: '.6rem', color: '#fff', marginTop: 3 }}>Edit</span>
+          </div>
         </div>
+
         <div>
           <div className="profile-name">{data.username}</div>
           <div className="profile-role">
@@ -75,6 +106,8 @@ export default function ProfilePage() {
           <div style={{ fontSize: '.83rem', color: 'var(--text-2)', marginTop: '.4rem' }}>{data.email}</div>
         </div>
       </div>
+
+      <style>{`.avatar-cam-overlay { pointer-events: none; } div:hover > .avatar-cam-overlay { opacity: 1 !important; }`}</style>
 
       {/* Profile details card */}
       <div className="card">

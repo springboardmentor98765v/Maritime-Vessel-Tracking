@@ -1,216 +1,213 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  fetchExtraProfile,
-  updateExtraProfile,
-} from "../services/authService";
-import "../index.css";
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { fetchExtraProfile, updateExtraProfile } from '../services/authService'
 
-export default function UpdateProfile() {
-  const navigate = useNavigate();
+const API_BASE = 'http://127.0.0.1:8000'
 
-  // -------------------- STATE --------------------
-  const [loading, setLoading] = useState(true);
+export default function UpdateProfilePage() {
+  const navigate = useNavigate()
+  const fileInputRef = useRef(null)
 
-  const [form, setForm] = useState({
-    company: "",
-    phone_number: "",
-    bio: "",
-    avatar: null,
-  });
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
+  const [form, setForm] = useState({ company: '', phone_number: '', bio: '' })
+  const [avatarFile, setAvatarFile] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
 
-  // 👇 NEW STATE FOR IMAGE PREVIEW
-  const [avatarPreview, setAvatarPreview] = useState(null);
-
-  // -------------------- FETCH PROFILE --------------------
   useEffect(() => {
     fetchExtraProfile()
-      .then((data) => {
+      .then(data => {
         setForm({
-          company: data.company || "",
-          phone_number: data.phone_number || "",
-          bio: data.bio || "",
-          avatar: null,
-        });
-
-        // 👇 SET EXISTING IMAGE
-        if (data.avatar) {
-  setAvatarPreview(`${BASE_URL}${data.avatar}`);
-}
+          company: data.company || '',
+          phone_number: data.phone_number || '',
+          bio: data.bio || '',
+        })
+        if (data.avatar && !data.avatar.endsWith('default.png')) {
+          const url = data.avatar.startsWith('http') ? data.avatar : `${API_BASE}${data.avatar}`
+          setAvatarPreview(url)
+        }
       })
-      .finally(() => setLoading(false));
-  }, []);
+      .catch(() => setError('Failed to load profile data.'))
+      .finally(() => setLoading(false))
+  }, [])
 
-  // -------------------- HANDLE CHANGE --------------------
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-
-    if (name === "avatar") {
-      const file = files[0];
-      setForm({ ...form, avatar: file });
-
-      // 👇 SHOW NEW PREVIEW
-      if (file) {
-        setAvatarPreview(URL.createObjectURL(file));
-      }
-    } else {
-      setForm({ ...form, [name]: value });
-    }
-  };
-
-  // -------------------- SUBMIT --------------------
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("company", form.company);
-    formData.append("phone_number", form.phone_number);
-    formData.append("bio", form.bio);
-
-    if (form.avatar) {
-      formData.append("avatar", form.avatar);
-    }
-
-    try {
-      await updateExtraProfile(formData);
-      alert("Profile updated successfully");
-      navigate("/profile");
-    } catch {
-      alert("Failed to update profile");
-    }
-  };
-
-  // -------------------- LOADING --------------------
-  if (loading) {
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center text-slate-300">
-        Loading profile...
-      </div>
-    );
+  const handleChange = e => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  // -------------------- UI --------------------
-  return (
-    <div className="min-h-[70vh] flex items-start justify-start pt-20">
-      <div className="max-w-lg w-full bg-slate-900/90 backdrop-blur-xl
-                      border border-white/10 rounded-2xl shadow-2xl shadow-slate-950/50 p-8">
-        <h2 className="text-3xl font-bold text-white mb-2">
-          Update Profile
-        </h2>
-        <p className="text-slate-400 mb-6">
-          Update your personal information
-        </p>
+  const handleAvatarChange = e => {
+    const file = e.target.files[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { setError('Image must be under 5 MB'); return }
+    setAvatarFile(file)
+    setAvatarPreview(URL.createObjectURL(file))
+    setError('')
+  }
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Avatar Preview */}
-          {avatarPreview && (
-            <div className="flex justify-center mb-4">
-              <img
-                src={avatarPreview}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border-4 border-cyan-500/50 shadow-lg shadow-cyan-500/30"
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+    setSaved(false)
+    const fd = new FormData()
+    fd.append('company', form.company)
+    fd.append('phone_number', form.phone_number)
+    fd.append('bio', form.bio)
+    if (avatarFile) fd.append('avatar', avatarFile)
+    try {
+      await updateExtraProfile(fd)
+      setSaved(true)
+      setTimeout(() => navigate('/profile'), 1500)
+    } catch {
+      setError('Failed to save changes. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) return (
+    <div style={{ display: 'grid', placeItems: 'center', minHeight: '60vh' }}>
+      <div style={{ width: 36, height: 36, border: '3px solid var(--brand)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
+    </div>
+  )
+
+  const initials = 'ME'
+
+  return (
+    <div style={{ maxWidth: 560, margin: '2rem auto', padding: '0 1rem', animation: 'fadeUp .35s ease both' }}>
+      <div className="card" style={{ padding: '2rem' }}>
+        <h2 style={{ fontWeight: 700, fontSize: '1.5rem', marginBottom: '.25rem' }}>Edit Profile</h2>
+        <p style={{ color: 'var(--text-2)', fontSize: '.9rem', marginBottom: '2rem' }}>Update your personal information and profile photo.</p>
+
+        <form onSubmit={handleSubmit}>
+          {/* ── Avatar picker ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                width: 110, height: 110, borderRadius: '50%',
+                background: avatarPreview ? 'transparent' : 'linear-gradient(135deg,var(--brand),#6366f1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '2rem', fontWeight: 700, color: '#fff',
+                cursor: 'pointer', position: 'relative', overflow: 'hidden',
+                border: '3px solid var(--brand)', boxShadow: '0 0 20px var(--brand)44',
+                transition: 'box-shadow .2s',
+              }}
+              title="Click to change avatar"
+            >
+              {avatarPreview
+                ? <img src={avatarPreview} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                : initials
+              }
+              {/* camera overlay */}
+              <div style={{
+                position: 'absolute', inset: 0, borderRadius: '50%',
+                background: 'rgba(0,0,0,.45)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                opacity: 0, transition: 'opacity .2s',
+              }}
+                className="avatar-overlay"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
+                <span style={{ fontSize: '.65rem', color: '#fff', marginTop: 4 }}>Change</span>
+              </div>
+            </div>
+            <p style={{ fontSize: '.78rem', color: 'var(--text-2)', marginTop: '.6rem' }}>Click avatar to upload a new photo (JPG, PNG — max 5 MB)</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={handleAvatarChange}
+            />
+            {avatarFile && (
+              <span style={{ fontSize: '.78rem', color: 'var(--brand)', marginTop: '.3rem' }}>
+                {avatarFile.name} selected
+              </span>
+            )}
+          </div>
+
+          {/* ── Fields ── */}
+          <div style={{ display: 'grid', gap: '1.1rem' }}>
+            <div className="field">
+              <label htmlFor="company">Company</label>
+              <input
+                id="company"
+                name="company"
+                value={form.company}
+                onChange={handleChange}
+                placeholder="e.g. Global Maritime Corp"
+                autoComplete="organization"
               />
+            </div>
+
+            <div className="field">
+              <label htmlFor="phone_number">Phone Number</label>
+              <input
+                id="phone_number"
+                name="phone_number"
+                value={form.phone_number}
+                onChange={handleChange}
+                placeholder="+1 555 000 0000"
+                autoComplete="tel"
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="bio">Bio</label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={form.bio}
+                onChange={handleChange}
+                rows={4}
+                placeholder="Tell us a bit about yourself..."
+                style={{
+                  resize: 'vertical', fontFamily: 'inherit', fontSize: '0.95rem',
+                  background: 'var(--surface-2)', border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius)', color: 'var(--text-1)',
+                  padding: '.65rem .9rem', width: '100%', boxSizing: 'border-box'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* ── Feedback ── */}
+          {error && (
+            <div style={{
+              background: '#ef444422', border: '1px solid #ef4444', color: '#ef4444',
+              borderRadius: 'var(--radius)', padding: '.7rem 1rem', fontSize: '.87rem', marginTop: '1rem'
+            }}>
+              {error}
+            </div>
+          )}
+          {saved && (
+            <div style={{
+              background: '#22c55e22', border: '1px solid #22c55e', color: '#22c55e',
+              borderRadius: 'var(--radius)', padding: '.7rem 1rem', fontSize: '.87rem', marginTop: '1rem'
+            }}>
+              Profile saved! Redirecting...
             </div>
           )}
 
-          {/* Company */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Company
-            </label>
-            <input
-              name="company"
-              value={form.company}
-              onChange={handleChange}
-              placeholder="e.g. Maritime Corp"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70
-                         text-white border border-slate-600/50
-                         placeholder-slate-500
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                         transition-all"
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Phone Number
-            </label>
-            <input
-              name="phone_number"
-              value={form.phone_number}
-              onChange={handleChange}
-              placeholder="+91 9876543210"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70
-                         text-white border border-slate-600/50
-                         placeholder-slate-500
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                         transition-all"
-            />
-          </div>
-
-          {/* Bio */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Bio
-            </label>
-            <textarea
-              name="bio"
-              value={form.bio}
-              onChange={handleChange}
-              rows="3"
-              placeholder="Tell us about yourself"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70
-                         text-white border border-slate-600/50
-                         placeholder-slate-500
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                         transition-all"
-            />
-          </div>
-
-          {/* Avatar Upload */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Profile Image
-            </label>
-            <input
-              type="file"
-              name="avatar"
-              accept="image/*"
-              onChange={handleChange}
-              className="block w-full text-sm text-slate-300
-                         file:mr-4 file:py-2 file:px-4
-                         file:rounded-lg file:border-0
-                         file:bg-gradient-to-r file:from-cyan-400 file:to-blue-500
-                         file:text-slate-900 file:font-semibold
-                         hover:file:shadow-lg hover:file:shadow-cyan-500/30
-                         file:transition-shadow"
-            />
-          </div>
-
-          {/* Buttons */}
-          <div className="flex gap-4 pt-4">
-            <button
-              type="submit"
-              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500
-                         hover:-translate-y-0.5 transition-transform
-                         text-slate-900 font-semibold shadow-lg shadow-cyan-500/30"
-            >
-              Save Changes
+          {/* ── Actions ── */}
+          <div style={{ display: 'flex', gap: '.75rem', marginTop: '1.5rem' }}>
+            <button type="submit" className="btn btn--primary" disabled={saving} style={{ flex: 1 }}>
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/profile")}
-              className="flex-1 py-3 rounded-xl border border-white/30
-                         text-white hover:bg-white/10 transition-colors"
-            >
+            <button type="button" className="btn btn--ghost" onClick={() => navigate('/profile')} style={{ flex: 1 }}>
               Cancel
             </button>
           </div>
         </form>
       </div>
+
+      <style>{`
+        .avatar-overlay { pointer-events: none; }
+        div:hover > .avatar-overlay { opacity: 1 !important; }
+      `}</style>
     </div>
-  );
+  )
 }
