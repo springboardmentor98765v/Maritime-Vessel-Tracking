@@ -8,8 +8,10 @@ __pycache__/
 
 # Virtual Environment
 venv/
+venv_win/
 env/
 ENV/
+.venv/
 
 # ======================
 # Django
