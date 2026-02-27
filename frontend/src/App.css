@@ -1567,3 +1567,166 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =====================================================
+   VESSELS PAGE
+   ===================================================== */
+.vessels-page {
+  display: grid;
+  gap: 1.5rem;
+  animation: fadeUp .38s ease both;
+}
+
+.vessels-header h1 {
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 700;
+}
+
+.vessels-subtitle {
+  color: var(--text-2);
+  font-size: .82rem;
+  margin-top: .25rem;
+}
+
+.vessel-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: .85rem 1.1rem;
+}
+
+.vessel-search-input,
+.vessel-select {
+  background: rgba(10, 22, 48, .85);
+  border: 1px solid var(--border);
+  color: var(--text-0);
+  padding: .42rem .75rem;
+  border-radius: var(--radius-sm);
+  font-size: .82rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s;
+  min-width: 120px;
+}
+
+.vessel-search-input:focus,
+.vessel-select:focus {
+  border-color: var(--brand-cyan);
+}
+
+.vessel-select option {
+  background: var(--bg-2);
+}
+
+/* Subscription notice bar */
+.subscription-notice {
+  background: rgba(34, 211, 238, .07);
+  border: 1px solid rgba(34, 211, 238, .18);
+  border-radius: var(--radius);
+  padding: .65rem 1rem;
+  font-size: .82rem;
+  color: var(--text-1);
+}
+
+.subscription-notice a {
+  color: var(--brand-cyan);
+  font-weight: 600;
+}
+
+/* Table */
+.vessels-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+}
+
+.vessels-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .82rem;
+}
+
+.vessels-table th {
+  padding: .7rem 1rem;
+  text-align: left;
+  font-size: .7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.vessels-table td {
+  padding: .65rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .04);
+  vertical-align: middle;
+}
+
+.vessels-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vessels-table tbody tr:hover {
+  background: rgba(255, 255, 255, .025);
+}
+
+.vessel-name {
+  font-weight: 600;
+  color: var(--text-0);
+}
+
+/* Actions cell */
+.vessel-actions {
+  display: flex;
+  gap: .45rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Subscribe button */
+.btn--subscribe {
+  background: rgba(34, 197, 94, .12);
+  border: 1px solid rgba(34, 197, 94, .3);
+  color: #86efac;
+  transition: all .18s;
+}
+
+.btn--subscribe:hover {
+  background: rgba(34, 197, 94, .22);
+  box-shadow: 0 0 12px rgba(34, 197, 94, .2);
+}
+
+/* Unsubscribe (already subscribed) button */
+.btn--subscribed {
+  background: rgba(239, 68, 68, .1);
+  border: 1px solid rgba(239, 68, 68, .28);
+  color: #fca5a5;
+  transition: all .18s;
+}
+
+.btn--subscribed:hover {
+  background: rgba(239, 68, 68, .2);
+  box-shadow: 0 0 12px rgba(239, 68, 68, .18);
+}
+
+.vessels-count {
+  padding: .65rem 1rem;
+  font-size: .75rem;
+  color: var(--text-2);
+  border-top: 1px solid var(--border);
+}
+
+.vessels-loading,
+.vessels-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-2);
+  font-size: .87rem;
+}

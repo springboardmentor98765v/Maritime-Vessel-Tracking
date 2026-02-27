@@ -1,51 +1,44 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RadarDisplay({
   scanSpeed = 4000,
   targetCount = 8,
-  radarColor = "#10b981", // emerald
+  radarColor = "#22d3ee",
   alertColor = "#ef4444",
 }) {
   const [angle, setAngle] = useState(0);
   const [time, setTime] = useState(0);
+  const [targets, setTargets] = useState([]);
 
-  /* ---------------- TARGET GENERATION ---------------- */
-  const targets = useMemo(() => {
-    return Array.from({ length: targetCount }, (_, i) => ({
-      id: i,
-      angle: Math.random() * 360,
-      distance: 25 + Math.random() * 45,
-      speed: 0.05 + Math.random() * 0.2,
-      alert: Math.random() > 0.7,
-    }));
+  useEffect(() => {
+    setTargets(
+      Array.from({ length: targetCount }, (_, i) => ({
+        id: i,
+        angle: Math.random() * 360,
+        distance: 22 + Math.random() * 42,
+        speed: 0.04 + Math.random() * 0.18,
+        alert: Math.random() > 0.72,
+      }))
+    );
   }, [targetCount]);
 
-  /* ---------------- ANIMATION LOOP ---------------- */
   useEffect(() => {
     let raf;
     let last = performance.now();
-
     const animate = (now) => {
       const delta = now - last;
       last = now;
-
       setAngle((a) => (a + (360 * delta) / scanSpeed) % 360);
       setTime((t) => t + delta);
-
       raf = requestAnimationFrame(animate);
     };
-
     raf = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(raf);
   }, [scanSpeed]);
 
-  /* ---------------- HELPERS ---------------- */
   const polarToXY = (a, d) => {
     const rad = ((a - 90) * Math.PI) / 180;
-    return {
-      x: 50 + d * Math.cos(rad),
-      y: 50 + d * Math.sin(rad),
-    };
+    return { x: 50 + d * Math.cos(rad), y: 50 + d * Math.sin(rad) };
   };
 
   const diffAngle = (a) => {
@@ -54,152 +47,155 @@ export default function RadarDisplay({
   };
 
   const DETECTION_WIDTH = 8;
-  let beamBoost = false;
 
   return (
     <>
-      {/* GLOBAL ANIMATIONS */}
       <style>{`
-        @keyframes blink {
-          0%,100% { opacity: 1; }
-          50% { opacity: 0.2; }
+        @keyframes radarBlink {
+          0%,100% { opacity:1; }
+          50% { opacity:0.15; }
         }
-
-        @keyframes text-blink {
-          0%,100% { opacity: 0.4; }
-          50% { opacity: 1; }
+        @keyframes radarTextBlink {
+          0%,100% { opacity:0.45; }
+          50% { opacity:1; }
+        }
+        @keyframes radarPulse {
+          0% { transform:translate(-50%,-50%) scale(1); opacity:0.9; }
+          100% { transform:translate(-50%,-50%) scale(2.5); opacity:0; }
         }
       `}</style>
 
-      <div className="relative w-full max-w-md mx-auto aspect-square">
-        {/* GLASS PANEL */}
-        <div
-          className="absolute inset-0 rounded-3xl border backdrop-blur-xl"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(15,23,42,.85), rgba(15,23,42,.95))",
-            borderColor: "rgba(255,255,255,.1)",
-            boxShadow: `0 0 60px ${radarColor}55`,
-          }}
-        />
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '380px',
+        margin: '0 auto',
+        aspectRatio: '1/1',
+      }}>
+        {/* Outer glow ring */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg,rgba(15,23,42,.9),rgba(4,12,24,.98))',
+          boxShadow: `0 0 70px ${radarColor}44, 0 0 120px ${radarColor}22`,
+          border: '1px solid rgba(34,211,238,0.15)',
+        }} />
 
-        {/* RADAR CIRCLE */}
-        <div className="absolute inset-8 rounded-full overflow-hidden">
-          {/* BASE */}
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(0,30,50,.3), rgba(0,5,10,.95))",
-              boxShadow: `inset 0 0 40px #000, 0 0 40px ${radarColor}55`,
-            }}
-          />
+        {/* Inner radar circle */}
+        <div style={{
+          position: 'absolute', inset: '8px',
+          borderRadius: '50%',
+          overflow: 'hidden',
+          background: 'radial-gradient(circle at center,rgba(0,35,60,.35),rgba(2,8,20,.98))',
+          boxShadow: `inset 0 0 50px rgba(0,0,0,.8)`,
+        }}>
+          {/* Sweep gradient behind scan line */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            borderRadius: '50%',
+            background: `conic-gradient(from ${angle}deg, ${radarColor}20 0deg, transparent 60deg, transparent 360deg)`,
+          }} />
 
-          {/* GRID CIRCLES */}
+          {/* Concentric range rings */}
           {[20, 40, 60, 80].map((r) => (
-            <div
-              key={r}
-              className="absolute rounded-full border"
-              style={{
-                inset: `${50 - r / 2}%`,
-                borderColor: radarColor,
-                opacity: 0.15,
-              }}
-            />
+            <div key={r} style={{
+              position: 'absolute',
+              borderRadius: '50%',
+              border: `1px solid ${radarColor}`,
+              opacity: 0.12,
+              inset: `${50 - r / 2}%`,
+            }} />
           ))}
 
-          {/* GRID LINES */}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute left-1/2 top-1/2 w-px h-1/2"
-              style={{
-                background: `linear-gradient(${radarColor}, transparent)`,
-                opacity: 0.2,
-                transformOrigin: "top",
-                transform: `rotate(${i * 30}deg)`,
-              }}
-            />
+          {/* Cross-hair lines */}
+          {[0, 45, 90, 135].map((deg) => (
+            <div key={deg} style={{
+              position: 'absolute',
+              left: '50%', top: '50%',
+              width: '100%', height: '1px',
+              background: `linear-gradient(to right,transparent,${radarColor}30,transparent)`,
+              transformOrigin: 'left center',
+              transform: `rotate(${deg}deg)`,
+            }} />
           ))}
 
-          {/* TARGETS */}
+          {/* Targets */}
           {targets.map((t) => {
             const movingAngle = t.angle + time * t.speed * 0.02;
             const { x, y } = polarToXY(movingAngle, t.distance);
             const detected = diffAngle(movingAngle) < DETECTION_WIDTH;
-
-            if (detected) beamBoost = true;
-
-            const size = detected ? 14 : 7;
+            const size = detected ? 12 : 6;
             const color = t.alert ? alertColor : radarColor;
-
             return (
-              <div
-                key={t.id}
-                className="absolute rounded-full"
-                style={{
-                  left: `${x}%`,
-                  top: `${y}%`,
-                  width: size,
-                  height: size,
-                  transform: "translate(-50%,-50%)",
-                  background: color,
-                  boxShadow: detected
-                    ? `0 0 25px ${color}, 0 0 40px ${color}`
-                    : `0 0 10px ${color}`,
-                  animation: detected ? "blink 0.4s ease-in-out" : "none",
-                  transition: "all 0.2s ease",
-                }}
-              />
+              <div key={t.id}>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    width: size,
+                    height: size,
+                    transform: "translate(-50%,-50%)",
+                    borderRadius: "50%",
+                    background: color,
+                    boxShadow: detected
+                      ? `0 0 20px ${color}, 0 0 35px ${color}`
+                      : `0 0 8px ${color}`,
+                    animation: detected ? "radarBlink 0.5s ease-in-out" : "none",
+                  }}
+                />
+                {detected && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: `${x}%`,
+                      top: `${y}%`,
+                      width: size * 3,
+                      height: size * 3,
+                      transform: "translate(-50%,-50%)",
+                      borderRadius: "50%",
+                      border: `2px solid ${color}`,
+                      animation: "radarPulse 1s ease-out infinite",
+                    }}
+                  />
+                )}
+              </div>
             );
           })}
 
-          {/* SCAN LINE */}
-          <div
-            className="absolute inset-0"
-            style={{ transform: `rotate(${angle}deg)` }}
-          >
-            <div
-              className="absolute left-1/2 top-1/2"
-              style={{
-                width: beamBoost ? "5px" : "2px",
-                height: "50%",
-                background: radarColor,
-                transform: "translateX(-50%)",
-                boxShadow: beamBoost
-                  ? `0 0 40px ${radarColor}, 0 0 60px ${radarColor}`
-                  : `0 0 20px ${radarColor}`,
-                transition: "all 0.1s ease",
-              }}
-            />
-          </div>
+          {/* Scan line */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            borderRadius: '50%',
+            background: `conic-gradient(from ${angle}deg, ${radarColor}40 0deg, ${radarColor}10 8deg, transparent 25deg, transparent 360deg)`,
+            opacity: 0.6,
+          }} />
 
-          {/* TEXT 16px BELOW CENTER */}
-          <div
-            className="absolute left-1/2 pointer-events-none"
-            style={{
-              top: "50%",
-              transform: "translate(-50%, calc(-50% + 16px))",
-              color: radarColor,
-              fontFamily: "monospace",
-              fontSize: "12px",
-              letterSpacing: "0.35em",
-              textShadow: `0 0 10px ${radarColor}`,
-              animation: "text-blink 2s ease-in-out infinite",
-            }}
-          >
-            MARITIME VISTA
-          </div>
+          {/* Center point */}
+          <div style={{
+            position: 'absolute',
+            left: '50%', top: '50%',
+            width: '6px', height: '6px',
+            background: radarColor,
+            borderRadius: '50%',
+            transform: 'translate(-50%,-50%)',
+            boxShadow: `0 0 15px ${radarColor}`,
+          }} />
+        </div>
 
-          {/* CENTER DOT */}
-          <div
-            className="absolute left-1/2 top-1/2 w-4 h-4 rounded-full"
-            style={{
-              background: radarColor,
-              transform: "translate(-50%,-50%)",
-              boxShadow: `0 0 40px ${radarColor}`,
-            }}
-          />
+        {/* Radar Labels */}
+        <div style={{
+          position: 'absolute',
+          left: '50%', top: '8%',
+          transform: 'translateX(-50%)',
+          color: radarColor,
+          fontSize: '11px',
+          opacity: 0.45,
+          fontWeight: 600,
+          letterSpacing: '1px',
+          animation: 'radarTextBlink 2s ease-in-out infinite',
+        }}>
+          RANGE: 64nm
         </div>
       </div>
     </>

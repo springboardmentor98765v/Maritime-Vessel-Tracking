@@ -14,7 +14,7 @@ class Vessel(models.Model):
         db_index=True
     )
 
-    type = models.CharField(max_length=50, db_index=True)
+    vessel_type = models.CharField(max_length=50, db_index=True)
     flag = models.CharField(max_length=50, db_index=True)
     cargo_type = models.CharField(max_length=50, db_index=True)
 
@@ -23,6 +23,9 @@ class Vessel(models.Model):
 
     last_position_lat = models.FloatField(null=True, blank=True)
     last_position_lon = models.FloatField(null=True, blank=True)
+    speed = models.FloatField(null=True, blank=True, db_index=True)
+    heading = models.FloatField(null=True, blank=True)
+    destination = models.CharField(max_length=255, null=True, blank=True, db_index=True)
 
     last_update = models.DateTimeField(null=True, blank=True)
 
@@ -30,6 +33,16 @@ class Vessel(models.Model):
 
     class Meta:
         ordering = ['name']
+        indexes = [
+            models.Index(fields=['imo_number']),
+            models.Index(fields=['vessel_type']),
+            models.Index(fields=['flag']),
+            models.Index(fields=['last_update']),
+            models.Index(fields=['destination']),
+            models.Index(fields=['speed']),
+            models.Index(fields=['last_update', 'destination']),  # Composite for filtering
+            models.Index(fields=['vessel_type', 'flag']),  # Composite for filtering
+        ]
 
     def __str__(self):
         return f"{self.name} ({self.imo_number})"
@@ -52,6 +65,11 @@ class VesselSubscription(models.Model):
     class Meta:
         unique_together = ('user', 'vessel')
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['vessel']),
+            models.Index(fields=['user', 'vessel']),  # Composite for lookups
+        ]
 
     def __str__(self):
         return f"{self.user.username} → {self.vessel.name}"
@@ -66,6 +84,11 @@ class VesselEvent(models.Model):
         ('weather', 'Weather Alert'),
         ('port_delay', 'Port Delay'),
         ('inspection', 'Inspection'),
+        ('stopped', 'Stopped'),
+        ('underway', 'Underway'),
+        ('route_changed', 'Route Changed'),
+        ('entered_port', 'Entered Port'),
+        ('ais_lost', 'AIS Signal Lost'),
         ('other', 'Other'),
     ]
 
@@ -77,6 +100,8 @@ class VesselEvent(models.Model):
 
     event_type = models.CharField(max_length=50, choices=EVENT_TYPES, db_index=True)
     location = models.CharField(max_length=255, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     timestamp = models.DateTimeField()
     details = models.TextField(blank=True)
 
@@ -84,6 +109,12 @@ class VesselEvent(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['vessel', 'timestamp']),
+            models.Index(fields=['vessel']),
+            models.Index(fields=['timestamp']),
+            models.Index(fields=['event_type']),
+        ]
 
     def __str__(self):
         return f"{self.event_type} — {self.vessel.name} @ {self.timestamp}"

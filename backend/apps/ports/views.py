@@ -2,6 +2,7 @@ from django.db.models import Avg, Count
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from .models import Port
 from .serializers import PortSerializer
@@ -10,6 +11,7 @@ from .serializers import PortSerializer
 class PortListView(generics.ListAPIView):
     """GET /ports/ — List all ports. Optional filter: ?country=&name="""
     serializer_class = PortSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         qs = Port.objects.all()
@@ -26,6 +28,7 @@ class PortDetailView(generics.RetrieveAPIView):
     """GET /ports/<pk>/ — Single port details."""
     serializer_class = PortSerializer
     queryset = Port.objects.all()
+    permission_classes = [AllowAny]
 
 
 class PortCongestionDashboardView(APIView):
@@ -34,6 +37,7 @@ class PortCongestionDashboardView(APIView):
     Returns ports ranked by congestion score (highest first).
     Adds a human-readable congestion level: low / moderate / high / critical.
     """
+    permission_classes = [AllowAny]
 
     def get(self, request):
         ports = Port.objects.all().order_by('-congestion_score')
@@ -63,13 +67,13 @@ class PortCongestionDashboardView(APIView):
                 'alert': score >= 80,
             })
 
-
-
+        return Response(data)
 class PortAnalyticsView(APIView):
     """
     GET /ports/analytics/
     Returns aggregate data for charts: top congested ports, averages, counts.
     """
+    permission_classes = [AllowAny]
 
     def get(self, request):
         from apps.vessels.models import Vessel
@@ -89,7 +93,7 @@ class PortAnalyticsView(APIView):
 
         # Vessel type breakdown
         vessel_types = list(
-            Vessel.objects.values('type')
+            Vessel.objects.values('vessel_type')
             .annotate(count=Count('id'))
             .order_by('-count')[:8]
         )

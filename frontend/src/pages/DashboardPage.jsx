@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import api from '../services/api'
 
 const FEATURES = [
-  { to: '/map', icon: '🗺️', title: 'Live Vessel Map', desc: 'Real-time positions and safety overlays' },
-  { to: '/vessels', icon: '🚢', title: 'Fleet Search', desc: 'Filter vessels by type, flag, cargo' },
-  { to: '/ports', icon: '⚓', title: 'Port Congestion', desc: 'Arrivals, departures, wait times' },
-  { to: '/voyages', icon: '🎬', title: 'Voyage Replay', desc: 'Animate historical voyage routes' },
-  { to: '/analytics', icon: '📊', title: 'Analytics', desc: 'Charts, trends, and KPIs' },
-  { to: '/admin', icon: '🛠️', title: 'Admin Tools', desc: 'API status, safety events, quick links' },
+  { to: '/map', icon: 'MAP', title: 'Live Vessel Map', desc: 'Real-time positions and safety overlays' },
+  { to: '/vessels', icon: 'FLEET', title: 'Fleet Search', desc: 'Filter vessels by type, flag, cargo' },
+  { to: '/ports', icon: 'PORTS', title: 'Port Congestion', desc: 'Arrivals, departures, wait times' },
+  { to: '/voyages', icon: 'REPLAY', title: 'Voyage Replay', desc: 'Animate historical voyage routes' },
+  { to: '/analytics', icon: 'STATS', title: 'Analytics', desc: 'Charts, trends, and KPIs' },
+  { to: '/admin', icon: 'ADMIN', title: 'Admin Tools', desc: 'API status, safety events, quick links' },
 ]
 
 export default function DashboardPage() {
@@ -34,7 +34,9 @@ export default function DashboardPage() {
     try {
       await api.patch(`/notifications/${id}/read/`)
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
-    } catch { }
+    } catch {
+      // ignore
+    }
   }
 
   return (
@@ -43,7 +45,7 @@ export default function DashboardPage() {
       <div className="dashboard__header">
         <div>
           <h1 className="dashboard__greeting">
-            Welcome back{user?.username ? `, ${user.username}` : ''} 👋
+            Welcome back{user?.username ? `, ${user.username}` : ''}.
           </h1>
           <p className="dashboard__sub">Your maritime command center — everything in one place.</p>
         </div>
@@ -54,7 +56,7 @@ export default function DashboardPage() {
       <div className="dashboard__grid">
         {FEATURES.map(f => (
           <Link key={f.to} to={f.to} className="dash-card" style={{ textDecoration: 'none' }}>
-            <div className="dash-card__icon">{f.icon}</div>
+            <div className="dash-card__icon" style={{ fontSize: '.65rem', letterSpacing: '.05em', fontWeight: 800, color: 'var(--brand)' }}>{f.icon}</div>
             <div className="dash-card__title">{f.title}</div>
             <div className="dash-card__detail">{f.desc}</div>
           </Link>
@@ -68,7 +70,7 @@ export default function DashboardPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.85rem' }}>
             <h2 style={{ fontSize: '.95rem', fontWeight: 700 }}>
-              🔔 Notifications
+              Notifications
               {unread.length > 0 && <span className="badge badge--red" style={{ marginLeft: '.5rem' }}>{unread.length}</span>}
             </h2>
           </div>
@@ -89,9 +91,6 @@ export default function DashboardPage() {
                     border: '1px solid var(--border)',
                   }}
                 >
-                  <span style={{ fontSize: '1rem', marginTop: '.05rem' }}>
-                    {n.type === 'piracy' ? '🏴‍☠️' : n.type === 'weather' ? '🌪️' : n.type === 'accident' ? '💥' : '⚠️'}
-                  </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '.8rem', fontWeight: n.is_read ? 400 : 600, lineHeight: 1.4 }}>{n.message}</div>
                     <div style={{ fontSize: '.7rem', color: 'var(--text-2)', marginTop: '.15rem' }}>
@@ -104,7 +103,7 @@ export default function DashboardPage() {
                       style={{ flexShrink: 0, fontSize: '.68rem', padding: '.2rem .5rem' }}
                       onClick={() => markRead(n.id)}
                     >
-                      ✓
+                      Mark read
                     </button>
                   )}
                 </div>
@@ -115,12 +114,12 @@ export default function DashboardPage() {
 
         {/* Subscribed vessels */}
         <div className="card">
-          <h2 style={{ fontSize: '.95rem', fontWeight: 700, marginBottom: '.85rem' }}>📡 Subscribed Vessels</h2>
+          <h2 style={{ fontSize: '.95rem', fontWeight: 700, marginBottom: '.85rem' }}>Subscribed Vessels</h2>
           {loadingNotifs ? (
             <div style={{ color: 'var(--text-2)', fontSize: '.8rem' }}>Loading…</div>
           ) : subscriptions.length === 0 ? (
             <div style={{ color: 'var(--text-2)', fontSize: '.8rem' }}>
-              No subscriptions yet. Visit a vessel's detail page and click "Subscribe to Alerts".
+              No subscriptions yet. Visit a vessel detail page and click "Subscribe to Alerts".
             </div>
           ) : (
             <div style={{ display: 'grid', gap: '.55rem' }}>
@@ -133,7 +132,7 @@ export default function DashboardPage() {
                 >
                   <div>
                     <div className="sub-item__name">{sub.vessel?.name || 'Unknown Vessel'}</div>
-                    <div className="sub-item__meta">IMO: {sub.vessel?.imo_number} · {sub.vessel?.type}</div>
+                    <div className="sub-item__meta">IMO: {sub.vessel?.imo_number} · {sub.vessel?.vessel_type}</div>
                   </div>
                   <span className="badge badge--blue">Watching</span>
                 </Link>
