@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from apps.voyages.models import Voyage
 from apps.voyages.serializers import VoyageSerializer
@@ -12,6 +13,7 @@ class VoyageListView(generics.ListAPIView):
     Filter by ?vessel=<id>, ?status=<status>, ?port_from=<id>, ?port_to=<id>
     """
     serializer_class = VoyageSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         qs = Voyage.objects.select_related('vessel', 'port_from', 'port_to').all()
@@ -33,6 +35,7 @@ class VoyageListView(generics.ListAPIView):
 class VoyageDetailView(generics.RetrieveAPIView):
     """GET /voyages/<pk>/"""
     serializer_class = VoyageSerializer
+    permission_classes = [AllowAny]
     queryset = Voyage.objects.select_related('vessel', 'port_from', 'port_to').all()
 
 
@@ -40,8 +43,8 @@ class VoyageReplayView(APIView):
     """
     GET /voyages/<pk>/replay/
     Returns an ordered list of waypoints for a voyage replay animation.
-    Waypoints: departure port → vessel events (if any) → arrival port
     """
+    permission_classes = [AllowAny]
 
     def get(self, request, pk):
         try:

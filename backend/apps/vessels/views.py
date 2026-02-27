@@ -75,6 +75,7 @@ class VesselPositionUpdateView(APIView):
 class VesselEventListView(generics.ListAPIView):
     """GET /vessels/<pk>/events/ — Events for a specific vessel."""
     serializer_class = VesselEventSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         return VesselEvent.objects.filter(vessel_id=self.kwargs['pk'])
@@ -129,6 +130,7 @@ class SafetyEventListView(generics.ListAPIView):
     """
     from .safety_serializers import SafetyEventSerializer
     serializer_class = SafetyEventSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         from .safety_serializers import SafetyEventSerializer
