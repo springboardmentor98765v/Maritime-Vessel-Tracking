@@ -1,0 +1,324 @@
+# Maritime Vessel Tracking — Team 3
+## Project Completion Documentation
+
+**Repository:** https://github.com/springboardmentor98765v/Maritime-Vessel-Tracking  
+**Branch:** `team-three`  
+**Last Updated:** 2026-02-27
+
+---
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Architecture](#architecture)
+3. [What We Completed — Milestone by Milestone](#milestones)
+4. [Feature List](#feature-list)
+5. [API Reference](#api-reference)
+6. [Database Summary](#database-summary)
+7. [Frontend Pages](#frontend-pages)
+8. [How to Run the Project](#how-to-run)
+9. [Bugs Fixed](#bugs-fixed)
+
+---
+
+## 1. Project Overview
+
+**Maritime Vista** is a full-stack web application for real-time global maritime vessel tracking. It provides:
+- Live vessel position updates (simulated AIS feed)
+- Port congestion monitoring across 61 world ports
+- Voyage route replay with waypoint timeline
+- Safety event overlay on map (piracy zones, storms, restricted areas)
+- Analytics dashboard with charts and statistics
+- Vessel subscription system with notifications
+
+---
+
+## 2. Architecture
+
+```
+Maritime-Vessel-Tracking/
+├── backend/               Django 4.2 REST API
+│   ├── apps/
+│   │   ├── authentication/  JWT auth, user model, password reset
+│   │   ├── vessels/         Vessel CRUD, events, subscriptions, safety events
+│   │   ├── ports/           Port congestion, analytics
+│   │   ├── voyages/         Voyage tracking, replay
+│   │   └── notifications/   User notification model
+│   ├── core/
+│   │   ├── settings.py      Django configuration
+│   │   └── urls.py          Main URL routing
+│   └── integrations/        NOAA, AISHub, MarineTraffic adapters
+│
+└── frontend/              React 18 + Vite
+    └── src/
+        ├── pages/           8 page components
+        ├── components/      Header, Footer, RadarDisplay
+        ├── services/        Axios API clients
+        ├── context/         AuthContext
+        └── hooks/           useAuth
+```
+
+**Tech Stack:**
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, Vite 7, React Router v7 |
+| Map | Leaflet + React-Leaflet |
+| Charts | Recharts |
+| HTTP Client | Axios |
+| Backend | Django 4.2, Django REST Framework |
+| Auth | JWT (djangorestframework-simplejwt) |
+| Database | SQLite (dev) |
+| CORS | django-cors-headers |
+
+---
+
+## 3. Milestones Completed
+
+### Milestone 1 — Project Setup & Authentication
+- Django project scaffolding with modular app structure
+- Custom `User` model with JWT authentication
+- Login, Register, Logout endpoints
+- Password reset via email (console backend for dev)
+- React frontend with React Router
+- AuthContext and `useAuth` hook
+- Protected and public route definitions
+
+### Milestone 2 — Database Integration & Models
+- [Vessel](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/vessels/models.py#4-49) model with all AIS fields (IMO, position, speed, heading, flag, cargo, operator)
+- [Port](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/ports/models.py#4-33) model with congestion metrics
+- [Voyage](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/pages/VoyageReplayPage.jsx#18-46) model linking vessels to ports with status tracking
+- [VesselEvent](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/vessels/models.py#78-121) model for journey waypoints
+- [SafetyEvent](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/vessels/models.py#123-166) model with geographic radius zones
+- [VesselSubscription](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/vessels/models.py#51-76) model for user alerts
+- Database indexes for performance on query-heavy fields
+- [seed_baseline.py](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/vessels/management/commands/seed_baseline.py) — initial seeding command
+- [seed_large_data.py](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/vessels/management/commands/seed_large_data.py) — large dataset seeder (150 vessels, 61 ports, 369 voyages)
+
+### Milestone 3 — Backend APIs & Real-time Data
+- `GET /vessels/` — Searchable vessel registry (filter by name, type, flag, cargo)
+- `GET /vessels/<id>/` — Single vessel detail
+- `GET /vessels/<id>/events/` — Per-vessel event history
+- `POST /vessels/<id>/subscribe/` — Subscribe to vessel alerts
+- `DELETE /vessels/<id>/unsubscribe/` — Unsubscribe
+- `GET /ports/` — Port list
+- `GET /ports/congestion/` — Ports ranked by congestion score
+- `GET /ports/analytics/` — Aggregated analytics for dashboards
+- `GET /voyages/` — All voyages
+- `GET /voyages/<id>/replay/` — Voyage replay waypoints
+- `GET /safety-events/` — Active safety zones
+- [simulate_live_api.py](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/vessels/management/commands/simulate_live_api.py) — Continuous AIS position simulator (background command)
+
+### Milestone 4 — Frontend Integration & UI Polish
+- **Home Page** — Hero section with animated radar, statistics, call to action
+- **Live Map** — Leaflet map with custom SVG vessel markers, safety event circles, auto-refresh
+- **Vessels Page** — Searchable/filterable table with subscribe/unsubscribe per row
+- **Vessel Detail Page** — Full vessel info, recent events, OpenStreetMap link
+- **Ports Page** — Congestion dashboard with color-coded status bars, sorted table
+- **Analytics Dashboard** — Bar chart (top congested ports), Pie charts (vessel types, voyage statuses)
+- **Voyage Replay** — Timeline stepper with play/pause, per-waypoint event details
+- **Dashboard** — User overview, notifications, subscribed vessels
+- **Admin Tools Panel** — API status cards, safety event table, quick links
+
+### Bug Fixes Applied
+- Fixed `vessel_type` → `type` field name bug in [PortAnalyticsView](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/ports/views.py#71-128) (analytics charts were showing zero/empty data)
+- Fixed all emojis across the entire frontend (replaced with SVG icons and styled dots)
+- Fixed `venv_win/` being tracked by git (added to [.gitignore](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/.gitignore), prevented future corruption)
+- Fixed PortsPage error state — now shows a "Retry" button instead of a dead screen
+- Backend startup fixed to use system Python when `venv_win` is unavailable
+
+---
+
+## 4. Feature List
+
+| Feature | Status |
+|---|---|
+| User Registration & Login (JWT) | Done |
+| Password Reset via Email | Done |
+| Live Vessel Map | Done |
+| Vessel Search & Filter | Done |
+| Vessel Detail View | Done |
+| Vessel Subscribe/Unsubscribe | Done |
+| Port Congestion Dashboard | Done |
+| Analytics Charts (bar + pie) | Done |
+| Voyage List | Done |
+| Voyage Replay Timeline | Done |
+| Safety Event Overlay on Map | Done |
+| Admin Tools Panel | Done |
+| User Notifications | Done |
+| Real-time AIS Simulator | Done |
+| Large Dummy Dataset | Done |
+| No Emojis / Professional UI | Done |
+
+---
+
+## 5. API Reference
+
+**Base URL:** `http://127.0.0.1:8000`
+
+All endpoints return JSON. Authentication is via `Authorization: Bearer <token>` header for protected routes.
+
+### Authentication
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/auth/register/` | No | Register new user |
+| POST | `/auth/login/` | No | Login, get JWT tokens |
+| POST | `/auth/token/refresh/` | No | Refresh access token |
+| POST | `/auth/logout/` | Yes | Blacklist refresh token |
+| POST | `/auth/password-reset/` | No | Request password reset email |
+| POST | `/auth/password-reset/confirm/` | No | Confirm password reset |
+
+### Vessels
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/vessels/` | No | List vessels (supports `?name=&type=&flag=&cargo_type=`) |
+| GET | `/vessels/<id>/` | No | Vessel detail |
+| PATCH | `/vessels/<id>/update-position/` | No | Update vessel position (AIS simulator uses this) |
+| GET | `/vessels/<id>/events/` | No | Vessel event history |
+| POST | `/vessels/<id>/subscribe/` | Yes | Subscribe to vessel |
+| DELETE | `/vessels/<id>/unsubscribe/` | Yes | Unsubscribe from vessel |
+| GET | `/subscriptions/` | Yes | List user's subscriptions |
+
+### Ports
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/ports/` | No | All ports |
+| GET | `/ports/<id>/` | No | Single port |
+| GET | `/ports/congestion/` | No | Ports sorted by congestion score |
+| GET | `/ports/analytics/` | No | Analytics aggregate (charts data) |
+
+### Voyages & Safety
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/voyages/` | No | All voyages |
+| GET | `/voyages/<id>/replay/` | No | Voyage waypoints for replay |
+| GET | `/safety-events/` | No | Active safety zones |
+| GET | `/notifications/` | Yes | User notifications |
+
+---
+
+## 6. Database Summary
+
+Seeded via `python manage.py seed_large_data --clear`:
+
+| Table | Records |
+|---|---|
+| Vessels | 150 |
+| Ports | 61 |
+| Voyages | 369 |
+| Vessel Events | 1,610 |
+| Safety Zones | 15 |
+
+### Vessel Types Covered
+Tanker, Cargo, Container Ship, Bulk Carrier, Passenger, Tug, Ferry, Chemical Tanker, LNG Carrier, Ro-Ro, Offshore Supply, Research
+
+### Ports Covered (by region)
+- **Europe** — Rotterdam, Antwerp, Hamburg, Felixstowe, Piraeus, Algeciras, Barcelona, Genoa, Marseille, Le Havre, Lisbon, Oslo, Stockholm, Helsinki, Riga, Valencia, Bremen
+- **Asia-Pacific** — Shanghai, Singapore, Ningbo, Guangzhou, Busan, Hong Kong, Tianjin, Dalian, Xiamen, Qingdao, Kaohsiung, Kobe, Tokyo, Yokohama, Tanjung Priok, Laem Chabang, Colombo, Penang, Port Klang, Tanjung Pelepas
+- **Middle East** — Dubai (Jebel Ali), Khalifa, Oman (Sohar), Suez, Alexandria, Beirut, Istanbul
+- **Americas** — Los Angeles, Long Beach, New York, Savannah, Seattle, Houston, New Orleans, Halifax, Vancouver, Santos, Buenos Aires, Montevideo
+- **Africa** — Durban, Cape Town, Lagos, Mombasa, Tanger Med
+
+### Safety Zones
+- Gulf of Aden Piracy Advisory
+- Gulf of Guinea Piracy Zone (Critical)
+- Bay of Bengal Tropical Cyclone (Critical)
+- Atlantic Hurricane Warning Zone
+- Strait of Hormuz Military Zone
+- Suez Canal Aground Incident (Critical)
+- South China Sea Exclusion Zone
+- North Sea Severe Weather
+- Malacca Strait Collision
+- Port of Rotterdam Dredging
+- Malacca Strait Robbery
+- Western Pacific Super Typhoon (Critical)
+- Bosphorus Traffic Restriction
+- Indian Ocean Cargo Distress
+- US Navy Pacific Exercise Zone
+
+---
+
+## 7. Frontend Pages
+
+| Page | Route | Description |
+|---|---|---|
+| Home | `/` | Landing page with radar animation and stats |
+| Dashboard | `/dashboard` | User overview, notifications, subscriptions |
+| Live Map | `/map` | Leaflet map with vessels and safety overlays |
+| Vessels | `/vessels` | Searchable vessel registry table |
+| Vessel Detail | `/vessels/:id` | Full vessel info and events |
+| Ports | `/ports` | Port congestion dashboard |
+| Voyage Replay | `/voyages` | Voyage timeline player |
+| Analytics | `/analytics` | Charts and statistics |
+| Admin | `/admin` | API status and tools |
+| Login | `/login` | User login form |
+| Register | `/register` | User registration form |
+
+---
+
+## 8. How to Run
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- All Python packages installed globally or in a venv: `django`, `djangorestframework`, `djangorestframework-simplejwt`, `django-cors-headers`, `python-dotenv`
+
+### Step 1 — Database Setup (first time only)
+```powershell
+cd C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\backend
+python manage.py migrate
+python manage.py seed_large_data --clear
+```
+
+### Step 2 — Start Backend Server
+```powershell
+cd C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\backend
+python manage.py runserver 8000
+# Backend: http://127.0.0.1:8000
+```
+
+### Step 3 — Start Frontend
+```powershell
+cd C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\frontend
+npm install   # first time only
+npm run dev
+# Frontend: http://localhost:5173
+```
+
+### Step 4 — Start Live Data Simulator (optional)
+```powershell
+cd C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\backend
+python manage.py simulate_live_api --interval 8 --batch 10
+```
+
+### Quick Links When Running
+| Service | URL |
+|---|---|
+| Frontend App | http://localhost:5173 |
+| Backend API | http://127.0.0.1:8000 |
+| Django Admin | http://127.0.0.1:8000/admin/ |
+| Vessels API | http://127.0.0.1:8000/vessels/ |
+| Ports Congestion | http://127.0.0.1:8000/ports/congestion/ |
+| Analytics | http://127.0.0.1:8000/ports/analytics/ |
+| Safety Events | http://127.0.0.1:8000/safety-events/ |
+| Voyages | http://127.0.0.1:8000/voyages/ |
+
+---
+
+## 9. Bugs Fixed
+
+| Bug | File | Fix |
+|---|---|---|
+| Analytics showing empty vessel type chart | [backend/apps/ports/views.py](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/backend/apps/ports/views.py) L96 | Changed `values('type')` to `values('vessel_type')` |
+| Ship emoji instead of proper icon on map | [MapPage.jsx](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/pages/MapPage.jsx) | Replaced with inline SVG vessel marker |
+| Bell emoji in notification button | [Header.jsx](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/components/common/Header.jsx) | Replaced with SVG bell icon |
+| Subscribe/unsubscribe emoji buttons | [VesselsPage.jsx](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/pages/VesselsPage.jsx), [VesselDetailPage.jsx](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/pages/VesselDetailPage.jsx) | Clean text buttons |
+| Location pin emoji in events | [VesselDetailPage.jsx](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/pages/VesselDetailPage.jsx) | Removed, text only |
+| Colored circle emojis in Ports page | [PortsPage.jsx](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/pages/PortsPage.jsx) | Replaced with CSS `border-radius: 50%` colored dots |
+| Error state had no retry option | [PortsPage.jsx](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/frontend/src/pages/PortsPage.jsx) | Added "Retry" button in error UI |
+| `venv_win/` committed to git accidentally | [.gitignore](file:///c:/Users/LENOVO/Desktop/teamm3/Maritime-Vessel-Tracking/.gitignore) | Added `venv_win/` to ignore list |
+| Backend crash after git pull overwrote venv files | `venv_win/Scripts/python.exe` | Use system Python `python manage.py ...` instead |
+
+---
+
+*Documentation generated: 2026-02-27 — Team 3, Maritime Vessel Tracking Project*
