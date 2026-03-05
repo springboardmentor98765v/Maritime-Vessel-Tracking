@@ -24,12 +24,15 @@ export default function UpdateProfilePage() {
           phone_number: data.phone_number || '',
           bio: data.bio || '',
         })
-        if (data.avatar && !data.avatar.endsWith('default.png')) {
+        if (data.avatar && data.avatar !== '' && !data.avatar.includes('null')) {
           const url = data.avatar.startsWith('http') ? data.avatar : `${API_BASE}${data.avatar}`
           setAvatarPreview(url)
         }
       })
-      .catch(() => setError('Failed to load profile data.'))
+      .catch((err) => {
+        console.error('Failed to load profile data:', err)
+        setError('Failed to load profile data.')
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -52,16 +55,24 @@ export default function UpdateProfilePage() {
     setError('')
     setSaved(false)
     const fd = new FormData()
-    fd.append('company', form.company)
-    fd.append('phone_number', form.phone_number)
-    fd.append('bio', form.bio)
-    if (avatarFile) fd.append('avatar', avatarFile)
+    fd.append('company', form.company || '')
+    fd.append('phone_number', form.phone_number || '')
+    fd.append('bio', form.bio || '')
+    if (avatarFile) {
+      fd.append('avatar', avatarFile)
+    }
     try {
       await updateExtraProfile(fd)
       setSaved(true)
       setTimeout(() => navigate('/profile'), 1500)
-    } catch {
-      setError('Failed to save changes. Please try again.')
+    } catch (err) {
+      console.error('Profile update error:', err)
+      const errorMsg = err.response?.data?.detail || 
+                       err.response?.data?.error ||
+                       Object.values(err.response?.data || {}).flat().join(', ') ||
+                       err.message ||
+                       'Failed to save changes. Please try again.'
+      setError(errorMsg)
     } finally {
       setSaving(false)
     }

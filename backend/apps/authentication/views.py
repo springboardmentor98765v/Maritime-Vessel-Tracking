@@ -5,7 +5,10 @@ from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.utils import timezone
 import logging
+import random
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +20,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from datetime import timedelta
 
-from .models import User, UserProfile
+from .models import User, UserProfile, OTP
 from .permissions import IsAdmin
 from .serializers import (
     RegisterSerializer,
@@ -27,6 +31,8 @@ from .serializers import (
     CustomTokenObtainPairSerializer,
     UserProfileSerializer,
     PasswordResetSerializer,
+    SendOTPSerializer,
+    VerifyOTPSerializer,
 )
 
 
@@ -172,7 +178,9 @@ class UpdateUserProfileView(APIView):
             data=request.data,
             partial=True
         )
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            print("Profile Update Errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -283,3 +291,146 @@ class PasswordResetConfirmView(APIView):
                 {"error": "Invalid reset link"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+# =========================
+# OTP VERIFICATION
+# =========================
+
+def generate_otp():
+    """Generate a random 6-digit OTP"""
+    return ''.join(random.choices(string.digits, k=6))
+
+
+class SendOTPView(APIView):
+    """Send OTP to user email for verification"""
+    
+    def post(self, request):
+        serializer = SendOTPSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        email = serializer.validated_data["email"]
+        
+        # Check if user exists
+        try:
+            user = User.objects.get(email=email)
+            # Delete old OTPs for this email
+            OTP.objects.filter(email=email).delete()
+            
+            # Generate new OTP
+            otp = generate_otp()
+            expires_at = timezone.now() + timedelta(minutes=10)
+            
+            # Save OTP
+            OTP.objects.create(email=email, otp=otp, expires_at=expires_at)
+            
+            # Send email with OTP
+            subject = "Your Password Reset OTP"
+            message = f"Your OTP for password reset is: {otp}\n\nThis OTP is valid for 10 minutes."
+            
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                logger.exception("Failed to send OTP email: %s", e)
+            
+            return Response(
+                {"detail": "OTP sent to email"},
+                status=status.HTTP_200_OK
+            )
+        except User.DoesNotExist:
+            # Don't reveal if user exists
+            return Response(
+                {"detail": "If that email exists, an OTP will be sent."},
+                status=status.HTTP_200_OK
+            )
+
+
+class VerifyOTPView(APIView):
+    """Verify OTP and return a temporary token for password reset"""
+    
+    def post(self, request):
+        serializer = VerifyOTPSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        email = serializer.validated_data["email"]
+        otp = serializer.validated_data["otp"]
+        
+        try:
+            # Get the latest OTP for this email
+            otp_obj = OTP.objects.filter(email=email).latest('created_at')
+            
+            if not otp_obj.is_valid():
+                otp_obj.delete()
+                return Response(
+                    {"error": "OTP has expired"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            if otp_obj.otp != otp:
+                return Response(
+                    {"error": "Invalid OTP"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # OTP is valid, delete it
+            otp_obj.delete()
+            
+            # Return success with email for password reset
+            return Response(
+                {"detail": "OTP verified successfully", "email": email},
+                status=status.HTTP_200_OK
+            )
+        except OTP.DoesNotExist:
+            return Response(
+                {"error": "No OTP found for this email"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ResetPasswordOTPView(APIView):
+    """Reset password after OTP verification"""
+    
+    def post(self, request):
+        email = request.data.get("email")
+        new_password = request.data.get("new_password")
+        
+        if not email or not new_password:
+            return Response(
+                {"error": "Email and new_password are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            from django.contrib.auth.password_validation import validate_password
+            validate_password(new_password)
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            
+            return Response(
+                {"detail": "Password reset successfully"},
+                status=status.HTTP_200_OK
+            )
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+

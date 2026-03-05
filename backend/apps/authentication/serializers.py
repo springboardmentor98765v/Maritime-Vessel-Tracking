@@ -80,7 +80,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 # =========================
 
 class UserProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UserProfile
         fields = [
@@ -89,6 +88,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "avatar",
             "bio",
         ]
+        extra_kwargs = {
+            'company': {'required': False, 'allow_blank': True},
+            'phone_number': {'required': False, 'allow_blank': True},
+            'avatar': {'required': False, 'allow_null': True},
+            'bio': {'required': False, 'allow_blank': True},
+        }
 
 
 # =========================
@@ -148,3 +153,16 @@ class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     # Note: Don't validate existence here — the view handles it silently
     # (security best practice: never reveal if an email is registered)
+
+
+# =========================
+# OTP SERIALIZERS
+# =========================
+
+class SendOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class VerifyOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    otp = serializers.CharField(max_length=6, required=True)

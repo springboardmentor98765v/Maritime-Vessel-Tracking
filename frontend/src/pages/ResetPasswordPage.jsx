@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../services/api'
 
 export default function ResetPasswordPage() {
   const { uid, token } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   
+  const email = searchParams.get('email') // From OTP flow
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showNew, setShowNew] = useState(false)
@@ -13,6 +15,16 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Check if this is OTP flow or token flow
+  const isOTPFlow = !!email
+  const isTokenFlow = !!(uid && token)
+
+  useEffect(() => {
+    if (!isOTPFlow && !isTokenFlow) {
+      setError('Invalid reset link or missing email')
+    }
+  }, [isOTPFlow, isTokenFlow])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -31,18 +43,27 @@ export default function ResetPasswordPage() {
 
     setLoading(true)
     try {
-      await api.post(
-        '/auth/password-reset-confirm/',
-        {
-          uid,
-          token,
+      if (isOTPFlow) {
+        // OTP-based password reset
+        await api.post('/auth/reset-password-otp/', {
+          email,
           new_password: newPassword,
-        }
-      )
+        })
+      } else {
+        // Token-based password reset
+        await api.post(
+          '/auth/password-reset-confirm/',
+          {
+            uid,
+            token,
+            new_password: newPassword,
+          }
+        )
+      }
       setSuccess('Password reset successfully! Redirecting to login...')
       setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Unable to reset password. Try again.')
+      setError(err.response?.data?.error || err.response?.data?.detail || 'Unable to reset password. Try again.')
     } finally {
       setLoading(false)
     }

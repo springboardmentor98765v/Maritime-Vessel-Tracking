@@ -1,247 +1,170 @@
-import { useState, useEffect } from "react";
-import { changePassword } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { changePassword } from '../services/authService'
 
-export default function ChangePassword() {
-  const navigate = useNavigate();
+export default function ChangePasswordPage() {
+  const navigate = useNavigate()
 
   const [form, setForm] = useState({
-    old_password: "",
-    new_password: "",
-    captcha: "",
-  });
+    old_password: '',
+    new_password: '',
+    confirm_password: ''
+  })
+  const [showOld, setShowOld] = useState(false)
+  const [showNew, setShowNew] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const [showOld, setShowOld] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-
-  const [error, setError] = useState("");
-  const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
-
-  // Generate captcha
-  const generateCaptcha = () => {
-    setCaptcha({
-      a: Math.floor(Math.random() * 10) + 1,
-      b: Math.floor(Math.random() * 10) + 1,
-    });
-    setForm((prev) => ({ ...prev, captcha: "" }));
-  };
-
-  useEffect(() => {
-    generateCaptcha();
-  }, []);
-
-  const validatePassword = (password) => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
-    return regex.test(password);
-  };
+  const validatePassword = (pwd) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/
+    return regex.test(pwd)
+  }
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
-  };
+    setForm({ ...form, [e.target.name]: e.target.value })
+    setError('')
+    setSuccess('')
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+    setError('')
+    setSuccess('')
 
-    // Password validation
+    if (form.new_password !== form.confirm_password) {
+      setError('New password and confirmation do not match')
+      return
+    }
+
     if (!validatePassword(form.new_password)) {
-      setError(
-        "Password must be 8+ chars, include uppercase, lowercase, number & special character."
-      );
-      return;
+      setError('Password must be 8+ chars and include upper, lower, number & special char')
+      return
     }
 
-    // Captcha validation
-    if (parseInt(form.captcha) !== captcha.a + captcha.b) {
-      setError("Captcha answer is incorrect.");
-      generateCaptcha();
-      return;
-    }
-
+    setLoading(true)
     try {
       await changePassword({
         old_password: form.old_password,
-        new_password: form.new_password,
-      });
-
-      alert("Password changed successfully. Please login again.");
-      navigate("/login");
+        new_password: form.new_password
+      })
+      setSuccess('Password updated successfully. Please log in again.')
+      setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError("Old password is incorrect or new password is invalid.");
+      setError(err.response?.data?.error || 'Unable to change password. Check old password.')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
+
+  const renderToggleBtn = (visible, toggleFn, label) => (
+    <button
+      type="button"
+      onClick={toggleFn}
+      style={{
+        position: 'absolute',
+        right: 8,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        background: 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        width: 28,
+        height: 28,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#6b7280'
+      }}
+      aria-label={visible ? `Hide ${label}` : `Show ${label}`}
+    >
+      {visible ? (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 013.153-4.278M6.1 6.1L17.9 17.9" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
+        </svg>
+      )}
+    </button>
+  )
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center">
-      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-slate-950/50 p-8">
-        
-        <h2 className="text-3xl font-bold text-white mb-2">
-          Change Password
-        </h2>
-        <p className="text-slate-400 mb-6">
-          Keep your account secure
-        </p>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <h2 className="auth-card__title">Change Password</h2>
+          <p className="auth-card__sub">Update your password to keep your account secure.</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* Old Password */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Old Password
-            </label>
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
+          <div className="field">
+            <label htmlFor="old_password">Current Password</label>
             <div style={{ position: 'relative' }}>
               <input
-                type={showOld ? 'text' : 'password'}
+                id="old_password"
                 name="old_password"
+                type={showOld ? 'text' : 'password'}
+                placeholder="Enter current password"
                 value={form.old_password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
-                           placeholder-slate-500
-                           focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                           transition-all"
                 required
+                autoComplete="current-password"
                 style={{ paddingRight: 44 }}
               />
-              <button
-                type="button"
-                onClick={() => setShowOld((s) => !s)}
-                style={{
-                  position: 'absolute',
-                  right: 8,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  width: 28,
-                  height: 28,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#6b7280'
-                }}
-                aria-label={showOld ? 'Hide old password' : 'Show old password'}
-              >
-                {showOld ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 013.153-4.278M6.1 6.1L17.9 17.9" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
+              {renderToggleBtn(showOld, () => setShowOld(s => !s), 'current password')}
             </div>
           </div>
 
-          {/* New Password */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              New Password
-            </label>
+          <div className="field">
+            <label htmlFor="new_password">New Password</label>
             <div style={{ position: 'relative' }}>
               <input
-                type={showNew ? 'text' : 'password'}
+                id="new_password"
                 name="new_password"
+                type={showNew ? 'text' : 'password'}
+                placeholder="Enter new password"
                 value={form.new_password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
-                           placeholder-slate-500
-                           focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                           transition-all"
                 required
+                autoComplete="new-password"
                 style={{ paddingRight: 44 }}
               />
-              <button
-                type="button"
-                onClick={() => setShowNew((s) => !s)}
-                style={{
-                  position: 'absolute',
-                  right: 8,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  width: 28,
-                  height: 28,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#6b7280'
-                }}
-                aria-label={showNew ? 'Hide new password' : 'Show new password'}
-              >
-                {showNew ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 013.153-4.278M6.1 6.1L17.9 17.9" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
+              {renderToggleBtn(showNew, () => setShowNew(s => !s), 'new password')}
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Min 8 chars, uppercase, lowercase, number & special character
-            </p>
           </div>
 
-          {/* CAPTCHA */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Captcha: {captcha.a} + {captcha.b} = ?
-            </label>
-            <input
-              type="text"
-              name="captcha"
-              value={form.captcha}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/70 text-white border border-slate-600/50
-                         placeholder-slate-500
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent
-                         transition-all"
-              required
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="p-3 rounded-xl bg-red-500/15 border border-red-400/40 text-red-200 text-sm">
-              {error}
+          <div className="field">
+            <label htmlFor="confirm_password">Confirm New Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="confirm_password"
+                name="confirm_password"
+                type={showConfirm ? 'text' : 'password'}
+                placeholder="Confirm new password"
+                value={form.confirm_password}
+                onChange={handleChange}
+                required
+                autoComplete="new-password"
+                style={{ paddingRight: 44 }}
+              />
+              {renderToggleBtn(showConfirm, () => setShowConfirm(s => !s), 'confirmation')}
             </div>
-          )}
-
-          {/* Buttons */}
-          <div className="flex gap-4 pt-2">
-            <button
-              type="submit"
-              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500
-                         hover:-translate-y-0.5 transition-transform
-                         text-slate-900 font-semibold shadow-lg shadow-cyan-500/30"
-            >
-              Update Password
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/profile")}
-              className="flex-1 py-3 rounded-xl border border-white/30
-                         text-white hover:bg-white/10 transition-colors"
-            >
-              Cancel
-            </button>
           </div>
 
+          {error && <div className="form-error">{error}</div>}
+          {success && <div className="form-success">{success}</div>}
+
+          <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+            {loading ? 'Updating…' : 'Update password →'}
+          </button>
         </form>
       </div>
     </div>
-  );
+  )
 }
+
