@@ -96,7 +96,7 @@ class Command(BaseCommand):
                     if arr_time and event_time > arr_time:
                         break
                         
-                    event_types = ['underway', 'route_changed', 'weather_alert', 'inspection']
+                    event_types = ['underway', 'route_changed', 'weather', 'inspection']
                     
                     VesselEvent.objects.create(
                         vessel=v,

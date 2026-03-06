@@ -7,6 +7,7 @@ class VesselEventSerializer(serializers.ModelSerializer):
         model = VesselEvent
         fields = [
             'id', 'event_type', 'location',
+            'latitude', 'longitude',
             'timestamp', 'details', 'created_at',
         ]
         read_only_fields = ['id', 'created_at']
@@ -18,6 +19,7 @@ class VesselSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'imo_number', 'name', 'vessel_type', 'flag',
             'cargo_type', 'operator',
+            'speed', 'heading', 'destination',
             'last_position_lat', 'last_position_lon',
             'last_update', 'created_at',
         ]

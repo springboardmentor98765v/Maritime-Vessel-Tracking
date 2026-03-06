@@ -101,19 +101,19 @@ def process_vessel_update(ship_data):
     if previous_speed is not None and new_speed is not None:
         if previous_speed > 0 and new_speed == 0:
             detected_events.append({
-                "type": "Stopped",
+                "type": "stopped",
                 "details": f"{vessel.name} has stopped moving."
             })
         elif previous_speed == 0 and new_speed > 0:
             detected_events.append({
-                "type": "Underway",
+                "type": "underway",
                 "details": f"{vessel.name} is now moving at {new_speed} knots."
             })
 
     # Detect Destination Changes
     if previous_destination and new_destination and previous_destination != new_destination:
         detected_events.append({
-            "type": "Route Changed",
+            "type": "route_changed",
             "details": f"Destination changed from {previous_destination} to {new_destination}."
         })
 

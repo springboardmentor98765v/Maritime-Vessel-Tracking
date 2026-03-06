@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 imo_number=v['imo'],
                 defaults={
                     'name': v['name'],
-                    'type': v['type'],
+                    'vessel_type': v['type'],
                     'flag': v['flag'],
                     'cargo_type': v['cargo'],
                     'operator': 'Global Shipping Inc.',
@@ -93,7 +93,7 @@ class Command(BaseCommand):
         for vessel in vessels:
             VesselEvent.objects.create(
                 vessel=vessel,
-                event_type='Arrival',
+                event_type='entered_port',
                 timestamp=timezone.now() - timedelta(days=1),
                 details=f'{vessel.name} arrived at anchor.'
             )

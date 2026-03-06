@@ -178,3 +178,25 @@ EMAIL_HOST_USER = 'tempsushant986@gmail.com'
 EMAIL_HOST_PASSWORD = 'vsaq ikqx vehy ogdn'
 DEFAULT_FROM_EMAIL = 'tempsushant986@gmail.com'
 FRONTEND_URL = 'http://localhost:5173'  # React frontend URL for password reset links
+
+# ─── Celery ───────────────────────────────────────────────────────────────────
+# Broker: Redis must be running on the default port.
+# Start with:  redis-server   (or Docker: docker run -p 6379:6379 redis)
+# Then run:    celery -A core worker -l info
+#              celery -A core beat   -l info
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    # Fetch live AIS vessel positions every 5 minutes.
+    'sync-vessel-data-every-5-min': {
+        'task': 'apps.vessels.tasks.sync_vessel_data',
+        'schedule': crontab(minute='*/5'),
+    },
+}
