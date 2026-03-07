@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import Vessel, VesselEvent, VesselSubscription, Notification
 
-# Register your models here.
+
+admin.site.register(Vessel)
+admin.site.register(VesselEvent)
+admin.site.register(VesselSubscription)
+admin.site.register(Notification)
