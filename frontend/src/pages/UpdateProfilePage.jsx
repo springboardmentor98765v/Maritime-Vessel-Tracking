@@ -57,7 +57,12 @@ export default function UpdateProfilePage() {
     fd.append('bio', form.bio)
     if (avatarFile) fd.append('avatar', avatarFile)
     try {
-      await updateExtraProfile(fd)
+      const response = await updateExtraProfile(fd)
+      // Update avatar preview with the new URL from the response
+      if (response.avatar && !response.avatar.endsWith('default.png')) {
+        const url = response.avatar.startsWith('http') ? response.avatar : `${API_BASE}${response.avatar}`
+        setAvatarPreview(url)
+      }
       setSaved(true)
       setTimeout(() => navigate('/profile'), 1500)
     } catch {

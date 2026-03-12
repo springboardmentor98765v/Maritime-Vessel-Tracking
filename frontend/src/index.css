@@ -35,6 +35,11 @@
   --danger: #ef4444;
   --info: #38bdf8;
 
+  --surface-50: rgba(7, 18, 36, 0.9);
+  --surface-100: rgba(11, 26, 53, 0.8);
+  --text-weak: rgba(160, 200, 240, 0.5);
+  --brand-primary: #22d3ee;
+
   --radius-sm: 8px;
   --radius: 14px;
   --radius-lg: 20px;
@@ -55,8 +60,7 @@ body {
   background-color: var(--bg-0);
   background-image:
     radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34, 211, 238, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
-    url('/images/background.png');
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(99, 102, 241, 0.07) 0%, transparent 60%);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -109,8 +113,36 @@ p {
 
 /* ── Layout helpers ── */
 .container {
-  width: min(1160px, 94%);
+  width: min(1280px, 96%);
   margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    width: min(100%, 95%);
+    padding: 0 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 0 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    padding: 0 0.75rem;
+  }
+}
+
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .sr-only {
@@ -123,3 +155,190 @@ p {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+/* =====================================================
+   LIVE TICKER
+   ===================================================== */
+.live-ticker-container {
+  width: 100%;
+  background: rgba(4, 12, 24, 0.95);
+  border-bottom: 1px solid rgba(34, 211, 238, 0.15);
+  padding: 0.4rem 0;
+  display: flex;
+  justify-content: center;
+  z-index: 99;
+  position: sticky;
+  top: 57px; /* Below header */
+  backdrop-filter: blur(12px);
+}
+
+.live-ticker-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: min(1280px, 96%);
+  padding: 0 1rem;
+}
+
+.ticker-badge {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--brand-cyan);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  animation: shimmer 2s infinite;
+  flex-shrink: 0;
+}
+
+.ticker-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeUp 0.4s ease-out both;
+  font-size: 0.8rem;
+}
+
+.ticker-text {
+  color: var(--text-0);
+  font-weight: 500;
+}
+
+.ticker-time {
+  color: var(--text-2);
+  font-size: 0.7rem;
+}
+
+
+/* =====================================================
+   TOAST NOTIFICATIONS
+   ===================================================== */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  background: rgba(10, 22, 50, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  min-width: 300px;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.toast--success { border-color: rgba(34, 197, 94, 0.4); }
+.toast--success .toast-icon { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+
+.toast--error { border-color: rgba(239, 68, 68, 0.4); }
+.toast--error .toast-icon { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+.toast--info { border-color: rgba(34, 211, 238, 0.4); }
+.toast--info .toast-icon { background: rgba(34, 211, 238, 0.2); color: #67e8f9; }
+
+.toast-message {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-0);
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.toast-close:hover { color: white; }
+
+
+/* =====================================================
+   PREMIUM GLASSMORPHISM & ANIMATIONS
+   ===================================================== */
+/* Smooth row hover effects for data tables */
+.vessels-table tbody tr {
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.vessels-table tbody tr:hover {
+  background: rgba(34, 211, 238, 0.04) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Deep glass effect for the header to look ultra-premium */
+.header {
+  background: rgba(4, 12, 24, 0.75) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Enhanced glowing buttons */
+.btn--primary {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background-size: 200% auto !important;
+}
+.btn--primary:hover {
+  background-position: right center !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 24px rgba(34, 211, 238, 0.4) !important;
+}
+
+/* 3D Dashboard Cards */
+.dash-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.dash-card:hover {
+  border-color: rgba(34, 211, 238, 0.5) !important;
+  transform: translateY(-4px) scale(1.01) !important;
+  box-shadow: 0 12px 32px rgba(34, 211, 238, 0.15) !important;
+}
+
+/* Shimmer skeleton for loading states */
+@keyframes skeletonShimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+.vessels-loading {
+  animation: skeletonShimmer 2s infinite linear;
+  background: linear-gradient(to right, rgba(255,255,255,0.02) 4%, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.02) 36%);
+  background-size: 1000px 100%;
+  border-radius: var(--radius);
+  padding: 3rem;
+  color: transparent !important;
+}
+

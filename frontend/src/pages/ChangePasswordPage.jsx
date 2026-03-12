@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { changePassword } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 
 export default function ChangePassword() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const [form, setForm] = useState({
     old_password: "",
@@ -26,6 +28,7 @@ export default function ChangePassword() {
     setForm((prev) => ({ ...prev, captcha: "" }));
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     generateCaptcha();
   }, []);
@@ -65,10 +68,11 @@ export default function ChangePassword() {
         new_password: form.new_password,
       });
 
-      alert("Password changed successfully. Please login again.");
+      addToast("Password changed successfully. Please login again.", "success");
       navigate("/login");
-    } catch (err) {
+    } catch {
       setError("Old password is incorrect or new password is invalid.");
+      addToast("Failed to change password.", "error");
     }
   };
 
