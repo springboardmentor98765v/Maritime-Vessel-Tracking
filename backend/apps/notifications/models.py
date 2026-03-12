@@ -37,6 +37,14 @@ class Notification(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['user', 'is_read']),
+            models.Index(fields=['timestamp']),
+            models.Index(fields=['user']),
+            models.Index(fields=['is_read']),
+            models.Index(fields=['user', 'timestamp']),  # Composite for user's recent notifications
+            models.Index(fields=['is_read', 'timestamp']),  # Composite for fetching unread
+        ]
 
     def __str__(self):
         return f"Notification for {self.user.username} — {self.type}"

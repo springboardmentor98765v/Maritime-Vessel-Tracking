@@ -37,6 +37,7 @@ class VoyageDetailView(generics.RetrieveAPIView):
     serializer_class = VoyageSerializer
     permission_classes = [AllowAny]
     queryset = Voyage.objects.select_related('vessel', 'port_from', 'port_to').all()
+    permission_classes = [AllowAny]
 
 
 class VoyageReplayView(APIView):

@@ -21,6 +21,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from datetime import timedelta
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import User, UserProfile, OTP
 from .permissions import IsAdmin
@@ -75,6 +76,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 class LogoutView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -102,6 +104,7 @@ class LogoutView(APIView):
 # =========================
 
 class AdminView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdmin]
 
 
@@ -110,6 +113,7 @@ class AdminView(APIView):
 # =========================
 
 class ProfileMeView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -128,6 +132,7 @@ class ProfileMeView(APIView):
 
 
 class ChangePasswordView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -161,6 +166,7 @@ class ChangePasswordView(APIView):
 # =========================
 
 class UpdateUserProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 

@@ -95,7 +95,7 @@ class Command(BaseCommand):
                     event_time = dep_time + timedelta(days=w*2 + 1)
                     if arr_time and event_time > arr_time:
                         break
-                        
+
                     event_types = ['underway', 'route_changed', 'weather', 'inspection']
                     
                     VesselEvent.objects.create(

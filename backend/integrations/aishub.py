@@ -87,3 +87,5 @@ def sync_vessel_positions():
             last_position_lon=pos["lon"],
             last_update=timezone.now(),
         )
+        
+    return positions
