@@ -23,13 +23,10 @@ import VoyageReplayPage from './pages/VoyageReplayPage'
 import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage'
 import AdminPage from './pages/AdminPage'
 
-import LiveTicker from './components/common/LiveTicker'
-
 function App() {
   return (
     <div className="app-shell">
       <Header />
-      <LiveTicker />
 
       <main className="main-content">
         <div className="container">

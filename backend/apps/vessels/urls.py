@@ -6,8 +6,6 @@ from .views import (
     VesselEventListView,
     VesselSubscribeView,
     VesselSubscriptionListView,
-    SafetyZonesView,
-    SafetyAlertsView,
 )
 
 urlpatterns = [
@@ -17,7 +15,4 @@ urlpatterns = [
     path('<int:pk>/position/', VesselPositionUpdateView.as_view()), # POST /vessels/<id>/position/
     path('<int:pk>/events/', VesselEventListView.as_view()),    # GET /vessels/<id>/events/
     path('<int:pk>/subscribe/', VesselSubscribeView.as_view()), # POST/DELETE /vessels/<id>/subscribe/
-    # Milestone-3 Safety APIs
-    path('safety/zones/', SafetyZonesView.as_view()),           # GET /vessels/safety/zones/
-    path('safety/alerts/', SafetyAlertsView.as_view()),         # GET /vessels/safety/alerts/
 ]

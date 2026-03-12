@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useCallback,
@@ -81,7 +80,6 @@ export function AuthProvider({ children }) {
     () => ({
       authState,
       isAuthenticated: Boolean(authState?.token),
-      user: authState?.profile ?? null,
       login,
       register,
       logout,

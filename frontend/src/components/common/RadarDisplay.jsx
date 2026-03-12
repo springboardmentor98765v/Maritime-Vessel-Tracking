@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RadarDisplay({
   scanSpeed = 4000,
@@ -8,15 +8,18 @@ export default function RadarDisplay({
 }) {
   const [angle, setAngle] = useState(0);
   const [time, setTime] = useState(0);
+  const [targets, setTargets] = useState([]);
 
-  const targets = React.useMemo(() => {
-    return Array.from({ length: targetCount }, (_, i) => ({
-      id: i,
-      angle: Math.random() * 360,
-      distance: 22 + Math.random() * 42,
-      speed: 0.04 + Math.random() * 0.18,
-      alert: Math.random() > 0.72,
-    }));
+  useEffect(() => {
+    setTargets(
+      Array.from({ length: targetCount }, (_, i) => ({
+        id: i,
+        angle: Math.random() * 360,
+        distance: 22 + Math.random() * 42,
+        speed: 0.04 + Math.random() * 0.18,
+        alert: Math.random() > 0.72,
+      }))
+    );
   }, [targetCount]);
 
   useEffect(() => {

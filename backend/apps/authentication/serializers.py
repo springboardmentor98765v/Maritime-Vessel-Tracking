@@ -80,12 +80,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 # =========================
 
 class UserProfileSerializer(serializers.ModelSerializer):
-<<<<<<< HEAD
-=======
-    # Make avatar a regular field so it's writable, but use custom get method
-    avatar = serializers.ImageField(required=False, allow_null=True)
-
->>>>>>> b16d3955ee626492bc0f6c4e85975a0cc5e68115
     class Meta:
         model = UserProfile
         fields = [
@@ -100,35 +94,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'avatar': {'required': False, 'allow_null': True},
             'bio': {'required': False, 'allow_blank': True},
         }
-
-    def to_representation(self, instance):
-        """Convert avatar to absolute URL in responses"""
-        data = super().to_representation(instance)
-        
-        # Handle avatar URL properly
-        if data.get('avatar'):
-            avatar_name = data['avatar']
-            # Check if it's the default placeholder
-            if avatar_name and avatar_name.endswith('default.png'):
-                data['avatar'] = None
-            else:
-                # Build absolute URL
-                request = self.context.get("request")
-                if request:
-                    # If it's already a full URL, keep it
-                    if avatar_name.startswith('http'):
-                        data['avatar'] = avatar_name
-                    else:
-                        # Build full URL from relative path
-                        data['avatar'] = request.build_absolute_uri(f"/media/{avatar_name}")
-                else:
-                    # Fallback if no request context
-                    if not avatar_name.startswith('http'):
-                        data['avatar'] = f"http://127.0.0.1:8000/media/{avatar_name}"
-        else:
-            data['avatar'] = None
-            
-        return data
 
 
 # =========================

@@ -37,11 +37,6 @@ export const unsubscribeVessel = async (id) => {
 
 // Get current user's subscriptions
 export const fetchSubscriptions = async () => {
-    try {
-        const response = await api.get(`/vessels/subscriptions/`);
-        return response.data;
-    } catch (_error) {
-        // Return empty array if not authenticated or endpoint fails
-        return [];
-    }
+    const response = await api.get(`/vessels/subscriptions/`);
+    return response.data;
 };

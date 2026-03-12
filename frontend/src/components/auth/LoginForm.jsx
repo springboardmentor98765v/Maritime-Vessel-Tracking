@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { useToast } from '../../context/ToastContext'
 
 const initialState = {
   username: '',
@@ -11,7 +10,6 @@ const initialState = {
 function LoginForm() {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const { addToast } = useToast()
   const [formState, setFormState] = useState(initialState)
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
@@ -30,13 +28,10 @@ function LoginForm() {
     try {
       await login(formState)
       setStatus('success')
-      addToast('Successfully signed in', 'success')
       navigate('/dashboard')
-    } catch (_err) {
-      console.error(_err)
+    } catch (err) {
       setStatus('error')
       setError('Unable to sign in. Check credentials or API status.')
-      addToast('Invalid credentials or API error', 'error')
     }
   }
 

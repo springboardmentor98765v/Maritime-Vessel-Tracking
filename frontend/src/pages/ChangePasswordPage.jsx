@@ -1,20 +1,9 @@
-<<<<<<< HEAD
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { changePassword } from '../services/authService'
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate()
-=======
-import { useState, useEffect } from "react";
-import { changePassword } from "../services/authService";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "../context/ToastContext";
-
-export default function ChangePassword() {
-  const navigate = useNavigate();
-  const { addToast } = useToast();
->>>>>>> b16d3955ee626492bc0f6c4e85975a0cc5e68115
 
   const [form, setForm] = useState({
     old_password: '',
@@ -28,38 +17,10 @@ export default function ChangePassword() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
-<<<<<<< HEAD
   const validatePassword = (pwd) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/
     return regex.test(pwd)
   }
-=======
-  const [showOld, setShowOld] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-
-  const [error, setError] = useState("");
-  const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
-
-  // Generate captcha
-  const generateCaptcha = () => {
-    setCaptcha({
-      a: Math.floor(Math.random() * 10) + 1,
-      b: Math.floor(Math.random() * 10) + 1,
-    });
-    setForm((prev) => ({ ...prev, captcha: "" }));
-  };
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
-    generateCaptcha();
-  }, []);
-
-  const validatePassword = (password) => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
-    return regex.test(password);
-  };
->>>>>>> b16d3955ee626492bc0f6c4e85975a0cc5e68115
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -86,7 +47,6 @@ export default function ChangePassword() {
     try {
       await changePassword({
         old_password: form.old_password,
-<<<<<<< HEAD
         new_password: form.new_password
       })
       setSuccess('Password updated successfully. Please log in again.')
@@ -95,16 +55,6 @@ export default function ChangePassword() {
       setError(err.response?.data?.error || 'Unable to change password. Check old password.')
     } finally {
       setLoading(false)
-=======
-        new_password: form.new_password,
-      });
-
-      addToast("Password changed successfully. Please login again.", "success");
-      navigate("/login");
-    } catch {
-      setError("Old password is incorrect or new password is invalid.");
-      addToast("Failed to change password.", "error");
->>>>>>> b16d3955ee626492bc0f6c4e85975a0cc5e68115
     }
   }
 

@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
   const markRead = async (id) => {
     try {
-      await api.post(`/notifications/${id}/read/`)
+      await api.patch(`/notifications/${id}/read/`)
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
     } catch {
       // ignore
