@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
 import Header from './components/common/Header'
 import Footer from './components/common/Footer'
@@ -24,40 +24,57 @@ import VoyageReplayPage from './pages/VoyageReplayPage'
 import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage'
 import AdminPage from './pages/AdminPage'
 
+// Pages that need full viewport width — no container wrapping
+const FULL_WIDTH_PAGES = ['/map', '/voyages']
+
+function PageWrapper({ children }) {
+  const location = useLocation()
+  const isFullWidth = FULL_WIDTH_PAGES.some(p => location.pathname.startsWith(p))
+
+  if (isFullWidth) {
+    return <>{children}</>
+  }
+  return (
+    <div className="page-container">
+      {children}
+    </div>
+  )
+}
+
 function App() {
   return (
     <div className="app-shell">
       <Header />
 
       <main className="main-content">
-        <div className="container">
-          <Routes>
-            {/* Public */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password/:uid/:token" element={<ResetPasswordPage />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/vessels" element={<VesselsPage />} />
-            <Route path="/vessels/:id" element={<VesselDetailPage />} />
-            <Route path="/ports" element={<PortsPage />} />
-            <Route path="/voyages" element={<VoyageReplayPage />} />
-            <Route path="/analytics" element={<AnalyticsDashboardPage />} />
+        <Routes>
+          {/* Full-width pages */}
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/voyages" element={<VoyageReplayPage />} />
 
-            {/* Protected */}
-            <Route element={<PrivateRoute />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/profile/update" element={<UpdateProfilePage />} />
-              <Route path="/profile/change-password" element={<ChangePasswordPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-            </Route>
+          {/* Contained pages */}
+          <Route path="/" element={<PageWrapper><HomePage /></PageWrapper>} />
+          <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
+          <Route path="/register" element={<PageWrapper><RegisterPage /></PageWrapper>} />
+          <Route path="/forgot-password" element={<PageWrapper><ForgotPasswordPage /></PageWrapper>} />
+          <Route path="/reset-password/:uid/:token" element={<PageWrapper><ResetPasswordPage /></PageWrapper>} />
+          <Route path="/vessels" element={<PageWrapper><VesselsPage /></PageWrapper>} />
+          <Route path="/vessels/:id" element={<PageWrapper><VesselDetailPage /></PageWrapper>} />
+          <Route path="/ports" element={<PageWrapper><PortsPage /></PageWrapper>} />
+          <Route path="/analytics" element={<PageWrapper><AnalyticsDashboardPage /></PageWrapper>} />
 
-            {/* Fallback */}
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </div>
+          {/* Protected */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<PageWrapper><DashboardPage /></PageWrapper>} />
+            <Route path="/profile" element={<PageWrapper><ProfilePage /></PageWrapper>} />
+            <Route path="/profile/update" element={<PageWrapper><UpdateProfilePage /></PageWrapper>} />
+            <Route path="/profile/change-password" element={<PageWrapper><ChangePasswordPage /></PageWrapper>} />
+            <Route path="/admin" element={<PageWrapper><AdminPage /></PageWrapper>} />
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*" element={<PageWrapper><NotFoundPage /></PageWrapper>} />
+        </Routes>
       </main>
 
       <Footer />

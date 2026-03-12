@@ -6,7 +6,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const { login } = useAuth()
 
-  const [form, setForm] = useState({ username: '', password: '', role: 'operator' })
+  const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -17,10 +17,11 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      await login(form)
+      await login({ username: form.username, password: form.password })
       navigate('/dashboard')
-    } catch {
-      setError('Invalid username, password, or role. Please try again.')
+    } catch (err) {
+      const msg = err?.response?.data?.detail || err?.response?.data?.non_field_errors?.[0]
+      setError(msg || 'Invalid username or password. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -70,15 +71,6 @@ export default function LoginPage() {
           </div>
 
           <div className="field">
-            <label htmlFor="role">Role</label>
-            <select id="role" name="role" value={form.role} onChange={handleChange} required>
-              <option value="operator">Operator</option>
-              <option value="analyst">Analyst</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
-          <div className="field">
             <label htmlFor="password">Password</label>
             <input
               id="password"
@@ -102,9 +94,9 @@ export default function LoginPage() {
         <p className="auth-footer-link">
           Don&apos;t have an account?{' '}
           <Link to="/register">Create one free</Link>
-            <span style={{ margin: '0 0.5rem' }}>·</span>
-            <Link to="/forgot-password">Forgot password?</Link>
-          </p>
+          <span style={{ margin: '0 0.5rem' }}>·</span>
+          <Link to="/forgot-password">Forgot password?</Link>
+        </p>
       </div>
     </div>
   )

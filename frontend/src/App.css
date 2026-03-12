@@ -43,13 +43,16 @@
 /* ─ App Shell ─ */
 .app-shell {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 .main-content {
   flex: 1;
-  padding: 2rem 0 4rem;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* =====================================================
@@ -59,7 +62,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(4, 12, 24, 0.9);
+  width: 100%;
+  background: rgba(15, 23, 42, 0.9);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -69,7 +73,9 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 0.7rem 0;
+  padding: 0.7rem clamp(1rem, 3vw, 2.5rem);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .brand {
@@ -137,7 +143,7 @@
 }
 
 .nav-link--active {
-  background: rgba(34, 211, 238, 0.11);
+  background: rgba(59, 130, 246, 0.11);
   color: var(--brand-cyan);
 }
 
@@ -173,11 +179,11 @@
 .btn--primary {
   background: var(--brand-grad);
   color: #030d1a;
-  box-shadow: 0 0 16px rgba(34, 211, 238, 0.2);
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.2);
 }
 
 .btn--primary:hover {
-  box-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.35);
   transform: translateY(-1px);
   color: #030d1a;
 }
@@ -245,7 +251,7 @@
 .button--primary {
   background: var(--brand-grad);
   color: #030d1a;
-  box-shadow: 0 0 16px rgba(34, 211, 238, .2);
+  box-shadow: 0 0 16px rgba(59, 130, 246, .2);
 }
 
 .button--ghost {
@@ -282,12 +288,12 @@
 
 .card--hover:hover {
   border-color: var(--border-hi);
-  box-shadow: 0 6px 24px rgba(34, 211, 238, 0.07);
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.07);
 }
 
 .card--glow {
-  background: linear-gradient(135deg, rgba(34, 211, 238, 0.05), rgba(99, 102, 241, 0.05));
-  border-color: rgba(34, 211, 238, 0.18);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.05));
+  border-color: rgba(59, 130, 246, 0.18);
 }
 
 /* =====================================================
@@ -312,7 +318,7 @@
 .form-input,
 .form-select {
   width: 100%;
-  background: rgba(10, 22, 48, 0.85);
+  background: rgba(30, 41, 59, 0.85);
   border: 1px solid var(--border);
   color: var(--text-0);
   padding: 0.55rem 0.85rem;
@@ -328,7 +334,7 @@
 .form-input:focus,
 .form-select:focus {
   border-color: var(--brand-cyan);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .field input::placeholder {
@@ -404,9 +410,9 @@
 }
 
 .badge--type {
-  background: rgba(34, 211, 238, .1);
+  background: rgba(59, 130, 246, .1);
   color: var(--brand-cyan);
-  border: 1px solid rgba(34, 211, 238, .18);
+  border: 1px solid rgba(59, 130, 246, .18);
 }
 
 /* =====================================================
@@ -453,7 +459,7 @@
 .footer {
   border-top: 1px solid var(--border);
   padding: 2rem 0;
-  background: rgba(4, 12, 24, 0.6);
+  background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(8px);
 }
 
@@ -518,8 +524,8 @@
   text-transform: uppercase;
   letter-spacing: .2em;
   color: var(--brand-cyan);
-  background: rgba(34, 211, 238, .07);
-  border: 1px solid rgba(34, 211, 238, .18);
+  background: rgba(59, 130, 246, .07);
+  border: 1px solid rgba(59, 130, 246, .18);
   border-radius: 99px;
   padding: .25rem .8rem;
 }
@@ -583,8 +589,8 @@
 }
 
 .radar-card {
-  background: linear-gradient(135deg, rgba(10, 22, 50, .9), rgba(6, 16, 40, .95));
-  border: 1px solid rgba(34, 211, 238, .18);
+  background: linear-gradient(135deg, rgba(30, 41, 59, .9), rgba(15, 23, 42, .95));
+  border: 1px solid rgba(59, 130, 246, .18);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   text-align: center;
@@ -673,7 +679,7 @@
 }
 
 .auth-card {
-  background: rgba(7, 16, 34, 0.95);
+  background: rgba(15, 23, 42, 0.95);
   border: 1px solid var(--border-hi);
   border-radius: var(--radius-xl);
   padding: 1.85rem;
@@ -863,7 +869,7 @@
 
 .vessel-search-input,
 .vessel-select {
-  background: rgba(10, 22, 48, .85);
+  background: rgba(30, 41, 59, .85);
   border: 1px solid var(--border);
   color: var(--text-0);
   padding: .45rem .75rem;
@@ -914,7 +920,7 @@
 }
 
 .vessels-table thead {
-  background: rgba(10, 22, 48, .9);
+  background: rgba(30, 41, 59, .9);
 }
 
 .vessels-table th {
@@ -939,7 +945,7 @@
 }
 
 .vessels-table tbody tr:hover td {
-  background: rgba(34, 211, 238, .025);
+  background: rgba(59, 130, 246, .025);
 }
 
 .vessel-name {
@@ -953,7 +959,7 @@
   font-size: .72rem;
   color: var(--text-2);
   border-top: 1px solid var(--border);
-  background: rgba(10, 22, 48, .8);
+  background: rgba(30, 41, 59, .8);
 }
 
 /* =====================================================
@@ -1021,7 +1027,7 @@
 
 .vessel-map-preview {
   background: var(--surface-1);
-  border: 1px solid rgba(34, 211, 238, .15);
+  border: 1px solid rgba(59, 130, 246, .15);
   border-radius: var(--radius-lg);
   padding: 1.2rem;
   display: grid;
@@ -1115,7 +1121,7 @@
   justify-content: space-between;
   align-items: center;
   padding: .6rem 1.25rem;
-  background: rgba(4, 12, 24, .98);
+  background: rgba(15, 23, 42, .98);
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   gap: .65rem;
@@ -1163,7 +1169,7 @@
   justify-content: center;
   font-size: .95rem;
   color: var(--text-2);
-  background: rgba(4, 12, 24, .5);
+  background: rgba(15, 23, 42, .5);
 }
 
 .map-popup {
@@ -1305,7 +1311,7 @@
 }
 
 .ports-table thead {
-  background: rgba(10, 22, 48, .9);
+  background: rgba(30, 41, 59, .9);
 }
 
 .ports-table th {
@@ -1329,7 +1335,7 @@
 }
 
 .ports-table tbody tr:hover td {
-  background: rgba(34, 211, 238, .02);
+  background: rgba(59, 130, 246, .02);
 }
 
 .port-row--alert td:first-child {
@@ -1601,7 +1607,7 @@
 
 .vessel-search-input,
 .vessel-select {
-  background: rgba(10, 22, 48, .85);
+  background: rgba(30, 41, 59, .85);
   border: 1px solid var(--border);
   color: var(--text-0);
   padding: .42rem .75rem;
@@ -1624,8 +1630,8 @@
 
 /* Subscription notice bar */
 .subscription-notice {
-  background: rgba(34, 211, 238, .07);
-  border: 1px solid rgba(34, 211, 238, .18);
+  background: rgba(59, 130, 246, .07);
+  border: 1px solid rgba(59, 130, 246, .18);
   border-radius: var(--radius);
   padding: .65rem 1rem;
   font-size: .82rem;
@@ -1729,4 +1735,120 @@
   padding: 3rem 1rem;
   color: var(--text-2);
   font-size: .87rem;
+}
+
+/* =====================================================
+   MAP PAGE — full viewport (no container)
+   ===================================================== */
+.map-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 56px);
+  /* subtract header height */
+  overflow: hidden;
+  padding: 0;
+}
+
+.map-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+  padding: .65rem 1.25rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+
+.map-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.map-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.map-title {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text-0);
+}
+
+.map-vessel-count {
+  font-size: .78rem;
+  color: var(--text-2);
+}
+
+.map-refresh-time {
+  font-size: .75rem;
+  color: var(--text-2);
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-2);
+  font-size: .9rem;
+}
+
+.map-popup {
+  font-family: 'Inter', sans-serif;
+  font-size: .82rem;
+  line-height: 1.5;
+  color: #1a2540;
+  min-width: 160px;
+}
+
+.map-popup strong {
+  display: block;
+  font-size: .9rem;
+  margin-bottom: .25rem;
+  color: #0b1a35;
+}
+
+.map-popup p {
+  margin: .1rem 0;
+  color: #2a3f60;
+}
+
+.popup-time {
+  font-size: .7rem;
+  opacity: .65;
+}
+
+.popup-link {
+  display: inline-block;
+  margin-top: .4rem;
+  color: #3b82f6;
+  font-weight: 600;
+  font-size: .78rem;
+  text-decoration: none;
+}
+
+.popup-link:hover {
+  color: #22d3ee;
+}
+
+/* main-content has padding for normal pages — remove it for full-width pages  */
+.main-content:has(.map-page) {
+  padding: 0;
 }

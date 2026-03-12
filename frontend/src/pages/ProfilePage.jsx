@@ -61,11 +61,16 @@ export default function ProfilePage() {
 
   // Build avatar URL — use backend media if available, else show initials
   let avatarSrc = null
-  if (profile.avatar && !profile.avatar.endsWith('default.png')) {
-    avatarSrc = profile.avatar.startsWith('http')
-      ? profile.avatar
-      : `http://127.0.0.1:8000${profile.avatar}`
+  const avatarPath = profile?.avatar
+  if (avatarPath && typeof avatarPath === 'string' && !avatarPath.endsWith('default.png') && !avatarPath.endsWith('default')) {
+    if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
+      avatarSrc = avatarPath
+    } else {
+      // Relative path from Django — prepend backend base URL
+      avatarSrc = `http://127.0.0.1:8000${avatarPath.startsWith('/') ? '' : '/'}${avatarPath}`
+    }
   }
+
 
   return (
     <div className="profile-page" style={{ animation: 'fadeUp .38s ease both' }}>

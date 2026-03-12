@@ -10,39 +10,49 @@
   padding: 0;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 :root {
-  --brand-cyan: #22d3ee;
-  --brand-blue: #3b82f6;
-  --brand-indigo: #6366f1;
+  --brand-cyan: #3b82f6;
+  --brand-blue: #2563eb;
+  --brand-indigo: #1e40af;
   --brand-grad: linear-gradient(135deg, var(--brand-cyan), var(--brand-indigo));
 
-  --bg-0: #040c18;
-  --bg-1: #071224;
-  --bg-2: #0b1a35;
-  --bg-3: #0f2248;
+  --bg-0: #0f172a;
+  --bg-1: #1e293b;
+  --bg-2: #334155;
+  --bg-3: #475569;
 
-  --surface-1: rgba(15, 31, 60, 0.75);
-  --surface-2: rgba(20, 40, 75, 0.65);
-  --border: rgba(100, 160, 255, 0.12);
-  --border-hi: rgba(100, 200, 255, 0.25);
+  --surface-1: rgba(30, 41, 59, 0.8);
+  --surface-2: rgba(51, 65, 85, 0.7);
+  --border: rgba(148, 163, 184, 0.15);
+  --border-hi: rgba(148, 163, 184, 0.25);
 
-  --text-0: #f0f8ff;
-  --text-1: rgba(220, 240, 255, 0.8);
-  --text-2: rgba(160, 200, 240, 0.6);
+  --text-0: #f8fafc;
+  --text-1: #e2e8f0;
+  --text-2: #94a3b8;
 
-  --success: #22c55e;
+  --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --info: #38bdf8;
+  --info: #0ea5e9;
 
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--text-0);
 }
 
@@ -51,12 +61,10 @@ html {
 }
 
 body {
-  min-height: 100vh;
   background-color: var(--bg-0);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34, 211, 238, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
-    url('/images/background.png');
+    radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(30, 64, 175, 0.05) 0%, transparent 50%);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -107,10 +115,31 @@ p {
   color: var(--text-1);
 }
 
-/* ── Layout helpers ── */
+/* ── Layout System ── */
+/* .inner: consistent horizontal padding for full-width sections */
+.inner {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+/* .container: legacy alias — now the same as .inner */
 .container {
-  width: min(1160px, 94%);
-  margin: 0 auto;
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+/* .page-container: wraps page content, same full-width approach */
+.page-container {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+  box-sizing: border-box;
 }
 
 .sr-only {

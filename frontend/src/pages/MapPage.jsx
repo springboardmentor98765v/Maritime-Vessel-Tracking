@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, Circle } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { fetchVessels } from '../services/vesselService'
@@ -136,29 +137,31 @@ export default function MapPage() {
                         ))}
 
                         {/* Vessel markers */}
-                        {vessels.map(v => (
-                            <Marker
-                                key={v.id}
-                                position={[v.last_position_lat, v.last_position_lon]}
-                                icon={shipIcon}
-                            >
-                                <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>{v.name}</Tooltip>
-                                <Popup>
-                                    <div className="map-popup">
-                                        <strong>{v.name}</strong>
-                                        <p>IMO: <span className="mono">{v.imo_number}</span></p>
-                                        <p>Type: {v.vessel_type}</p>
-                                        <p>Flag: {v.flag}</p>
-                                        <p>Cargo: {v.cargo_type}</p>
-                                        {v.operator && <p>Operator: {v.operator}</p>}
-                                        {v.last_update && (
-                                            <p className="popup-time">Updated: {new Date(v.last_update).toLocaleString()}</p>
-                                        )}
-                                        <Link to={`/vessels/${v.id}`} className="popup-link">View Details →</Link>
-                                    </div>
-                                </Popup>
-                            </Marker>
-                        ))}
+                        <MarkerClusterGroup chunkedLoading maxClusterRadius={60}>
+                            {vessels.map(v => (
+                                <Marker
+                                    key={v.id}
+                                    position={[v.last_position_lat, v.last_position_lon]}
+                                    icon={shipIcon}
+                                >
+                                    <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>{v.name}</Tooltip>
+                                    <Popup>
+                                        <div className="map-popup">
+                                            <strong>{v.name}</strong>
+                                            <p>IMO: <span className="mono">{v.imo_number}</span></p>
+                                            <p>Type: {v.vessel_type}</p>
+                                            <p>Flag: {v.flag}</p>
+                                            <p>Cargo: {v.cargo_type}</p>
+                                            {v.operator && <p>Operator: {v.operator}</p>}
+                                            {v.last_update && (
+                                                <p className="popup-time">Updated: {new Date(v.last_update).toLocaleString()}</p>
+                                            )}
+                                            <Link to={`/vessels/${v.id}`} className="popup-link">View Details →</Link>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
+                        </MarkerClusterGroup>
                     </MapContainer>
                 )}
             </div>
