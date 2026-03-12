@@ -55,7 +55,7 @@ export default function UpdateProfilePage() {
     fd.append('company', form.company)
     fd.append('phone_number', form.phone_number)
     fd.append('bio', form.bio)
-    if (avatarFile) fd.append('avatar', avatarFile)
+    if (avatarFile) fd.append('avatar_upload', avatarFile)
     try {
       await updateExtraProfile(fd)
       setSaved(true)

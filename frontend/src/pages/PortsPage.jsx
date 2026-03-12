@@ -35,11 +35,14 @@ export default function PortsPage() {
     const loadData = async () => {
         setLoading(true)
         try {
-            setPorts(await fetchPortCongestion())
+            const data = await fetchPortCongestion()
+            console.log('Port data loaded:', data)
+            setPorts(Array.isArray(data) ? data : (data?.ports || []))
             setLastRefresh(new Date().toLocaleTimeString())
             setError('')
-        } catch {
-            setError('Failed to load port congestion data. Make sure the backend is running at http://127.0.0.1:8000')
+        } catch (err) {
+            console.error('Port congestion error:', err)
+            setError(`Failed to load port data. Error: ${err.message || 'Check console for details'}. Backend: http://localhost:8000`)
         } finally {
             setLoading(false)
         }

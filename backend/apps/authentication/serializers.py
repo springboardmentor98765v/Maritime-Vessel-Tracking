@@ -80,6 +80,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 # =========================
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    # Read: returns absolute URL or None
+    avatar = serializers.SerializerMethodField(read_only=True)
+    # Write: optional file upload
+    avatar_upload = serializers.ImageField(write_only=True, required=False)
 
     class Meta:
         model = UserProfile
@@ -87,8 +91,34 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "company",
             "phone_number",
             "avatar",
+            "avatar_upload",
             "bio",
         ]
+
+    def get_avatar(self, obj):
+        """Return absolute URL for avatar, or None if using default/missing."""
+        if not obj.avatar:
+            return None
+        name = str(obj.avatar.name) if hasattr(obj.avatar, 'name') else str(obj.avatar)
+        if not name or 'default.png' in name:
+            return None
+        try:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.avatar.url)
+            return obj.avatar.url
+        except Exception:
+            return None
+
+    def update(self, instance, validated_data):
+        # Handle avatar file upload via avatar_upload field
+        avatar_file = validated_data.pop('avatar_upload', None)
+        if avatar_file:
+            instance.avatar = avatar_file
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 # =========================

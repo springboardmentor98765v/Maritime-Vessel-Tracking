@@ -83,6 +83,10 @@ class Command(BaseCommand):
 
                     process_vessel_update(mocked_api_payload)
                     
+                    # Update the in-memory vessel object so future simulation ticks build on this new position
+                    vessel.last_position_lat = new_lat
+                    vessel.last_position_lon = new_lon
+                    
                 self.stdout.write(f"[{timezone.now().strftime('%H:%M:%S')}] Pushed live positional updates for {len(moving_vessels)} vessels.")
                 
                 time.sleep(interval)
