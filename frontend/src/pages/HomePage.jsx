@@ -56,10 +56,10 @@ function HomePage() {
         <div className="roles-card">
           <h3>Built for maritime professionals</h3>
           <div className="role-tags">
-            <span className="role-tag">🧭 Fleet Operator</span>
-            <span className="role-tag">📊 Data Analyst</span>
-            <span className="role-tag">🛡️ Safety Officer</span>
-            <span className="role-tag">⚓ Port Manager</span>
+            <span className="role-tag">Fleet Operator</span>
+            <span className="role-tag">Data Analyst</span>
+            <span className="role-tag">Safety Officer</span>
+            <span className="role-tag">Port Manager</span>
           </div>
         </div>
       </div>

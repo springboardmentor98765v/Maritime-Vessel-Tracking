@@ -11,15 +11,15 @@ function RegisterPage() {
           risk zones worldwide — all in one command center.
         </p>
         <div className="auth-feature">
-          <div className="auth-feature-icon">🌍</div>
+          <div className="auth-feature-icon auth-feature-icon--vessel">GT</div>
           <div>Global vessel tracking across all ocean regions</div>
         </div>
         <div className="auth-feature">
-          <div className="auth-feature-icon">📊</div>
+          <div className="auth-feature-icon auth-feature-icon--port">PA</div>
           <div>Port congestion dashboards with live scores</div>
         </div>
         <div className="auth-feature">
-          <div className="auth-feature-icon">🔔</div>
+          <div className="auth-feature-icon auth-feature-icon--safety">AL</div>
           <div>Subscribe to vessels and receive instant alerts</div>
         </div>
       </div>

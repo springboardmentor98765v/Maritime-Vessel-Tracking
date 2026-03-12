@@ -14,9 +14,15 @@ class Vessel(models.Model):
         db_index=True
     )
 
+<<<<<<< HEAD
     vessel_type = models.CharField(max_length=50, db_index=True, default='General Cargo')
     flag = models.CharField(max_length=50, db_index=True, default='Unknown')
     cargo_type = models.CharField(max_length=50, db_index=True, default='General Cargo')
+=======
+    vessel_type = models.CharField(max_length=50, db_index=True, default='Unknown')
+    flag = models.CharField(max_length=50, db_index=True)
+    cargo_type = models.CharField(max_length=50, db_index=True)
+>>>>>>> b16d3955ee626492bc0f6c4e85975a0cc5e68115
 
     # ✅ Added from design diagram
     operator = models.CharField(max_length=100, blank=True, null=True)
@@ -163,3 +169,39 @@ class SafetyEvent(models.Model):
 
     def __str__(self):
         return f"[{self.severity.upper()}] {self.event_type} — {self.title}"
+
+
+class SafetyZones(models.Model):
+    """Milestone-3: Stores active safety zones (storms, piracy, accidents)."""
+    zone_type = models.CharField(max_length=100, db_index=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    radius = models.FloatField()
+    severity = models.CharField(max_length=50)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['zone_type', 'expires_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.zone_type} ({self.severity})"
+
+
+class ExternalSafetyData(models.Model):
+    """Milestone-3: Staging table for raw data from NOAA/UNCTAD."""
+    source = models.CharField(max_length=100)
+    unique_identifier = models.CharField(max_length=255, unique=True, db_index=True)
+    raw_data = models.JSONField()
+    processed = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.source} - {self.unique_identifier} [{self.processed}]"
