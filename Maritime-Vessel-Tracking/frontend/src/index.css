@@ -1,0 +1,125 @@
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* ── CSS Reset & Base ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --brand-cyan: #22d3ee;
+  --brand-blue: #3b82f6;
+  --brand-indigo: #6366f1;
+  --brand-grad: linear-gradient(135deg, var(--brand-cyan), var(--brand-indigo));
+
+  --bg-0: #040c18;
+  --bg-1: #071224;
+  --bg-2: #0b1a35;
+  --bg-3: #0f2248;
+
+  --surface-1: rgba(15, 31, 60, 0.75);
+  --surface-2: rgba(20, 40, 75, 0.65);
+  --border: rgba(100, 160, 255, 0.12);
+  --border-hi: rgba(100, 200, 255, 0.25);
+
+  --text-0: #f0f8ff;
+  --text-1: rgba(220, 240, 255, 0.8);
+  --text-2: rgba(160, 200, 240, 0.6);
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg-0);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34, 211, 238, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
+    url('/images/background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-3);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 160, 255, 0.4);
+}
+
+/* ── Typography ── */
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  line-height: 1.2;
+  color: var(--text-0);
+}
+
+a {
+  color: var(--brand-cyan);
+  text-decoration: none;
+  transition: color .2s;
+}
+
+a:hover {
+  color: #67e8f9;
+}
+
+p {
+  color: var(--text-1);
+}
+
+/* ── Layout helpers ── */
+.container {
+  width: min(1160px, 94%);
+  margin: 0 auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

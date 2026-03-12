@@ -1,0 +1,20 @@
+Found 7 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\backend\venv_win\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\backend\staticfiles\
+  mw_instance = middleware(adapted_handler)
+F......
+======================================================================
+FAIL: test_notification_apis (apps.vessels.tests.SubscriptionAndNotificationTests.test_notification_apis)
+Test GET /notifications/ and PATCH mark-read.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\backend\apps\vessels\tests.py", line 161, in test_notification_apis
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+AssertionError: 403 != 200
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.292s
+
+FAILED (failures=1)
+Destroying test database for alias 'default'...
