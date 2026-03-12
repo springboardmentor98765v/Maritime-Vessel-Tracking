@@ -14,9 +14,9 @@ class Vessel(models.Model):
         db_index=True
     )
 
-    vessel_type = models.CharField(max_length=50, db_index=True, default='General Cargo')
-    flag = models.CharField(max_length=50, db_index=True, default='Unknown')
-    cargo_type = models.CharField(max_length=50, db_index=True, default='General Cargo')
+    vessel_type = models.CharField(max_length=50, db_index=True)
+    flag = models.CharField(max_length=50, db_index=True)
+    cargo_type = models.CharField(max_length=50, db_index=True)
 
     # ✅ Added from design diagram
     operator = models.CharField(max_length=100, blank=True, null=True)
