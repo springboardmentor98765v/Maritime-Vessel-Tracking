@@ -167,7 +167,7 @@ class UpdateUserProfileView(APIView):
     def get(self, request):
         """Fetch profile data for auto-fill"""
         profile, _ = UserProfile.objects.get_or_create(user=request.user)
-        serializer = UserProfileSerializer(profile)
+        serializer = UserProfileSerializer(profile, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
@@ -176,6 +176,7 @@ class UpdateUserProfileView(APIView):
         serializer = UserProfileSerializer(
             profile,
             data=request.data,
+            context={'request': request},
             partial=True
         )
         if not serializer.is_valid():

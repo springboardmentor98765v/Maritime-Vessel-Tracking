@@ -2,12 +2,14 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchVessels, fetchSubscriptions, subscribeVessel, unsubscribeVessel } from '../services/vesselService'
 import { useAuthContext } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 const VESSEL_TYPES = ['', 'Tanker', 'Cargo', 'Container', 'Bulk Carrier', 'Passenger', 'Tug', 'Ferry', 'Other']
 const CARGO_TYPES = ['', 'Oil', 'Gas', 'Chemicals', 'Dry Bulk', 'Containers', 'General', 'Passengers']
 
 export default function VesselsPage() {
     const { isAuthenticated } = useAuthContext()
+    const { addToast } = useToast()
     const [vessels, setVessels] = useState([])
     const [loading, setLoading] = useState(true)
     const [filters, setFilters] = useState({ name: '', type: '', flag: '', cargo_type: '' })
@@ -47,12 +49,15 @@ export default function VesselsPage() {
             if (isSubscribed) {
                 await unsubscribeVessel(vesselId)
                 setSubscribedIds(prev => { const next = new Set(prev); next.delete(vesselId); return next })
+                addToast('Unsubscribed from vessel alerts', 'info')
             } else {
                 await subscribeVessel(vesselId)
                 setSubscribedIds(prev => new Set([...prev, vesselId]))
+                addToast('Subscribed to real-time vessel alerts', 'success')
             }
         } catch (err) {
             console.error('Subscription toggle failed:', err)
+            addToast('Failed to update subscription', 'error')
         } finally {
             setTogglingId(null)
         }

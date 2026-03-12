@@ -57,6 +57,7 @@ function ReplayPanel({ voyage, onClose }) {
 
     useEffect(() => {
         if (!playing || !replay) return
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (step >= replay.waypoints.length - 1) { setPlaying(false); return }
         const t = setTimeout(() => setStep(s => s + 1), 1200)
         return () => clearTimeout(t)
@@ -70,8 +71,8 @@ function ReplayPanel({ voyage, onClose }) {
     return (
         <div className="card card--glow">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h2 style={{ fontSize: '1.05rem', fontWeight: 700 }}>🎬 Voyage Replay</h2>
-                <button className="btn btn--ghost btn--sm" onClick={onClose}>✕ Close</button>
+                <h2 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Voyage Replay</h2>
+                <button className="btn btn--ghost btn--sm" onClick={onClose}>Close</button>
             </div>
 
             {/* Route header */}
@@ -111,7 +112,7 @@ function ReplayPanel({ voyage, onClose }) {
             {/* Current waypoint */}
             <div className="vessel-detail-card" style={{ marginBottom: '1rem' }}>
                 <div className="detail-label">
-                    {current.type === 'departure' ? '⚓ Departure' : current.type === 'arrival' ? '🏁 Destination' : '⚠️ Event'}
+                    {current.type === 'departure' ? 'Departure' : current.type === 'arrival' ? 'Destination' : 'Event'}
                 </div>
                 <div className="detail-value" style={{ marginTop: '.25rem' }}>{current.label}</div>
                 {current.timestamp && (
@@ -126,15 +127,15 @@ function ReplayPanel({ voyage, onClose }) {
 
             {/* Controls */}
             <div style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
-                <button className="btn btn--ghost btn--sm" onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}>‹ Prev</button>
+                <button className="btn btn--ghost btn--sm" onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}>Prev</button>
                 <button
                     className={`btn btn--sm ${playing ? 'btn--danger' : 'btn--primary'}`}
                     onClick={() => setPlaying(p => !p)}
                     disabled={step >= total - 1 && !playing}
                 >
-                    {playing ? '⏸ Pause' : step >= total - 1 ? '↺ Restart' : '▷ Play'}
+                    {playing ? 'Pause' : step >= total - 1 ? 'Restart' : 'Play'}
                 </button>
-                <button className="btn btn--ghost btn--sm" onClick={() => setStep(s => Math.min(total - 1, s + 1))} disabled={step >= total - 1}>Next ›</button>
+                <button className="btn btn--ghost btn--sm" onClick={() => setStep(s => Math.min(total - 1, s + 1))} disabled={step >= total - 1}>Next</button>
                 <span style={{ marginLeft: 'auto', fontSize: '.75rem', color: 'var(--text-2)' }}>Step {step + 1} / {total}</span>
             </div>
 
@@ -171,7 +172,7 @@ export default function VoyageReplayPage() {
         <div style={{ display: 'grid', gap: '1.75rem', animation: 'fadeUp .38s ease both' }}>
             {/* Header */}
             <div>
-                <h1 className="page-title">🗺️ Voyage Replay</h1>
+                <h1 className="page-title">Voyage Replay</h1>
                 <p className="page-subtitle">Select a voyage to replay its route and view events along the journey.</p>
             </div>
 

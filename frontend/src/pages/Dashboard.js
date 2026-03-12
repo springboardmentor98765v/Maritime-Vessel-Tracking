@@ -11,7 +11,7 @@ function Dashboard() {
       await API.post("auth/logout/", {
         refresh: localStorage.getItem("refresh")
       });
-    } catch (error) {
+    } catch (_error) {
       console.log("Logout API failed");
     }
 
