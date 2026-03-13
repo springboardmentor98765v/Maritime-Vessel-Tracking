@@ -7,6 +7,7 @@ export const fetchVessels = async (filters = {}) => {
     if (filters.type) params.append("type", filters.type);
     if (filters.flag) params.append("flag", filters.flag);
     if (filters.cargo_type) params.append("cargo_type", filters.cargo_type);
+    if (filters.page_size) params.append("page_size", filters.page_size);
     const response = await api.get(`/vessels/?${params.toString()}`);
     return response.data;
 };

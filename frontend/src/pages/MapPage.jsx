@@ -76,8 +76,13 @@ export default function MapPage() {
     const loadData = async () => {
         setLoading(true)
         try {
+<<<<<<< Updated upstream
             const [vesselData, safetyData, zonesData, alertsData] = await Promise.all([
                 fetchVessels(),
+=======
+            const [vesselData, safetyData] = await Promise.all([
+                fetchVessels({ page_size: 1000 }),
+>>>>>>> Stashed changes
                 api.get('/safety-events/').then(r => r.data).catch(() => []),
                 fetchSafetyZones().catch(() => []),
                 fetchSafetyAlerts().catch(() => []),
