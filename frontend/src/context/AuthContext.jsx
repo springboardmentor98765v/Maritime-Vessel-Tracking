@@ -81,6 +81,7 @@ export function AuthProvider({ children }) {
     () => ({
       authState,
       isAuthenticated: Boolean(authState?.token),
+      user: authState?.profile ?? null,
       login,
       register,
       logout,

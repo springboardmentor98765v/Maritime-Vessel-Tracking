@@ -1,14 +1,26 @@
 import { useState, useEffect } from 'react'
 import api from '../services/api'
 
-function StatusCard({ title, status, detail, color }) {
+function StatusDot({ color }) {
     return (
-        <div className="card" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-            <div style={{ width: 6, borderRadius: 99, background: color, alignSelf: 'stretch', flexShrink: 0 }} />
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />
+    )
+}
+
+function StatusCard({ title, abbr, status, detail, color }) {
+    return (
+        <div className="card" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div style={{
+                width: 44, height: 44, borderRadius: 10,
+                background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.18)',
+                display: 'grid', placeItems: 'center', flexShrink: 0,
+                fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800,
+                fontSize: '.62rem', letterSpacing: '.05em', color: 'var(--brand-cyan)'
+            }}>{abbr}</div>
             <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{title}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginTop: '.3rem' }}>
-                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />
+                    <StatusDot color={color} />
                     <span style={{ fontSize: '.78rem', color: 'var(--text-2)' }}>{status}</span>
                 </div>
                 {detail && <div style={{ fontSize: '.73rem', color: 'var(--text-2)', marginTop: '.2rem' }}>{detail}</div>}
@@ -51,11 +63,11 @@ export default function AdminPage() {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                    <h1 className="page-title">Admin Tools</h1>
-                    <p className="page-subtitle">API source status, data overview, and monitoring.</p>
+                    <h1 className="page-title">System Administration</h1>
+                    <p className="page-subtitle">API source status, data overview, and platform monitoring.</p>
                 </div>
                 <button className="btn btn--ghost btn--sm" onClick={loadAll} disabled={loading}>
-                    {loading ? 'Refreshing…' : 'Refresh'}
+                    {loading ? 'Refreshing...' : 'Refresh'}
                 </button>
             </div>
 
@@ -65,43 +77,54 @@ export default function AdminPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '.85rem' }}>
                     <StatusCard
                         title="AISHub — Vessel Positions"
-                        status={positionedVessels > 0 ? 'Connected · Data received' : 'No position data yet'}
+                        abbr="AIS"
+                        status={positionedVessels > 0 ? 'Connected — Data received' : 'No position data yet'}
                         detail={`${positionedVessels} vessels with live position`}
                         color={positionedVessels > 0 ? '#22c55e' : '#eab308'}
                     />
                     <StatusCard
                         title="NOAA — Safety Events"
-                        status={activeSafety.length > 0 ? 'Connected · Events loaded' : 'No active events'}
-                        detail={`${activeSafety.length} active · ${criticalSafety} critical`}
+                        abbr="NOAA"
+                        status={activeSafety.length > 0 ? 'Connected — Events loaded' : 'No active events'}
+                        detail={`${activeSafety.length} active, ${criticalSafety} critical`}
                         color={criticalSafety > 0 ? '#ef4444' : activeSafety.length > 0 ? '#22c55e' : '#eab308'}
                     />
                     <StatusCard
                         title="UNCTAD — Port Analytics"
+                        abbr="UNC"
                         status={vessels.length > 0 ? 'Operational' : 'Awaiting data'}
                         detail={`Last synced: ${lastSync}`}
                         color="#22c55e"
                     />
                     <StatusCard
                         title="Django Backend"
+                        abbr="API"
                         status="Running at 127.0.0.1:8000"
-                        detail="REST API · JWT Auth · SQLite"
+                        detail="REST API — JWT Auth — SQLite"
                         color="#22c55e"
                     />
                 </div>
             </div>
 
-            {/* Data overview */}
+            {/* Data overview cards */}
             <div>
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '.85rem' }}>Platform Data Overview</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '.85rem' }}>
                     {[
-                        { label: 'Total Vessels', value: vessels.length },
-                        { label: 'Positioned Vessels', value: positionedVessels },
-                        { label: 'Safety Zones (active)', value: activeSafety.length },
-                        { label: 'Critical Alerts', value: criticalSafety },
+                        { label: 'Total Vessels', value: vessels.length, abbr: 'VES' },
+                        { label: 'Positioned Vessels', value: positionedVessels, abbr: 'POS' },
+                        { label: 'Safety Zones (active)', value: activeSafety.length, abbr: 'SAF' },
+                        { label: 'Critical Alerts', value: criticalSafety, abbr: 'CRT' },
                     ].map(item => (
                         <div key={item.label} className="vessel-detail-card" style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif" }}>{item.value}</div>
+                            <div style={{
+                                display: 'inline-grid', placeItems: 'center',
+                                width: 40, height: 40, borderRadius: 10, marginBottom: '.5rem',
+                                background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.14)',
+                                fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '.58rem',
+                                letterSpacing: '.06em', color: 'var(--brand-cyan)'
+                            }}>{item.abbr}</div>
+                            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif" }}>{item.value.toLocaleString()}</div>
                             <div className="detail-label" style={{ marginTop: '.2rem' }}>{item.label}</div>
                         </div>
                     ))}
@@ -111,11 +134,10 @@ export default function AdminPage() {
             {/* Active Safety Events table */}
             <div>
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '.85rem' }}>
-                    Active Safety Events
-                    {activeSafety.length > 0 && <span className="badge badge--red" style={{ marginLeft: '.5rem' }}>{activeSafety.length}</span>}
+                    Active Safety Events {activeSafety.length > 0 && <span className="badge badge--red" style={{ marginLeft: '.5rem' }}>{activeSafety.length}</span>}
                 </h2>
                 {loading ? (
-                    <div className="vessels-loading">Loading…</div>
+                    <div className="vessels-loading">Loading...</div>
                 ) : activeSafety.length === 0 ? (
                     <div className="vessels-empty">No active safety events. NOAA data is clear.</div>
                 ) : (

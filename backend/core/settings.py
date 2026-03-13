@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
 from dotenv import load_dotenv
-import dj_database_url
 
 load_dotenv()
 
@@ -62,7 +61,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -97,10 +95,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR}/db.sqlite3",
-        conn_max_age=600
-    )
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgre",
+        "USER": "postgres",
+        "PASSWORD": "root",
+        "HOST": "localhost",
+        "PORT": "5432",
+    }
 }
 
 
@@ -133,7 +135,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
 }
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -195,4 +196,3 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='*/5'),
     },
 }
-STATIC_ROOT = BASE_DIR / 'staticfiles'

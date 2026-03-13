@@ -70,15 +70,15 @@ export default function LoginPage() {
         <p>Sign in to access your maritime intelligence dashboard — vessel tracking, port analytics, and safety overlays in one view.</p>
 
         <div className="auth-feature">
-          <div className="auth-feature-icon">—</div>
+          <div className="auth-feature-icon auth-feature-icon--vessel">VT</div>
           <div>Real-time vessel positions and event history</div>
         </div>
         <div className="auth-feature">
-          <div className="auth-feature-icon">—</div>
+          <div className="auth-feature-icon auth-feature-icon--port">PA</div>
           <div>Port congestion scores and wait times</div>
         </div>
         <div className="auth-feature">
-          <div className="auth-feature-icon">—</div>
+          <div className="auth-feature-icon auth-feature-icon--safety">SA</div>
           <div>Safety overlays: storms, piracy, restricted zones</div>
         </div>
       </div>
@@ -142,9 +142,9 @@ export default function LoginPage() {
         <p className="auth-footer-link">
           Don&apos;t have an account?{' '}
           <Link to="/register">Create one free</Link>
-            <span style={{ margin: '0 0.5rem' }}>·</span>
-            <Link to="/forgot-password">Forgot password?</Link>
-          </p>
+          <span style={{ margin: '0 0.5rem' }}>·</span>
+          <Link to="/forgot-password">Forgot password?</Link>
+        </p>
       </div>
     </div>
   )

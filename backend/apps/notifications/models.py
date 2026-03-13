@@ -6,13 +6,17 @@ class Notification(models.Model):
     user = models.ForeignKey(
         'authentication.User',
         on_delete=models.CASCADE,
-        related_name='notifications'
+        related_name='notifications',
+        db_index=True
     )
 
     vessel = models.ForeignKey(
         'vessels.Vessel',
         on_delete=models.CASCADE,
-        related_name='notifications'
+        related_name='notifications',
+        db_index=True,
+        null=True,
+        blank=True,
     )
 
     # ✅ Added from design diagram (event_id FK)
@@ -31,20 +35,21 @@ class Notification(models.Model):
         db_index=True
     )
 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
-    is_read = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         ordering = ['-timestamp']
         indexes = [
-            models.Index(fields=['user', 'is_read']),
-            models.Index(fields=['timestamp']),
             models.Index(fields=['user']),
-            models.Index(fields=['is_read']),
-            models.Index(fields=['user', 'timestamp']),  # Composite for user's recent notifications
-            models.Index(fields=['is_read', 'timestamp']),  # Composite for fetching unread
+            models.Index(fields=['vessel']),
+            models.Index(fields=['user', 'is_read']),  # For fetching unread notifications per user
+            models.Index(fields=['user', 'timestamp']),  # For chronological queries per user
+            models.Index(fields=['is_read', 'timestamp']),  # For trending notifications
+            models.Index(fields=['timestamp']),  # For global ordering
         ]
 
     def __str__(self):
         return f"Notification for {self.user.username} — {self.type}"
+

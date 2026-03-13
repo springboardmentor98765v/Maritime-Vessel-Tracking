@@ -16,7 +16,7 @@ const links = [
 ]
 
 function Header() {
-    const { isAuthenticated, logout, user } = useAuthContext()
+    const { isAuthenticated, logout } = useAuthContext()
     const [notifications, setNotifications] = useState([])
     const [showDropdown, setShowDropdown] = useState(false)
 
@@ -37,7 +37,7 @@ function Header() {
 
     const markAsRead = async (id) => {
         try {
-            await api.patch(`/notifications/${id}/read/`)
+            await api.post(`/notifications/${id}/read/`)
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
         } catch (err) {
             console.error(err)
@@ -84,7 +84,7 @@ function Header() {
                                 </button>
                                 {showDropdown && (
                                     <div style={{ position: 'absolute', right: 0, top: '40px', width: '300px', background: 'var(--surface-50)', border: '1px solid var(--surface-100)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', zIndex: 1000, maxHeight: '400px', overflowY: 'auto' }}>
-                                        <div style={{ padding: '10px', borderBottom: '1px solid var(--surface-100)', fontWeight: 'bold' }}>Notifications</div>
+                                        <div style={{ padding: '10px', borderBottom: '1px solid var(--surface-100)', fontWeight: '600' }}>Notifications</div>
                                         {notifications.length === 0 ? (
                                             <div style={{ padding: '15px', textAlign: 'center', color: 'var(--text-weak)' }}>No notifications</div>
                                         ) : (
