@@ -5,7 +5,9 @@ import sys
 
 # this is the example
 
-# this eaxxample from veer side
+# this eaxxample from veer sidethis 
+
+# this is the second example by sushant
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
