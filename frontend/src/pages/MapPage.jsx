@@ -106,11 +106,7 @@ export default function MapPage() {
     const toggleLayer = (type) => setLayerToggles(prev => ({ ...prev, [type]: !prev[type] }))
 
     // Unique zone types present in data (from both sources)
-    const allTypes = [...new Set([
-        ...safetyZones.map(z => z.zone_type),
-        ...safetyEvents.map(e => e.event_type),
-    ])].filter(t => ZONE_LABELS[t])
-
+   const allTypes = Object.keys(ZONE_LABELS)
     const criticalAlerts = alerts.filter(a => a.severity === 'critical' || a.severity === 'high')
 
     return (
@@ -153,32 +149,20 @@ export default function MapPage() {
 
             {/* Overlay Layer Toggles */}
             <div className="map-layer-controls">
-                <span style={{ color: '#64748b', fontSize: 12, marginRight: 8 }}>Overlays:</span>
-                {allTypes.map(type => (
-                    <label key={type} className="map-layer-toggle">
-                        <input
-                            type="checkbox"
-                            checked={layerToggles[type] ?? true}
-                            onChange={() => toggleLayer(type)}
-                        />
-                        <span
-                            className="map-layer-dot"
-                            style={{ background: ZONE_TYPE_COLORS[type] || '#888' }}
-                        />
-                        {ZONE_LABELS[type] || type}
-                    </label>
-                ))}
-                {/* Legacy toggle for old safety events */}
-                <label className="map-layer-toggle">
-                    <input
-                        type="checkbox"
-                        checked={showLegacySafety}
-                        onChange={() => setShowLegacySafety(p => !p)}
-                    />
-                    <span className="map-layer-dot" style={{ background: '#f97316' }} />
-                    Safety Events
-                </label>
-            </div>
+    <span style={{ color: '#64748b', fontSize: 12, marginRight: 8 }}>
+        Overlays:
+    </span>
+
+    <label className="map-layer-toggle">
+        <input
+            type="checkbox"
+            checked={showLegacySafety}
+            onChange={() => setShowLegacySafety(p => !p)}
+        />
+        <span className="map-layer-dot" style={{ background: '#f97316' }} />
+        Safety Events
+    </label>
+</div>
 
             {/* Risk Alert Panel */}
             {showAlertPanel && criticalAlerts.length > 0 && (
@@ -223,22 +207,25 @@ export default function MapPage() {
                         />
 
                         {/* Milestone-3 Safety Zones circles (per-type toggle) */}
-                        {safetyZones.map(zone => {
-                            if (!layerToggles[zone.zone_type]) return null
-                            const color = ZONE_TYPE_COLORS[zone.zone_type] || '#eab308'
-                            return (
-                                <Circle
-                                    key={`sz-${zone.id}`}
-                                    center={[zone.latitude, zone.longitude]}
-                                    radius={kmToMeters(zone.radius || 100)}
-                                    pathOptions={{
-                                        color,
-                                        fillColor: color,
-                                        fillOpacity: 0.13,
-                                        weight: 2,
-                                        dashArray: '6 3',
-                                    }}
-                                >
+                        { safetyZones.map(zone => {
+
+    if (layerToggles[zone.zone_type] === false) return null
+
+    const color = ZONE_TYPE_COLORS[zone.zone_type] || '#eab308'
+
+    return (
+        <Circle
+            key={`sz-${zone.id}`}
+            center={[zone.latitude, zone.longitude]}
+            radius={kmToMeters(zone.radius || 100)}
+            pathOptions={{
+                color,
+                fillColor: color,
+                fillOpacity: 0.13,
+                weight: 2,
+                dashArray: '6 3',
+            }}
+        >
                                     <Popup>
                                         <div className="map-popup">
                                             <strong style={{ color }}>{ZONE_LABELS[zone.zone_type] || zone.zone_type}</strong>
