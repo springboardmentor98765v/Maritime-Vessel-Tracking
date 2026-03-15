@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../services/api'
+import SkeletonLoader from '../components/common/SkeletonLoader'
 
 function StatusDot({ color }) {
     return (
@@ -137,7 +138,9 @@ export default function AdminPage() {
                     Active Safety Events {activeSafety.length > 0 && <span className="badge badge--red" style={{ marginLeft: '.5rem' }}>{activeSafety.length}</span>}
                 </h2>
                 {loading ? (
-                    <div className="vessels-loading">Loading...</div>
+                    <div style={{ marginTop: '1rem' }}>
+                        <SkeletonLoader type="row" count={4} />
+                    </div>
                 ) : activeSafety.length === 0 ? (
                     <div className="vessels-empty">No active safety events. NOAA data is clear.</div>
                 ) : (

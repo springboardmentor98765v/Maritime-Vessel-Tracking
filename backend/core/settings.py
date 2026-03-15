@@ -97,14 +97,26 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgre",
+        "NAME": "postgres",
         "USER": "postgres",
-        "PASSWORD": "root",
+        "PASSWORD": "Aditya1234",
         "HOST": "localhost",
         "PORT": "5432",
     }
 }
-
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "postgres",
+#         "USER": "postgres",
+#         "PASSWORD": "Sushant@1234Team#",
+#         "HOST": "db.hmztfdduussrotapaukq.supabase.co",
+#         "PORT": "5432",
+#         "OPTIONS": {
+#             "sslmode": "require",
+#         },
+#     }
+# }
 
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -180,8 +192,11 @@ FRONTEND_URL = 'http://localhost:5173'  # React frontend URL for password reset 
 # Start with:  redis-server   (or Docker: docker run -p 6379:6379 redis)
 # Then run:    celery -A core worker -l info
 #              celery -A core beat   -l info
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+# CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+# CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+# CELERY_ACCEPT_CONTENT = ['json']
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

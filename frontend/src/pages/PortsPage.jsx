@@ -1,24 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
 import { fetchPortCongestion } from '../services/portService'
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell
 } from 'recharts'
+import { motion } from 'framer-motion'
+import { Anchor, Search, Filter, AlertTriangle, Activity, BarChart3, Database, Globe, Clock, Ship, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import SkeletonLoader from '../components/common/SkeletonLoader'
 
 const LEVEL_COLORS = {
     critical: '#ef4444',
     high: '#f97316',
     moderate: '#eab308',
-    low: '#22c55e',
-}
-
-function LevelDot({ level }) {
-    return (
-        <span style={{
-            display: 'inline-block', width: 10, height: 10, borderRadius: '50%',
-            background: LEVEL_COLORS[level] || '#888', marginRight: 6, flexShrink: 0,
-            boxShadow: `0 0 6px ${LEVEL_COLORS[level] || '#888'}88`,
-        }} />
-    )
+    low: '#22d3ee', // changed from green to cyan for the palette
 }
 
 const PAGE_SIZE = 25
@@ -42,7 +35,7 @@ export default function PortsPage() {
             setLastRefresh(new Date().toLocaleTimeString())
             setError('')
         } catch {
-            setError('Failed to load port data. Make sure the backend is running at http://127.0.0.1:8000')
+            setError('Global port network uplink failed. Retrying connection...')
         } finally {
             setLoading(false)
         }
@@ -54,11 +47,9 @@ export default function PortsPage() {
         return () => clearInterval(t)
     }, [])
 
-    // Unique countries for filter dropdown
     const countries = useMemo(() =>
         [...new Set(ports.map(p => p.country))].sort(), [ports])
 
-    // Filtered & sorted ports
     const filtered = useMemo(() => {
         let result = [...ports]
         if (search) result = result.filter(p =>
@@ -68,7 +59,7 @@ export default function PortsPage() {
         if (levelFilter) result = result.filter(p => p.congestion_level === levelFilter)
         result.sort((a, b) => {
             const va = a[sortBy] ?? 0, vb = b[sortBy] ?? 0
-            const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb
+            const cmp = typeof va === 'string' ? String(va).localeCompare(String(vb)) : va - vb
             return sortDir === 'asc' ? cmp : -cmp
         })
         return result
@@ -78,7 +69,7 @@ export default function PortsPage() {
     const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
     const criticalCount = ports.filter(p => p.congestion_level === 'critical').length
-    const chartData = ports.slice(0, 15) // top 15 for charts
+    const chartData = ports.slice(0, 15)
 
     const handleSort = (col) => {
         if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -88,187 +79,274 @@ export default function PortsPage() {
 
     useEffect(() => setPage(1), [search, countryFilter, levelFilter, sortBy, sortDir])
 
-    if (loading && ports.length === 0) return <div className="ports-loading">Loading port congestion data...</div>
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+    }
+    const itemVariants = {
+        hidden: { opacity: 0, y: 15 },
+        show: { opacity: 1, y: 0 }
+    }
+
     if (error) return (
-        <div className="ports-error">
-            <strong>Connection Error</strong>
-            <p style={{ marginTop: '.5rem', fontSize: '.85rem' }}>{error}</p>
-            <button className="btn btn--ghost btn--sm" style={{ marginTop: '1rem' }} onClick={loadData}>Retry</button>
+        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--danger)', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '12px', marginTop: '2rem' }}>
+            <AlertTriangle size={48} style={{ marginBottom: '1rem', opacity: 0.8 }} />
+            <h2>Connection Error</h2>
+            <p>{error}</p>
+            <button style={{ marginTop: '1rem', background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }} onClick={loadData}>Re-establish Connection</button>
         </div>
     )
 
     return (
-        <div className="ports-page">
+        <motion.div initial="hidden" animate="show" variants={containerVariants} style={{ paddingBottom: '4rem' }}>
+            
             {/* Header */}
-            <div className="ports-header">
+            <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '1.5rem' }}>
                 <div>
-                    <h1>Port Congestion Dashboard</h1>
-                    <p className="ports-subtitle">
-                        {ports.length} ports monitored &middot; {criticalCount} critical alert{criticalCount !== 1 && 's'}
-                        {lastRefresh && <span className="ports-refresh"> &middot; Updated {lastRefresh}</span>}
+                    <h1 style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: '"Space Grotesk", sans-serif', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <Anchor color="var(--brand-cyan)" size={32} /> Global Terminal Congestion
+                    </h1>
+                    <p style={{ color: 'var(--text-1)', fontSize: '0.95rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        {loading ? 'Aggregating terminal data...' : `Monitoring ${ports.length} global trade hubs`} 
+                        &middot; <span style={{ color: criticalCount > 0 ? '#ef4444' : 'var(--text-1)', fontWeight: criticalCount > 0 ? 700 : 400 }}>{criticalCount} CRITICAL THREATS</span>
+                        {lastRefresh && <span>&middot; SYNOD: {lastRefresh}</span>}
                     </p>
                 </div>
-                <button className="btn btn--ghost btn--sm" onClick={loadData} disabled={loading}>
-                    {loading ? 'Refreshing...' : '⟳ Refresh'}
+                <button 
+                    onClick={loadData} 
+                    disabled={loading}
+                    style={{ background: 'rgba(34,211,238,0.1)', color: 'var(--brand-cyan)', border: '1px solid rgba(34,211,238,0.3)', padding: '0.5rem 1rem', borderRadius: '8px', cursor: loading ? 'wait' : 'pointer', fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s' }}
+                    onMouseOver={(e) => { if(!loading) e.currentTarget.style.background = 'rgba(34,211,238,0.2)' }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(34,211,238,0.1)' }}
+                >
+                    <Activity size={16} /> {loading ? 'PROCESSING...' : 'SYNC TERMINALS'}
                 </button>
-            </div>
+            </motion.div>
 
-            {/* Summary cards */}
-            <div className="congestion-summary">
-                {['critical', 'high', 'moderate', 'low'].map(level => {
-                    const count = ports.filter(p => p.congestion_level === level).length
-                    return (
-                        <div key={level}
-                            className={`congestion-summary-card congestion-summary-card--${level}${levelFilter === level ? ' active' : ''}`}
-                            onClick={() => setLevelFilter(prev => prev === level ? '' : level)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <LevelDot level={level} />
-                            <span className="cs-count">{count}</span>
-                            <span className="cs-label">{level.charAt(0).toUpperCase() + level.slice(1)}</span>
-                        </div>
-                    )
-                })}
-            </div>
-
-            {/* Charts Section — top 15 ports only */}
-            <div className="ports-charts" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-                <div className="card" style={{ padding: '1.5rem' }}>
-                    <h3 style={{ marginBottom: '1rem', fontSize: '1.05rem' }}>Top 15 — Congestion Score</h3>
-                    <div style={{ width: '100%', height: 280 }}>
-                        <ResponsiveContainer>
-                            <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                                <XAxis dataKey="name" stroke="var(--text-2)" fontSize={10} angle={-40} textAnchor="end" interval={0} />
-                                <YAxis stroke="var(--text-2)" fontSize={11} domain={[0, 100]} />
-                                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                                    contentStyle={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '8px' }} />
-                                <Bar dataKey="congestion_score" name="Congestion Score" fill="var(--brand-cyan)" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
+            {loading && ports.length === 0 ? (
+                <div style={{ padding: '2rem 0' }}>
+                    <SkeletonLoader type="card" count={4} style={{ marginBottom: '2.5rem' }} />
+                    <SkeletonLoader type="row" count={8} />
                 </div>
-                <div className="card" style={{ padding: '1.5rem' }}>
-                    <h3 style={{ marginBottom: '1rem', fontSize: '1.05rem' }}>Top 15 — Arrivals vs Departures</h3>
-                    <div style={{ width: '100%', height: 280 }}>
-                        <ResponsiveContainer>
-                            <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                                <XAxis dataKey="name" stroke="var(--text-2)" fontSize={10} angle={-40} textAnchor="end" interval={0} />
-                                <YAxis stroke="var(--text-2)" fontSize={11} />
-                                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                                    contentStyle={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '8px' }} />
-                                <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                                <Bar dataKey="arrivals" name="Arrivals" fill="#38bdf8" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="departures" name="Departures" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-
-            {/* Search / Filter Bar */}
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.25rem', alignItems: 'center' }}>
-                <input
-                    type="text"
-                    className="vessel-search-input"
-                    placeholder="🔍  Search port or country..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    style={{ minWidth: 220, flex: 1 }}
-                />
-                <select className="vessel-select" value={countryFilter} onChange={e => setCountryFilter(e.target.value)}>
-                    <option value="">All Countries</option>
-                    {countries.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                <select className="vessel-select" value={levelFilter} onChange={e => setLevelFilter(e.target.value)}>
-                    <option value="">All Levels</option>
-                    {['critical', 'high', 'moderate', 'low'].map(l => <option key={l} value={l}>{l.charAt(0).toUpperCase() + l.slice(1)}</option>)}
-                </select>
-                {(search || countryFilter || levelFilter) && (
-                    <button className="btn btn--ghost btn--sm" onClick={() => { setSearch(''); setCountryFilter(''); setLevelFilter('') }}>
-                        ✕ Clear
-                    </button>
-                )}
-                <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.82rem' }}>
-                    Showing {filtered.length} of {ports.length} ports
-                </span>
-            </div>
-
-            {/* Table */}
-            <div className="ports-table-wrap">
-                <table className="ports-table">
-                    <thead>
-                        <tr>
-                            <th style={{ width: 40 }}>#</th>
-                            <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>Port <SortIcon col="name" /></th>
-                            <th onClick={() => handleSort('country')} style={{ cursor: 'pointer' }}>Country <SortIcon col="country" /></th>
-                            <th onClick={() => handleSort('congestion_level')} style={{ cursor: 'pointer' }}>Status <SortIcon col="congestion_level" /></th>
-                            <th onClick={() => handleSort('congestion_score')} style={{ cursor: 'pointer' }}>Score <SortIcon col="congestion_score" /></th>
-                            <th onClick={() => handleSort('avg_wait_time')} style={{ cursor: 'pointer' }}>Avg Wait (h) <SortIcon col="avg_wait_time" /></th>
-                            <th onClick={() => handleSort('arrivals')} style={{ cursor: 'pointer' }}>Arrivals <SortIcon col="arrivals" /></th>
-                            <th onClick={() => handleSort('departures')} style={{ cursor: 'pointer' }}>Departures <SortIcon col="departures" /></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {paginated.map((port, idx) => (
-                            <tr key={port.id} className={port.alert ? 'port-row--alert' : ''}>
-                                <td className="text-muted">{(page - 1) * PAGE_SIZE + idx + 1}</td>
-                                <td>
-                                    <span className="port-name-link">{port.name}</span>
-                                    <div className="port-location-label">{port.location}</div>
-                                </td>
-                                <td>{port.country}</td>
-                                <td>
-                                    <span className="congestion-badge" style={{
-                                        display: 'inline-flex', alignItems: 'center',
-                                        background: LEVEL_COLORS[port.congestion_level] + '22',
-                                        color: LEVEL_COLORS[port.congestion_level],
-                                        border: `1px solid ${LEVEL_COLORS[port.congestion_level]}44`,
-                                    }}>
-                                        <LevelDot level={port.congestion_level} />
-                                        {port.congestion_level}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div className="score-bar-wrap">
-                                        <div className="score-bar-track">
-                                            <div className="score-bar"
-                                                style={{ width: `${port.congestion_score}%`, background: LEVEL_COLORS[port.congestion_level] }} />
+            ) : (
+                <>
+                    {/* Summary Matrix */}
+                    <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+                        {['critical', 'high', 'moderate', 'low'].map(level => {
+                            const count = ports.filter(p => p.congestion_level === level).length;
+                            const isActive = levelFilter === level;
+                            const color = LEVEL_COLORS[level];
+                            return (
+                                <motion.div key={level} variants={itemVariants}
+                                    whileHover={{ y: -4, boxShadow: `0 16px 32px ${color}25`, borderColor: `${color}80` }}
+                                    onClick={() => setLevelFilter(prev => prev === level ? '' : level)}
+                                    style={{ 
+                                        cursor: 'pointer', background: isActive ? `linear-gradient(180deg, ${color}20 0%, ${color}05 100%)` : 'linear-gradient(180deg, rgba(30,41,59,0.3) 0%, rgba(15,23,42,0.6) 100%)', 
+                                        border: `1px solid ${isActive ? color : 'rgba(255,255,255,0.06)'}`, 
+                                        borderRadius: '16px', padding: '1.5rem', backdropFilter: 'blur(16px)', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column', gap: '0.75rem',
+                                        position: 'relative', overflow: 'hidden'
+                                    }}
+                                >
+                                    <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '1px', background: `linear-gradient(90deg, transparent, ${color}90, transparent)` }} />
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-1)', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: color, boxShadow: `0 0 12px ${color}` }} />
+                                            {level} CONGESTION
                                         </div>
-                                        <span className="score-val">{port.congestion_score ?? '—'}</span>
                                     </div>
-                                </td>
-                                <td>{port.avg_wait_time ?? '—'}</td>
-                                <td>{port.arrivals ?? '—'}</td>
-                                <td>{port.departures ?? '—'}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                                    <div style={{ fontSize: '2.75rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1 }}>{count}</div>
+                                </motion.div>
+                            )
+                        })}
+                    </motion.div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-                    <button className="btn btn--ghost btn--sm" onClick={() => setPage(1)} disabled={page === 1}>«</button>
-                    <button className="btn btn--ghost btn--sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹ Prev</button>
-                    {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
-                        let p
-                        if (totalPages <= 7) p = i + 1
-                        else if (page <= 4) p = i + 1
-                        else if (page >= totalPages - 3) p = totalPages - 6 + i
-                        else p = page - 3 + i
-                        return (
-                            <button key={p} className={`btn btn--sm ${page === p ? 'btn--primary' : 'btn--ghost'}`}
-                                onClick={() => setPage(p)}>{p}</button>
-                        )
-                    })}
-                    <button className="btn btn--ghost btn--sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Next ›</button>
-                    <button className="btn btn--ghost btn--sm" onClick={() => setPage(totalPages)} disabled={page === totalPages}>»</button>
-                    <span style={{ opacity: 0.55, fontSize: '0.8rem' }}>Page {page} of {totalPages}</span>
-                </div>
+                    {/* Analytics Charts */}
+                    <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', backdropFilter: 'blur(12px)' }}>
+                            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontFamily: '"Space Grotesk", sans-serif' }}>
+                                <BarChart3 size={18} color="var(--brand-cyan)" /> Top 15 Operations Bottlenecks
+                            </h3>
+                            <div style={{ width: '100%', height: 300 }}>
+                                <ResponsiveContainer>
+                                    <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
+                                        <defs>
+                                            <linearGradient id="colorCyan" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#22d3ee" stopOpacity={1}/>
+                                                <stop offset="100%" stopColor="#22d3ee" stopOpacity={0.2}/>
+                                            </linearGradient>
+                                            <linearGradient id="colorYellow" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#eab308" stopOpacity={1}/>
+                                                <stop offset="100%" stopColor="#eab308" stopOpacity={0.2}/>
+                                            </linearGradient>
+                                            <linearGradient id="colorOrange" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#f97316" stopOpacity={1}/>
+                                                <stop offset="100%" stopColor="#f97316" stopOpacity={0.2}/>
+                                            </linearGradient>
+                                            <linearGradient id="colorRed" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#ef4444" stopOpacity={1}/>
+                                                <stop offset="100%" stopColor="#ef4444" stopOpacity={0.2}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                        <XAxis dataKey="name" stroke="var(--text-2)" fontSize={11} angle={-30} textAnchor="end" interval={0} tickLine={false} axisLine={false} dx={-10} dy={10} />
+                                        <YAxis stroke="var(--text-2)" fontSize={11} domain={[0, 100]} tickLine={false} axisLine={false} />
+                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ background: 'rgba(8, 17, 38, 0.95)', border: '1px solid var(--border-hi)', borderRadius: '12px', backdropFilter: 'blur(16px)', color: '#fff', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }} itemStyle={{ color: '#22d3ee' }} />
+                                        <Bar dataKey="congestion_score" name="Congestion Index" radius={[6, 6, 0, 0]}>
+                                            {chartData.map((entry, index) => {
+                                                const lvl = entry.congestion_level;
+                                                const grad = lvl === 'critical' ? 'url(#colorRed)' : lvl === 'high' ? 'url(#colorOrange)' : lvl === 'moderate' ? 'url(#colorYellow)' : 'url(#colorCyan)'
+                                                return <Cell key={`cell-${index}`} fill={grad} />
+                                            })}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', backdropFilter: 'blur(12px)' }}>
+                            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontFamily: '"Space Grotesk", sans-serif' }}>
+                                <ArrowUpRight size={18} color="#8b5cf6" /> Vessel Traffic Flow (Arrivals/Departures)
+                            </h3>
+                            <div style={{ width: '100%', height: 300 }}>
+                                <ResponsiveContainer>
+                                    <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
+                                        <defs>
+                                            <linearGradient id="colorArr" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#38bdf8" stopOpacity={1}/>
+                                                <stop offset="100%" stopColor="#38bdf8" stopOpacity={0.2}/>
+                                            </linearGradient>
+                                            <linearGradient id="colorDep" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1}/>
+                                                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.2}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                        <XAxis dataKey="name" stroke="var(--text-2)" fontSize={11} angle={-30} textAnchor="end" interval={0} tickLine={false} axisLine={false} dx={-10} dy={10} />
+                                        <YAxis stroke="var(--text-2)" fontSize={11} tickLine={false} axisLine={false} />
+                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ background: 'rgba(8, 17, 38, 0.95)', border: '1px solid var(--border-hi)', borderRadius: '12px', backdropFilter: 'blur(16px)', color: '#fff', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }} />
+                                        <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} iconType="circle" />
+                                        <Bar dataKey="arrivals" name="Inbound" fill="url(#colorArr)" radius={[6, 6, 0, 0]} />
+                                        <Bar dataKey="departures" name="Outbound" fill="url(#colorDep)" radius={[6, 6, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Filter Bar */}
+                    <motion.div variants={itemVariants} style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1rem', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', backdropFilter: 'blur(12px)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--brand-cyan)', fontWeight: 600, fontSize: '0.85rem', paddingRight: '1rem', borderRight: '1px solid var(--border)' }}>
+                            <Filter size={16} /> Filters
+                        </div>
+                        
+                        <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
+                            <Search size={14} color="var(--text-2)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                            <input type="text" placeholder="Terminal or Country..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-hi)', borderRadius: '6px', padding: '0.55rem 1rem 0.55rem 2rem', color: '#fff', fontSize: '0.85rem', outline: 'none' }} />
+                        </div>
+
+                        <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)} style={{ flex: 1, minWidth: '150px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-hi)', borderRadius: '6px', padding: '0.55rem 1rem', color: '#fff', fontSize: '0.85rem', outline: 'none', appearance: 'none' }}>
+                            <option value="" style={{ background: 'var(--bg-1)' }}>Global Territories</option>
+                            {countries.map(c => <option key={c} value={c} style={{ background: 'var(--bg-1)' }}>{c}</option>)}
+                        </select>
+
+                        <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)} style={{ flex: 1, minWidth: '150px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-hi)', borderRadius: '6px', padding: '0.55rem 1rem', color: '#fff', fontSize: '0.85rem', outline: 'none', appearance: 'none' }}>
+                            <option value="" style={{ background: 'var(--bg-1)' }}>All Threat Levels</option>
+                            {['critical', 'high', 'moderate', 'low'].map(l => <option key={l} value={l} style={{ background: 'var(--bg-1)' }}>{l.toUpperCase()}</option>)}
+                        </select>
+
+                        {(search || countryFilter || levelFilter) && (
+                            <button onClick={() => { setSearch(''); setCountryFilter(''); setLevelFilter('') }} style={{ background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.2s' }}>
+                                Clear
+                            </button>
+                        )}
+                        <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.8rem', fontFamily: 'monospace' }}>
+                            DISPLAYING {filtered.length} OF {ports.length}
+                        </span>
+                    </motion.div>
+
+                    {/* Matrix Grid */}
+                    <div style={{ overflowX: 'auto', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', backdropFilter: 'blur(12px)' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '900px' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(0,0,0,0.2)' }}>
+                                    <th onClick={() => handleSort('name')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Terminal <SortIcon col="name" /></th>
+                                    <th onClick={() => handleSort('country')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Territory <SortIcon col="country" /></th>
+                                    <th onClick={() => handleSort('congestion_level')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Status <SortIcon col="congestion_level" /></th>
+                                    <th onClick={() => handleSort('congestion_score')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Congestion Index <SortIcon col="congestion_score" /></th>
+                                    <th onClick={() => handleSort('avg_wait_time')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Avg Delay (H) <SortIcon col="avg_wait_time" /></th>
+                                    <th onClick={() => handleSort('arrivals')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'right' }}>In <SortIcon col="arrivals" /></th>
+                                    <th onClick={() => handleSort('departures')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'right' }}>Out <SortIcon col="departures" /></th>
+                                </tr>
+                            </thead>
+                            <motion.tbody variants={containerVariants} initial="hidden" animate="show">
+                                {paginated.map((port) => (
+                                    <motion.tr variants={itemVariants} key={port.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }} onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }} onMouseOut={(e) => { e.currentTarget.style.background = 'transparent' }}>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'grid', placeItems: 'center', color: LEVEL_COLORS[port.congestion_level] }}>
+                                                    <Database size={16} />
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>{port.name}</div>
+                                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', opacity: 0.8 }}>{port.location || 'Coordinates unavailable'}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-1)' }}>
+                                                <Globe size={14} opacity={0.5} /> {port.country}
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: `${LEVEL_COLORS[port.congestion_level]}15`, color: LEVEL_COLORS[port.congestion_level], border: `1px solid ${LEVEL_COLORS[port.congestion_level]}40`, padding: '0.25rem 0.6rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: LEVEL_COLORS[port.congestion_level], boxShadow: `0 0 6px ${LEVEL_COLORS[port.congestion_level]}` }} />
+                                                {port.congestion_level}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <div style={{ width: '80px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                                                    <div style={{ width: `${port.congestion_score}%`, height: '100%', background: LEVEL_COLORS[port.congestion_level], boxShadow: `0 0 10px ${LEVEL_COLORS[port.congestion_level]}` }} />
+                                                </div>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>{port.congestion_score ?? '—'}</span>
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-1)', fontFamily: 'monospace' }}>
+                                                <Clock size={14} opacity={0.5} /> {port.avg_wait_time ?? '—'}
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: '#38bdf8' }}>{port.arrivals ?? '—'}</td>
+                                        <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: '#8b5cf6' }}>{port.departures ?? '—'}</td>
+                                    </motion.tr>
+                                ))}
+                            </motion.tbody>
+                        </table>
+                    </div>
+
+                    {/* Matrix Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.25rem', marginTop: '1.5rem', padding: '0 0.5rem' }}>
+                            <button style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', color: 'var(--text-1)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1 }} onClick={() => setPage(1)} disabled={page === 1}>«</button>
+                            <button style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', color: 'var(--text-1)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1 }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>PREV</button>
+                            
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let p = page <= 3 ? i + 1 : page >= totalPages - 2 ? totalPages - 4 + i : page - 2 + i;
+                                if(p < 1) p = 1;
+                                if(p > totalPages) p = totalPages;
+                                return (
+                                    <button key={p} 
+                                        style={{ background: page === p ? 'rgba(34,211,238,0.15)' : 'var(--surface-1)', border: page === p ? '1px solid var(--brand-cyan)' : '1px solid var(--border)', color: page === p ? 'var(--brand-cyan)' : 'var(--text-1)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontWeight: page === p ? 700 : 400 }}
+                                        onClick={() => setPage(p)}
+                                    >{p}</button>
+                                )
+                            })}
+                            
+                            <button style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', color: 'var(--text-1)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1 }} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>NEXT</button>
+                        </div>
+                    )}
+                </>
             )}
-        </div>
+        </motion.div>
     )
 }

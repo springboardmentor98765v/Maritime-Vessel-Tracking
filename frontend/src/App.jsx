@@ -28,6 +28,7 @@ import LiveTicker from './components/common/LiveTicker'
 function App() {
   return (
     <div className="app-shell">
+      <div className="app-bg-grid" />
       <Header />
       <LiveTicker />
 

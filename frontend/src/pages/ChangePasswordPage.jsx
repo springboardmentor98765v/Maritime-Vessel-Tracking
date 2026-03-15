@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { changePassword } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
@@ -18,21 +18,6 @@ export default function ChangePassword() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
-  const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
-
-  // Generate captcha
-  const generateCaptcha = () => {
-    setCaptcha({
-      a: Math.floor(Math.random() * 10) + 1,
-      b: Math.floor(Math.random() * 10) + 1,
-    });
-    setForm((prev) => ({ ...prev, captcha: "" }));
-  };
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
-    generateCaptcha();
-  }, []);
 
   const validatePassword = (password) => {
     const regex =

@@ -1,0 +1,4 @@
+﻿Seeding Live APIs & Baseline DB...
+[NOAA Sync] Created 0 new safety events.
+Created 0 baseline vessels.
+Successfully seeded 26 Historical Voyages & Waypoints.

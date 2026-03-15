@@ -1,42 +1,81 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Anchor, Ship, ArrowRight, Clock, Calendar } from 'lucide-react'
 import api from '../services/api'
 
-const STATUS_BADGE = {
-    completed: { label: 'Completed', cls: 'badge--green' },
-    in_transit: { label: 'In Transit', cls: 'badge--blue' },
-    delayed: { label: 'Delayed', cls: 'badge--orange' },
-    cancelled: { label: 'Cancelled', cls: 'badge--red' },
+const STATUS_CFG = {
+    completed: { label: 'Completed', bg: 'rgba(34,197,94,0.15)', color: '#86efac', border: 'rgba(34,197,94,0.3)' },
+    in_transit: { label: 'In Transit', bg: 'rgba(56,189,248,0.15)', color: '#7dd3fc', border: 'rgba(56,189,248,0.3)' },
+    delayed: { label: 'Delayed', bg: 'rgba(245,158,11,0.15)', color: '#fcd34d', border: 'rgba(245,158,11,0.3)' },
+    cancelled: { label: 'Cancelled', bg: 'rgba(239,68,68,0.15)', color: '#fca5a5', border: 'rgba(239,68,68,0.3)' },
 }
 
-function getBadge(status) {
+function getStatus(status) {
     const s = (status || '').toLowerCase()
-    const found = Object.entries(STATUS_BADGE).find(([k]) => s.includes(k))
-    return found ? found[1] : { label: status, cls: 'badge--type' }
+    const found = Object.entries(STATUS_CFG).find(([k]) => s.includes(k))
+    return found ? found[1] : { label: status, bg: 'rgba(255,255,255,0.05)', color: 'var(--text-1)', border: 'rgba(255,255,255,0.1)' }
 }
 
 function VoyageCard({ voyage, onClick }) {
-    const badge = getBadge(voyage.status)
+    const status = getStatus(voyage.status)
+    const progress = voyage.status?.toLowerCase().includes('completed') ? 100
+        : voyage.status?.toLowerCase().includes('in_transit') ? 55
+        : voyage.status?.toLowerCase().includes('delayed') ? 40
+        : 0;
+
     return (
-        <div className="card card--hover" onClick={() => onClick(voyage)} style={{ cursor: 'pointer' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '.75rem', flexWrap: 'wrap' }}>
-                <div>
-                    <div style={{ fontWeight: 700, fontSize: '.95rem', marginBottom: '.2rem' }}>{voyage.vessel_name}</div>
-                    <div style={{ fontSize: '.8rem', color: 'var(--text-2)' }}>
-                        {voyage.port_from_name} → {voyage.port_to_name}
-                    </div>
+        <div
+            onClick={() => onClick(voyage)}
+            style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                cursor: 'pointer',
+                transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
+            }}
+            onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(56,189,248,0.3)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.2)'; }}
+            onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}
+        >
+            {/* Top: vessel name + status */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Ship size={16} color="var(--brand-cyan)" />
+                    <span style={{ fontWeight: 600, fontSize: '15px', color: '#fff' }}>{voyage.vessel_name}</span>
                 </div>
-                <span className={`badge ${badge.cls}`}>{badge.label}</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, padding: '3px 10px', borderRadius: '99px', background: status.bg, color: status.color, border: `1px solid ${status.border}` }}>
+                    {status.label}
+                </span>
             </div>
-            <div style={{ marginTop: '.75rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-                <div>
-                    <div className="detail-label">Departed</div>
-                    <div style={{ fontSize: '.82rem' }}>{new Date(voyage.departure_time).toLocaleDateString()}</div>
+
+            {/* Route visualization */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-2)', fontSize: '13px' }}>
+                    <Anchor size={13} />
+                    <span>{voyage.port_from_name || 'Origin'}</span>
+                </div>
+                <div style={{ flex: 1, position: 'relative', height: '3px', background: 'rgba(255,255,255,0.08)', borderRadius: '99px' }}>
+                    <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #38bdf8, #6366f1)', borderRadius: '99px', transition: 'width 0.6s ease' }} />
+                    {progress > 0 && progress < 100 && (
+                        <div style={{ position: 'absolute', top: '50%', left: `${progress}%`, transform: 'translate(-50%, -50%)', width: 10, height: 10, borderRadius: '50%', background: '#38bdf8', boxShadow: '0 0 8px #38bdf8' }} />
+                    )}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-2)', fontSize: '13px' }}>
+                    <Anchor size={13} />
+                    <span>{voyage.port_to_name || 'Destination'}</span>
+                </div>
+            </div>
+
+            {/* Dates */}
+            <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '12px', color: 'var(--text-2)' }}>
+                    <Calendar size={12} />
+                    <span>Departed: {new Date(voyage.departure_time).toLocaleDateString()}</span>
                 </div>
                 {voyage.arrival_time && (
-                    <div>
-                        <div className="detail-label">Arrived</div>
-                        <div style={{ fontSize: '.82rem' }}>{new Date(voyage.arrival_time).toLocaleDateString()}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '12px', color: 'var(--text-2)' }}>
+                        <Clock size={12} />
+                        <span>Arrived: {new Date(voyage.arrival_time).toLocaleDateString()}</span>
                     </div>
                 )}
             </div>
@@ -168,30 +207,71 @@ export default function VoyageReplayPage() {
         v.port_to_name?.toLowerCase().includes(filter.toLowerCase())
     )
 
+    const stats = {
+        active: voyages.filter(v => v.status?.toLowerCase().includes('in_transit')).length,
+        completed: voyages.filter(v => v.status?.toLowerCase().includes('completed')).length,
+        delayed: voyages.filter(v => v.status?.toLowerCase().includes('delayed')).length,
+        total: voyages.length,
+    }
+
     return (
-        <div style={{ display: 'grid', gap: '1.75rem', animation: 'fadeUp .38s ease both' }}>
+        <div style={{ display: 'grid', gap: '2rem', animation: 'fadeUp .38s ease both' }}>
             {/* Header */}
-            <div>
-                <h1 className="page-title">Voyage Replay</h1>
-                <p className="page-subtitle">Select a voyage to replay its route and view events along the journey.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                    <h1 className="page-title" style={{ fontSize: '28px', fontWeight: 700 }}>Voyage Replay</h1>
+                    <p className="page-subtitle">Select a voyage to replay its route and view waypoint events.</p>
+                </div>
+                <input
+                    className="vessel-search-input"
+                    style={{ width: '280px', flexShrink: 0 }}
+                    placeholder="Search vessel, port…"
+                    value={filter}
+                    onChange={e => setFilter(e.target.value)}
+                />
             </div>
 
+            {/* Stats Row */}
+            {!loading && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                    {[
+                        { label: 'Total Voyages', value: stats.total, color: '#38bdf8' },
+                        { label: 'In Transit', value: stats.active, color: '#7dd3fc' },
+                        { label: 'Completed', value: stats.completed, color: '#86efac' },
+                        { label: 'Delayed', value: stats.delayed, color: '#fcd34d' },
+                    ].map(stat => (
+                        <div
+                            key={stat.label}
+                            style={{
+                                background: 'rgba(255,255,255,0.03)',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                borderRadius: '12px',
+                                padding: '16px 20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1rem',
+                            }}
+                        >
+                            <div style={{ width: 4, height: 36, borderRadius: 99, background: stat.color, flexShrink: 0 }} />
+                            <div>
+                                <div style={{ fontSize: '22px', fontWeight: 700, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1 }}>{stat.value}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-2)', marginTop: '4px', fontWeight: 500 }}>{stat.label}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Main Grid: List + Detail */}
             <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 1fr' : '1fr', gap: '1.5rem', alignItems: 'start' }}>
                 {/* Left: voyage list */}
-                <div style={{ display: 'grid', gap: '1rem' }}>
-                    <input
-                        className="vessel-search-input"
-                        style={{ width: '100%' }}
-                        placeholder="Search vessel, port…"
-                        value={filter}
-                        onChange={e => setFilter(e.target.value)}
-                    />
+                <div style={{ display: 'grid', gap: '12px' }}>
                     {loading ? (
                         <div className="vessels-loading">Loading voyages…</div>
                     ) : filtered.length === 0 ? (
                         <div className="vessels-empty">No voyages found. Run <code>python manage.py seed_data</code> to populate data.</div>
                     ) : (
-                        <div style={{ display: 'grid', gap: '.75rem', maxHeight: '70vh', overflowY: 'auto', paddingRight: '.25rem' }}>
+                        <div style={{ display: 'grid', gap: '10px', maxHeight: '70vh', overflowY: 'auto', paddingRight: '4px' }}>
                             {filtered.map(v => (
                                 <VoyageCard
                                     key={v.id}

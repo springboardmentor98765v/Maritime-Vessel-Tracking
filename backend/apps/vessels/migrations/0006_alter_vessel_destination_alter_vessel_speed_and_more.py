@@ -25,40 +25,4 @@ class Migration(migrations.Migration):
             name='event_type',
             field=models.CharField(choices=[('piracy', 'Piracy'), ('accident', 'Accident'), ('weather', 'Weather Alert'), ('port_delay', 'Port Delay'), ('inspection', 'Inspection'), ('stopped', 'Stopped'), ('underway', 'Underway'), ('route_changed', 'Route Changed'), ('entered_port', 'Entered Port'), ('ais_lost', 'AIS Signal Lost'), ('other', 'Other')], db_index=True, max_length=50),
         ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['speed'], name='vessels_ves_speed_2d299b_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['last_update', 'destination'], name='vessels_ves_last_up_de8b44_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['type', 'flag'], name='vessels_ves_type_f46f01_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vesselevent',
-            index=models.Index(fields=['vessel'], name='vessels_ves_vessel__2f352a_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vesselevent',
-            index=models.Index(fields=['timestamp'], name='vessels_ves_timesta_39af96_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vesselevent',
-            index=models.Index(fields=['event_type'], name='vessels_ves_event_t_0f4a0b_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vesselsubscription',
-            index=models.Index(fields=['user'], name='vessels_ves_user_id_b54b94_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vesselsubscription',
-            index=models.Index(fields=['vessel'], name='vessels_ves_vessel__8d858d_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vesselsubscription',
-            index=models.Index(fields=['user', 'vessel'], name='vessels_ves_user_id_6d6a34_idx'),
-        ),
     ]

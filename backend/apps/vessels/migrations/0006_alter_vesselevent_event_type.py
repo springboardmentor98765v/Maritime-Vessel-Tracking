@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('vessels', '0005_rename_type_vessel_vessel_type_vessel_destination_and_more'),
+        ('vessels', '0005_remove_vessel_type_vessel_destination_vessel_heading_and_more'),
     ]
 
     operations = [

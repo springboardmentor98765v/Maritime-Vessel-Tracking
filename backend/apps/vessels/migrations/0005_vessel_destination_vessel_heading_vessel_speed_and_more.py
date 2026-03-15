@@ -6,57 +6,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('vessels', '0004_safetyevent'),
+        ('vessels', '0002_externalsafetydata_safetyzones'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='vessel',
-            name='destination',
-            field=models.CharField(blank=True, max_length=255, null=True),
-        ),
-        migrations.AddField(
-            model_name='vessel',
-            name='heading',
-            field=models.FloatField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name='vessel',
-            name='speed',
-            field=models.FloatField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name='vesselevent',
-            name='latitude',
-            field=models.FloatField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name='vesselevent',
-            name='longitude',
-            field=models.FloatField(blank=True, null=True),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['imo_number'], name='vessels_ves_imo_num_1c2106_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['type'], name='vessels_ves_type_2d352a_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['flag'], name='vessels_ves_flag_9d8886_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['last_update'], name='vessels_ves_last_up_382a69_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['destination'], name='vessels_ves_destina_6af475_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vesselevent',
-            index=models.Index(fields=['vessel', 'timestamp'], name='vessels_ves_vessel__cdde01_idx'),
-        ),
     ]

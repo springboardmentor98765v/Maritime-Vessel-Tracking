@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\LENOVO\Desktop\teamm3\Maritime-Vessel-Tracking\backend\venv_win
+set VIRTUAL_ENV=C:\Users\LENOVO\Desktop\teamm3\backend\venv_win
 
 if not defined PROMPT set PROMPT=$P$G
 

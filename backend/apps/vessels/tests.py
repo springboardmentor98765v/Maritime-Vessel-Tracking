@@ -18,7 +18,7 @@ class VesselAndEventTests(TestCase):
         self.vessel1 = Vessel.objects.create(
             imo_number='1234567',
             name='Test Ship Alpha',
-            type='Container',
+            vessel_type='Container',
             flag='Panama',
             cargo_type='General',
             last_position_lat=10.0,
@@ -30,7 +30,7 @@ class VesselAndEventTests(TestCase):
         self.vessel2 = Vessel.objects.create(
             imo_number='9876543',
             name='Test Ship Beta',
-            type='Tanker',
+            vessel_type='Tanker',
             flag='Liberia',
             cargo_type='Oil',
             last_position_lat=5.0,
@@ -78,12 +78,12 @@ class VesselAndEventTests(TestCase):
         # Check that Event was created
         events = VesselEvent.objects.filter(vessel=self.vessel1).order_by('-timestamp')
         self.assertTrue(events.exists())
-        self.assertEqual(events.first().event_type, "Stopped")
+        self.assertEqual(events.first().event_type, "stopped")
 
         # Check that Notification was dispatched via Signal
         notifs = Notification.objects.filter(user=self.user, vessel=self.vessel1)
         self.assertTrue(notifs.exists())
-        self.assertIn("stopped moving", notifs.first().message)
+        self.assertIn("stopped", notifs.first().message)
 
     def test_event_detection_route_changed(self):
         """Test process_vessel_update triggers 'Route Changed' when destination changes."""
@@ -101,10 +101,10 @@ class VesselAndEventTests(TestCase):
         events = VesselEvent.objects.filter(vessel=self.vessel2).order_by('-timestamp')
         self.assertTrue(events.exists())
         
-        # We should get 2 events: 'Underway' and 'Route Changed'
+        # We should get 2 events: 'underway' and 'route_changed'
         event_types = [e.event_type for e in events]
-        self.assertIn("Underway", event_types)
-        self.assertIn("Route Changed", event_types)
+        self.assertIn("underway", event_types)
+        self.assertIn("route_changed", event_types)
 
 class SubscriptionAndNotificationTests(TestCase):
     def setUp(self):
@@ -117,7 +117,9 @@ class SubscriptionAndNotificationTests(TestCase):
         self.vessel = Vessel.objects.create(
             imo_number='8888888',
             name='Subscribe Test Ship',
-            type='Bulk Carrier'
+            vessel_type='Bulk Carrier',
+            flag='',
+            cargo_type='',
         )
         
         # Authenticate client directly

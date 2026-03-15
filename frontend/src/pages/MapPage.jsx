@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { MapContainer, TileLayer, Marker, Popup, Tooltip, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, Circle, ZoomControl } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 import { fetchVessels } from '../services/vesselService'
 import { fetchSafetyZones, fetchSafetyAlerts } from '../services/portService'
 import api from '../services/api'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ShieldAlert, Layers, RefreshCw, Command, Target, Activity, MapPin } from 'lucide-react'
 
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
@@ -15,15 +18,31 @@ L.Icon.Default.mergeOptions({
 })
 
 const shipIcon = new L.DivIcon({
-    html: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 2px 4px #0008)">
-      <path d="M10 2L14 8H6L10 2Z" fill="#22d3ee"/>
-      <rect x="8" y="8" width="4" height="8" fill="#22d3ee"/>
-      <path d="M4 14H16L13 18H7L4 14Z" fill="#0ea5e9"/>
-    </svg>`,
+    html: `<div style="width:16px; height:16px; background:var(--brand-cyan); border-radius:50%; border:2px solid #000; box-shadow:0 0 12px var(--brand-cyan);"></div>`,
     iconSize: [20, 20],
-    iconAnchor: [10, 18],
+    iconAnchor: [10, 10],
     className: '',
 })
+
+const alertShipIcon = new L.DivIcon({
+    html: `<div style="width:16px; height:16px; background:#ef4444; border-radius:50%; border:2px solid #000; box-shadow:0 0 16px #ef4444; animation:pulse 1.5s infinite;"></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    className: '',
+})
+
+const createClusterCustomIcon = function (cluster) {
+    const count = cluster.getChildCount();
+    let size = 34;
+    if (count > 50) size = 48;
+    else if (count > 20) size = 40;
+
+    return new L.DivIcon({
+        html: `<div title="${count} vessels in this area" style="width:${size}px; height:${size}px; background:rgba(4, 9, 20, 0.95); border:1.5px solid rgba(56,189,248,0.7); border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:${count > 99 ? '0.65rem' : '0.8rem'}; box-shadow:0 0 14px rgba(56,189,248,0.35), inset 0 0 8px rgba(56,189,248,0.08); backdrop-filter:blur(8px); font-family:'Space Grotesk', sans-serif; gap:1px;">${count}<span style="font-size:0.5rem; font-weight:500; color:rgba(56,189,248,0.8); letter-spacing:0.02em; text-transform:uppercase;">vessels</span></div>`,
+        className: 'custom-marker-cluster',
+        iconSize: L.point(size, size, true),
+    });
+}
 
 const SEVERITY_COLORS = {
     critical: '#ef4444',
@@ -32,36 +51,31 @@ const SEVERITY_COLORS = {
     low: '#22c55e',
 }
 
-// Colors per zone type
 const ZONE_TYPE_COLORS = {
-    storm: '#ef4444',  // red
-    cyclone: '#f97316',  // orange
-    piracy: '#eab308',  // yellow
-    accident: '#a855f7',  // purple
-    restricted: '#6366f1',  // indigo
+    storm: '#ef4444',
+    cyclone: '#f97316',
+    piracy: '#eab308',
+    accident: '#a855f7',
+    restricted: '#6366f1',
 }
 
-// Human labels
 const ZONE_LABELS = {
-    storm: 'Storm Zones',
-    cyclone: 'Cyclone Zones',
-    piracy: 'Piracy Zones',
-    accident: 'Accident Areas',
-    restricted: 'Restricted Areas',
+    storm: 'Storm Cells',
+    cyclone: 'Cyclone Activity',
+    piracy: 'Piracy Risk Areas',
+    accident: 'Accident Sites',
+    restricted: 'Restricted Waters',
 }
-
-const SEVERITY_RANK = { critical: 0, high: 1, medium: 2, low: 3 }
 
 export default function MapPage() {
     const [vessels, setVessels] = useState([])
-    const [safetyEvents, setSafetyEvents] = useState([])   // legacy SafetyEvent overlays
-    const [safetyZones, setSafetyZones] = useState([])     // Milestone-3 SafetyZones
-    const [alerts, setAlerts] = useState([])               // risk alerts
+    const [safetyEvents, setSafetyEvents] = useState([])
+    const [safetyZones, setSafetyZones] = useState([])
+    const [alerts, setAlerts] = useState([])
     const [loading, setLoading] = useState(true)
-    const [lastRefreshed, setLastRefreshed] = useState(null)
+    // removed lastRefreshed
     const [showAlertPanel, setShowAlertPanel] = useState(false)
 
-    // Per-type toggle state — all on by default
     const [layerToggles, setLayerToggles] = useState({
         storm: true,
         cyclone: true,
@@ -70,10 +84,9 @@ export default function MapPage() {
         restricted: true,
     })
 
-    // Also keep legacy showSafety toggle for backward-compat overlay
     const [showLegacySafety, setShowLegacySafety] = useState(true)
 
-    const loadData = async () => {
+    const loadInitial = async () => {
         setLoading(true)
         try {
             const [vesselData, safetyData, zonesData, alertsData] = await Promise.all([
@@ -86,7 +99,6 @@ export default function MapPage() {
             setSafetyEvents(safetyData)
             setSafetyZones(zonesData)
             setAlerts(alertsData)
-            setLastRefreshed(new Date().toLocaleTimeString())
         } catch (err) {
             console.error('Map load failed:', err)
         } finally {
@@ -94,9 +106,19 @@ export default function MapPage() {
         }
     }
 
+    // Silent background refresh — does NOT trigger loading spinner
+    const refreshVessels = async () => {
+        try {
+            const vesselData = await fetchVessels()
+            setVessels(vesselData.filter(v => v.last_position_lat != null && v.last_position_lon != null))
+        } catch (err) {
+            console.error('Vessel refresh failed:', err)
+        }
+    }
+
     useEffect(() => {
-        loadData()
-        const interval = setInterval(loadData, 10_000)
+        loadInitial()
+        const interval = setInterval(refreshVessels, 30000)
         return () => clearInterval(interval)
     }, [])
 
@@ -105,140 +127,256 @@ export default function MapPage() {
 
     const toggleLayer = (type) => setLayerToggles(prev => ({ ...prev, [type]: !prev[type] }))
 
-    // Unique zone types present in data (from both sources)
+<<<<<<< HEAD
     const allTypes = [...new Set([
         ...safetyZones.map(z => z.zone_type),
         ...safetyEvents.map(e => e.event_type),
     ])].filter(t => ZONE_LABELS[t])
 
+=======
+    // Unique zone types present in data (from both sources)
+   const allTypes = Object.keys(ZONE_LABELS)
+>>>>>>> 31b8725ea6237bd7730b9fe1ebd91572efda51dc
     const criticalAlerts = alerts.filter(a => a.severity === 'critical' || a.severity === 'high')
 
-    return (
-        <div className="map-page">
-            <div className="map-toolbar">
-                <div className="map-toolbar-left">
-                    <h1 className="map-title">Live Vessel Map</h1>
-                    <span className="map-vessel-count">
-                        {vessels.length} vessel{vessels.length !== 1 ? 's' : ''} with known position
-                    </span>
-                    {criticalAlerts.length > 0 && (
-                        <span
-                            className="map-vessel-count"
-                            style={{ color: '#ef4444', cursor: 'pointer', fontWeight: 700 }}
-                            onClick={() => setShowAlertPanel(p => !p)}
-                        >
-                            &nbsp;⚠ {criticalAlerts.length} risk alert{criticalAlerts.length !== 1 ? 's' : ''}
-                        </span>
-                    )}
-                </div>
-                <div className="map-toolbar-right">
-                    {lastRefreshed && (
-                        <span className="map-refresh-time">Updated: {lastRefreshed}</span>
-                    )}
-                    {criticalAlerts.length > 0 && (
-                        <button
-                            className="btn btn--sm"
-                            style={{ borderColor: '#ef4444', color: '#ef4444' }}
-                            onClick={() => setShowAlertPanel(p => !p)}
-                        >
-                            {showAlertPanel ? 'Hide Alerts' : `⚠ Alerts (${criticalAlerts.length})`}
-                        </button>
-                    )}
-                    <button className="btn btn--ghost btn--sm" onClick={loadData} disabled={loading}>
-                        {loading ? 'Refreshing...' : 'Refresh'}
-                    </button>
-                    <Link to="/vessels" className="btn btn--primary btn--sm">Browse Vessels</Link>
-                </div>
-            </div>
+    // Find if a vessel is actively in a critical alert
+    const getVesselIcon = (vesselName) => {
+        if (criticalAlerts.some(a => a.vessel === vesselName)) return alertShipIcon;
+        return shipIcon;
+    }
 
+    return (
+        <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 120px)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+            
+            {/* Dark Map Base (Standard OSM with CSS inversion trick for dark mode) */}
+            <style>{`
+                .leaflet-layer,
+                .leaflet-control-zoom-in,
+                .leaflet-control-zoom-out,
+                .leaflet-control-attribution {
+                    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+                }
+                .leaflet-container {
+                    background: #020617;
+                    font-family: inherit;
+                }
+                .custom-popup .leaflet-popup-content-wrapper {
+                    background: rgba(8, 17, 38, 0.95);
+                    color: #fff;
+                    border: 1px solid rgba(34,211,238,0.3);
+                    border-radius: 8px;
+                    backdrop-filter: blur(12px);
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                }
+                .custom-popup .leaflet-popup-tip {
+                    background: rgba(8, 17, 38, 0.95);
+                    border: 1px solid rgba(34,211,238,0.3);
+                    border-top: none;
+                    border-left: none;
+                }
+                .custom-tooltip {
+                    background: rgba(0,0,0,0.8);
+                    border: 1px solid var(--brand-cyan);
+                    color: #fff;
+                    font-weight: 600;
+                    border-radius: 4px;
+                    padding: 4px 8px;
+                }
+            `}</style>
+
+<<<<<<< HEAD
+            <MapContainer center={[15, 0]} zoom={3} style={{ height: '100%', width: '100%', zIndex: 1 }} scrollWheelZoom zoomControl={false}>
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <ZoomControl position="bottomright" />
+=======
             {/* Overlay Layer Toggles */}
             <div className="map-layer-controls">
-                <span style={{ color: '#64748b', fontSize: 12, marginRight: 8 }}>Overlays:</span>
-                {allTypes.map(type => (
-                    <label key={type} className="map-layer-toggle">
-                        <input
-                            type="checkbox"
-                            checked={layerToggles[type] ?? true}
-                            onChange={() => toggleLayer(type)}
-                        />
-                        <span
-                            className="map-layer-dot"
-                            style={{ background: ZONE_TYPE_COLORS[type] || '#888' }}
-                        />
-                        {ZONE_LABELS[type] || type}
-                    </label>
-                ))}
-                {/* Legacy toggle for old safety events */}
-                <label className="map-layer-toggle">
-                    <input
-                        type="checkbox"
-                        checked={showLegacySafety}
-                        onChange={() => setShowLegacySafety(p => !p)}
-                    />
-                    <span className="map-layer-dot" style={{ background: '#f97316' }} />
-                    Safety Events
-                </label>
-            </div>
+    <span style={{ color: '#64748b', fontSize: 12, marginRight: 8 }}>
+        Overlays:
+    </span>
 
-            {/* Risk Alert Panel */}
-            {showAlertPanel && criticalAlerts.length > 0 && (
-                <div className="alert-panel">
-                    <div className="alert-panel-header">
-                        <span>⚠ Active Risk Alerts</span>
-                        <button className="alert-panel-close" onClick={() => setShowAlertPanel(false)}>✕</button>
-                    </div>
-                    <div className="alert-panel-list">
-                        {criticalAlerts.slice(0, 20).map((a, idx) => (
-                            <div key={idx} className={`alert-item alert-item--${a.severity}`}>
-                                <div className="alert-item-header">
-                                    <span className="alert-badge" style={{
-                                        background: SEVERITY_COLORS[a.severity] + '22',
-                                        color: SEVERITY_COLORS[a.severity],
-                                        border: `1px solid ${SEVERITY_COLORS[a.severity]}44`,
-                                    }}>
-                                        {a.severity?.toUpperCase()}
-                                    </span>
-                                    <span className="alert-risk">{a.risk}</span>
+    <label className="map-layer-toggle">
+        <input
+            type="checkbox"
+            checked={showLegacySafety}
+            onChange={() => setShowLegacySafety(p => !p)}
+        />
+        <span className="map-layer-dot" style={{ background: '#f97316' }} />
+        Safety Events
+    </label>
+</div>
+>>>>>>> 31b8725ea6237bd7730b9fe1ebd91572efda51dc
+
+                {/* Milestone-3 Safety Zones circles */}
+                {safetyZones.map(zone => {
+                    if (!layerToggles[zone.zone_type]) return null
+                    const color = ZONE_TYPE_COLORS[zone.zone_type] || '#eab308'
+                    return (
+                        <Circle
+                            key={`sz-${zone.id}`}
+                            center={[zone.latitude, zone.longitude]}
+                            radius={kmToMeters(zone.radius || 100)}
+                            pathOptions={{ color, fillColor: color, fillOpacity: 0.15, weight: 1.5, dashArray: '6 4' }}
+                        >
+                            <Popup className="custom-popup">
+                                <div style={{ padding: '0.25rem' }}>
+                                    <strong style={{ color, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                        <ShieldAlert size={16} /> {ZONE_LABELS[zone.zone_type] || zone.zone_type}
+                                    </strong>
+                                    <div style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', margin: '8px 0', fontSize: '0.8rem', borderLeft: `2px solid ${SEVERITY_COLORS[zone.severity]}` }}>
+                                        <span style={{ color: 'var(--text-1)' }}>Severity Level:</span> <span style={{ color: SEVERITY_COLORS[zone.severity], fontWeight: 700, textTransform: 'uppercase' }}>{zone.severity}</span>
+                                    </div>
+                                    <p style={{ margin: '0', fontSize: '0.75rem', color: 'var(--text-2)', fontFamily: 'monospace' }}>
+                                        Radius: {zone.radius}KM<br />
+                                        {zone.expires_at && <>Expires: {new Date(zone.expires_at).toLocaleDateString()}</>}
+                                    </p>
                                 </div>
-                                <div className="alert-vessel">
-                                    Vessel: <strong>{a.vessel}</strong>
-                                </div>
-                                {a.distance_km && (
-                                    <div className="alert-dist">{a.distance_km} km from zone center</div>
-                                )}
+                            </Popup>
+                        </Circle>
+                    )
+                })}
+
+                {/* Legacy SafetyEvent circles */}
+                {showLegacySafety && safetyEvents.map(ev => (
+                    <Circle
+                        key={ev.id}
+                        center={[ev.latitude, ev.longitude]}
+                        radius={nmToMeters(ev.radius_nm || 50)}
+                        pathOptions={{ color: SEVERITY_COLORS[ev.severity] || '#eab308', fillColor: SEVERITY_COLORS[ev.severity] || '#eab308', fillOpacity: 0.12, weight: 1.5, dashArray: '4 4' }}
+                    >
+                        <Popup className="custom-popup">
+                            <div style={{ padding: '0.25rem' }}>
+                                <strong style={{ color: SEVERITY_COLORS[ev.severity] }}>{ev.title}</strong>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-1)', margin: '4px 0' }}>{ev.description}</p>
+                                <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-2)' }}>Radius: {ev.radius_nm} NM | Source: {ev.source}</p>
                             </div>
-                        ))}
+                        </Popup>
+                    </Circle>
+                ))}
+
+                {/* Vessel markers clustered */}
+                <MarkerClusterGroup
+                    chunkedLoading
+                    iconCreateFunction={createClusterCustomIcon}
+                    maxClusterRadius={60}
+                    spiderfyOnMaxZoom={true}
+                    showCoverageOnHover={false}
+                >
+                    {vessels.map(v => (
+                        <Marker key={v.id} position={[v.last_position_lat, v.last_position_lon]} icon={getVesselIcon(v.name)}>
+                            <Tooltip direction="top" offset={[0, -10]} opacity={1} className="custom-tooltip">{v.name}</Tooltip>
+                            <Popup className="custom-popup">
+                                <div style={{ padding: '0.25rem', minWidth: '180px' }}>
+                                    <strong style={{ fontSize: '1rem', color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <Target size={14} color="var(--brand-cyan)" /> {v.name}
+                                    </strong>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-1)', marginTop: '8px', display: 'grid', gap: '4px' }}>
+                                        <div><strong style={{ color: 'var(--text-2)' }}>IMO:</strong> <span style={{ fontFamily: 'monospace' }}>{v.imo_number}</span></div>
+                                        <div><strong style={{ color: 'var(--text-2)' }}>TYPE:</strong> {v.vessel_type}</div>
+                                        <div><strong style={{ color: 'var(--text-2)' }}>CARGO:</strong> {v.cargo_type || 'Unknown'}</div>
+                                        {v.last_update && (
+                                            <div style={{ marginTop: '4px', paddingTop: '4px', borderTop: '1px dashed rgba(255,255,255,0.1)', color: 'var(--brand-cyan)', fontSize: '0.7rem' }}>
+                                                <Activity size={10} style={{ display: 'inline' }} /> {new Date(v.last_update).toLocaleTimeString()}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <Link to={`/vessels/${v.id}`} style={{ display: 'block', textAlign: 'center', background: 'var(--surface-2)', border: '1px solid var(--border-hi)', padding: '6px', marginTop: '12px', borderRadius: '4px', color: '#fff', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600 }}>
+                                        INITIALIZE TELEMETRY →
+                                    </Link>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))}
+                </MarkerClusterGroup>
+            </MapContainer>
+
+            {/* Overlays on top of Map */}
+            
+            {/* Top Bar HUD */}
+            <motion.div 
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                style={{ position: 'absolute', top: '16px', left: '16px', right: '16px', zIndex: 1000, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', pointerEvents: 'none' }}
+            >
+                {/* Status Panel left */}
+                <div style={{ background: 'rgba(4, 9, 20, 0.85)', backdropFilter: 'blur(16px)', border: '1px solid var(--border-hi)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', pointerEvents: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <Command color="var(--brand-cyan)" size={20} />
+                        <div>
+                            <h1 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#fff', lineHeight: 1 }}>Global Operations</h1>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-1)', letterSpacing: '0.05em' }}>{vessels.length} TARGETS ACQUIRED</span>
+                        </div>
                     </div>
                 </div>
-            )}
 
-            <div className="map-container">
-                {loading && vessels.length === 0 ? (
-                    <div className="map-loading">Loading vessel positions…</div>
-                ) : (
-                    <MapContainer center={[20, 0]} zoom={2} style={{ height: '100%', width: '100%' }} scrollWheelZoom>
-                        <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
+                {/* Tools right */}
+                <div style={{ display: 'flex', gap: '0.75rem', pointerEvents: 'auto' }}>
+                    {criticalAlerts.length > 0 && (
+                        <motion.button 
+                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                            onClick={() => setShowAlertPanel(!showAlertPanel)}
+                            style={{ background: showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.15)', color: showAlertPanel ? '#fff' : '#fca5a5', border: `1px solid ${showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.4)'}`, borderRadius: '8px', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', backdropFilter: 'blur(8px)', boxShadow: showAlertPanel ? '0 0 20px rgba(239,68,68,0.4)' : 'none' }}
+                        >
+                            <ShieldAlert size={16} /> {criticalAlerts.length} PROTOCOL BREACHES
+                        </motion.button>
+                    )}
+                    <button 
+                        onClick={loadInitial} disabled={loading}
+                        style={{ background: 'rgba(34, 211, 238, 0.1)', color: 'var(--brand-cyan)', border: '1px solid rgba(34, 211, 238, 0.3)', borderRadius: '8px', width: '40px', height: '40px', display: 'grid', placeItems: 'center', cursor: loading ? 'wait' : 'pointer', backdropFilter: 'blur(8px)' }}
+                    >
+                        <RefreshCw size={18} className={loading ? 'spinning' : ''} />
+                    </button>
+                </div>
+            </motion.div>
 
+<<<<<<< HEAD
+            {/* Bottom Layers Panel */}
+            <motion.div 
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                style={{ position: 'absolute', bottom: '16px', left: '16px', zIndex: 1000, background: 'rgba(4, 9, 20, 0.85)', backdropFilter: 'blur(16px)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1rem', width: '280px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}
+            >
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Layers size={14} color="var(--brand-cyan)" /> TACTICAL OVERLAYS
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {allTypes.map(type => (
+                        <label key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--text-1)' }}>
+                            <input type="checkbox" checked={layerToggles[type] ?? true} onChange={() => toggleLayer(type)} style={{ accentColor: ZONE_TYPE_COLORS[type] || 'var(--brand-cyan)' }} />
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: ZONE_TYPE_COLORS[type] || 'var(--brand-cyan)' }} />
+                            {ZONE_LABELS[type] || type}
+                        </label>
+                    ))}
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--text-1)', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                        <input type="checkbox" checked={showLegacySafety} onChange={() => setShowLegacySafety(p => !p)} style={{ accentColor: '#f97316' }} />
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f97316' }} />
+                        Legacy Safety Events
+                    </label>
+                </div>
+            </motion.div>
+=======
                         {/* Milestone-3 Safety Zones circles (per-type toggle) */}
-                        {safetyZones.map(zone => {
-                            if (!layerToggles[zone.zone_type]) return null
-                            const color = ZONE_TYPE_COLORS[zone.zone_type] || '#eab308'
-                            return (
-                                <Circle
-                                    key={`sz-${zone.id}`}
-                                    center={[zone.latitude, zone.longitude]}
-                                    radius={kmToMeters(zone.radius || 100)}
-                                    pathOptions={{
-                                        color,
-                                        fillColor: color,
-                                        fillOpacity: 0.13,
-                                        weight: 2,
-                                        dashArray: '6 3',
-                                    }}
-                                >
+                        { safetyZones.map(zone => {
+
+    if (layerToggles[zone.zone_type] === false) return null
+
+    const color = ZONE_TYPE_COLORS[zone.zone_type] || '#eab308'
+
+    return (
+        <Circle
+            key={`sz-${zone.id}`}
+            center={[zone.latitude, zone.longitude]}
+            radius={kmToMeters(zone.radius || 100)}
+            pathOptions={{
+                color,
+                fillColor: color,
+                fillOpacity: 0.13,
+                weight: 2,
+                dashArray: '6 3',
+            }}
+        >
                                     <Popup>
                                         <div className="map-popup">
                                             <strong style={{ color }}>{ZONE_LABELS[zone.zone_type] || zone.zone_type}</strong>
@@ -254,63 +392,42 @@ export default function MapPage() {
                                 </Circle>
                             )
                         })}
+>>>>>>> 31b8725ea6237bd7730b9fe1ebd91572efda51dc
 
-                        {/* Legacy SafetyEvent circles */}
-                        {showLegacySafety && safetyEvents.map(ev => (
-                            <Circle
-                                key={ev.id}
-                                center={[ev.latitude, ev.longitude]}
-                                radius={nmToMeters(ev.radius_nm || 50)}
-                                pathOptions={{
-                                    color: SEVERITY_COLORS[ev.severity] || '#eab308',
-                                    fillColor: SEVERITY_COLORS[ev.severity] || '#eab308',
-                                    fillOpacity: 0.12,
-                                    weight: 1.5,
-                                    dashArray: '4 4',
-                                }}
-                            >
-                                <Popup>
-                                    <div className="map-popup">
-                                        <strong>{ev.title}</strong>
-                                        <p style={{ color: SEVERITY_COLORS[ev.severity], fontWeight: 700, textTransform: 'capitalize', margin: 0 }}>
-                                            {ev.severity} · {ev.event_type}
-                                        </p>
-                                        {ev.description && <p>{ev.description}</p>}
-                                        <p style={{ opacity: .6, margin: 0, fontSize: '.7rem' }}>
-                                            Radius: {ev.radius_nm} nm · Source: {ev.source}
-                                        </p>
+            {/* Floating Risk Alerts Panel */}
+            <AnimatePresence>
+                {showAlertPanel && criticalAlerts.length > 0 && (
+                    <motion.div 
+                        initial={{ x: 300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: 300, opacity: 0 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        style={{ position: 'absolute', top: '70px', right: '16px', zIndex: 1000, background: 'rgba(8, 17, 38, 0.95)', backdropFilter: 'blur(16px)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '12px', width: '320px', boxShadow: '0 12px 40px rgba(0,0,0,0.6)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 200px)' }}
+                    >
+                        <div style={{ background: 'rgba(239, 68, 68, 0.1)', borderBottom: '1px solid rgba(239, 68, 68, 0.3)', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <ShieldAlert size={16} /> PRIORITY ALERTS
+                            </span>
+                            <button onClick={() => setShowAlertPanel(false)} style={{ background: 'none', border: 'none', color: '#fca5a5', cursor: 'pointer' }}>✕</button>
+                        </div>
+                        <div style={{ padding: '0.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {criticalAlerts.slice(0, 20).map((a, i) => (
+                                <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${SEVERITY_COLORS[a.severity]}30`, borderLeft: `3px solid ${SEVERITY_COLORS[a.severity]}`, borderRadius: '6px', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: SEVERITY_COLORS[a.severity], background: `${SEVERITY_COLORS[a.severity]}15`, padding: '2px 6px', borderRadius: '4px' }}>
+                                            {a.severity.toUpperCase()} ALERT
+                                        </span>
+                                        <span style={{ fontSize: '0.7rem', color: 'var(--text-1)' }}>{a.risk}</span>
                                     </div>
-                                </Popup>
-                            </Circle>
-                        ))}
-
-                        {/* Vessel markers */}
-                        {vessels.map(v => (
-                            <Marker
-                                key={v.id}
-                                position={[v.last_position_lat, v.last_position_lon]}
-                                icon={shipIcon}
-                            >
-                                <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>{v.name}</Tooltip>
-                                <Popup>
-                                    <div className="map-popup">
-                                        <strong>{v.name}</strong>
-                                        <p>IMO: <span className="mono">{v.imo_number}</span></p>
-                                        <p>Type: {v.vessel_type}</p>
-                                        <p>Flag: {v.flag}</p>
-                                        <p>Cargo: {v.cargo_type}</p>
-                                        {v.operator && <p>Operator: {v.operator}</p>}
-                                        {v.last_update && (
-                                            <p className="popup-time">Updated: {new Date(v.last_update).toLocaleString()}</p>
-                                        )}
-                                        <Link to={`/vessels/${v.id}`} className="popup-link">View Details →</Link>
-                                    </div>
-                                </Popup>
-                            </Marker>
-                        ))}
-                    </MapContainer>
+                                    <div style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>TGT: {a.vessel}</div>
+                                    {a.distance_km && <div style={{ fontSize: '0.75rem', color: 'var(--brand-cyan)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><MapPin size={12}/> PROXIMITY: {a.distance_km} KM</div>}
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
                 )}
-            </div>
+            </AnimatePresence>
+
         </div>
     )
 }

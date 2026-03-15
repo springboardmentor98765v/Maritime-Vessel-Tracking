@@ -12,18 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddIndex(
             model_name='notification',
-            index=models.Index(fields=['user'], name='notificatio_user_id_c291d5_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='notification',
             index=models.Index(fields=['is_read'], name='notificatio_is_read_9edb86_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='notification',
-            index=models.Index(fields=['user', 'timestamp'], name='notificatio_user_id_71c65a_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='notification',
-            index=models.Index(fields=['is_read', 'timestamp'], name='notificatio_is_read_585adf_idx'),
         ),
     ]

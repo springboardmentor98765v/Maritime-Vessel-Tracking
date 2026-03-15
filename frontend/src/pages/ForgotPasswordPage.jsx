@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
       await api.post('/auth/send-otp/', { email })
       setOtp('')
       startResendCountdown()
-    } catch (err) {
+    } catch {
       setError('Failed to resend OTP. Please try again.')
     } finally {
       setLoading(false)

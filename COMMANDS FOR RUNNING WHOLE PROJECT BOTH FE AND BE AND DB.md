@@ -1,6 +1,53 @@
 # 🚀 Project Startup Guide — Maritime Vessel Tracking
+          
+     THESE ARE NOT WORKING ILL UPDATE OR FOLLOW BELOW COMMANDS
+
+1.         cd backend
+
+2.         python -m venv venv_win
+
+3.         .\venv_win\Scripts\Activate.ps1
+
+4.         pip install -r requirements.txt
+
+5.         python manage.py migrate
+
+6.         python manage.py createsuperuser
+
+7.         python manage.py seed_m3_data
+
+8.         python manage.py runserver
+
+
+1.         cd frontend
+
+2.         npm install
+
+3.         npm run dev
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 This guide walks you through running the **full project** locally: PostgreSQL database, Django backend, and React frontend.
+
+## ⚡ Quick Start Links
+If your environment is already set up and running, here are the links you need:
+- **Frontend App:** [http://localhost:5173](http://localhost:5173) (Open this to use the app)
+- **Backend API:** [http://localhost:8000](http://localhost:8000)
+- **Django Admin:** [http://localhost:8000/admin/](http://localhost:8000/admin/)
 
 ---
 
@@ -82,7 +129,7 @@ Open a **new terminal window** (keep the backend running), navigate to the proje
 
 ```powershell
 # 1. Move into the frontend folder
-cd frontend
+cd frontend                                                                                                                                                                             
 
 # 2. Install Node dependencies (first time only)
 npm install
@@ -99,15 +146,16 @@ npm run dev
 
 | Service | URL | Notes |
 |---------|-----|-------|
-| **React Frontend** | http://localhost:5173 | Main app — open this in your browser |
-| **Django Backend API** | http://localhost:8000 | REST API root |
-| **Django Admin Panel** | http://localhost:8000/admin/ | Manage DB records via UI |
+| **React Frontend** | [http://localhost:5173](http://localhost:5173) | Main app — open this in your browser |
+| **Django Backend API** | [http://localhost:8000](http://localhost:8000) | REST API root |
+| **Django Admin Panel** | [http://localhost:8000/admin/](http://localhost:8000/admin/) | Manage DB records via UI |
 | **PostgreSQL Database** | localhost:5432 | Connect via pgAdmin or psql |
-| **Vessels API** | http://localhost:8000/vessels/ | Live vessel tracking data |
-| **Ports API** | http://localhost:8000/ports/ | Port data & analytics |
-| **Voyages API** | http://localhost:8000/voyages/ | Voyage records |
-| **Safety Events API** | http://localhost:8000/safety-events/ | Safety overlay data |
-| **Auth API** | http://localhost:8000/auth/ | JWT login & registration |
+| **Vessels API** | [http://localhost:8000/vessels/](http://localhost:8000/vessels/) | Live vessel tracking data |
+| **Ports API** | [http://localhost:8000/ports/](http://localhost:8000/ports/) | Port data & analytics |
+| **Voyages API** | [http://localhost:8000/voyages/](http://localhost:8000/voyages/) | Voyage records |
+| **Safety Events API** | [http://localhost:8000/safety-events/](http://localhost:8000/safety-events/) | Safety overlay data |
+| **Notifications API**| [http://localhost:8000/notifications/](http://localhost:8000/notifications/) | Notifications |
+| **Auth API** | [http://localhost:8000/auth/](http://localhost:8000/auth/) | JWT login & registration |
 
 ---
 
@@ -132,3 +180,37 @@ python manage.py simulate_live_api
 | Frontend not loading data | Confirm backend is running at `http://localhost:8000` |
 | `npm install` fails | Make sure Node.js v18+ is installed (`node -v`) |
 | Port already in use (8000) | Another process is using port 8000 — kill it or use `python manage.py runserver 8001` |
+
+---
+
+## ⚡ Pro Tips
+
+- **Command Palette:** Press `Cmd+K` (or `Ctrl+K`) anywhere in the frontend app to instantly search for vessels, ports, or jump between dashboard views.
+
+---
+
+## 💾 Exporting Live Data
+
+To export all the live database data to a PostgreSQL `.sql` file:
+1. Make sure PostgreSQL is running on port 5432 and the `teamm3` database exists.
+2. In the project root (`teamm3/`), simply run:
+   ```cmd
+   export_live_data.bat
+   ```
+3. A new file named `live_data_export.sql` will be generated in the root directory. You can use this file to restore or inspect the live database contents.
+
+---
+
+## 📥 Importing Live Data (For Teammates)
+
+If another person wants to use your exact database locally with the 1000 vessels:
+
+1. They need to share or download the `live_data_export.sql` file you generated.
+2. They must have PostgreSQL installed locally on port `5432`.
+3. They must first create an empty database named `teamm3` in their pgAdmin or `psql`.
+4. Run the import script in the root directory:
+   ```cmd
+   import_live_data.bat
+   ```
+   *(Or they can manually run: `psql -U postgres -h localhost -p 5432 -d teamm3 -f live_data_export.sql`)*
+5. The `teamm3` database will now match your live instance exactly!

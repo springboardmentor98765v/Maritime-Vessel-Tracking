@@ -1,0 +1,32 @@
+﻿python :   File 
+"<string>", line 1
+At line:1 char:31
++ ... tivate.ps1; python 
+-c 'import psycopg2; psyco
+pg2.connect("postgresql: 
+...
++                 ~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (   
+   File "<string>", lin   
+ e 1:String) [], Remot    
+eException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+    import psycopg2; psyco
+pg2.connect(postgresql://p
+ostgres.dealdikgxoibbnlomy
+oy:Sushant@1234@aws-0-ap-s
+outh-1.pooler.supabase.com
+:6543/postgres)
+                          
+                          
+                          
+                          
+      ^
+SyntaxError: invalid 
+decimal literal

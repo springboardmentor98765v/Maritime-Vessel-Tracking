@@ -41,7 +41,7 @@ export const fetchSubscriptions = async () => {
     try {
         const response = await api.get(`/vessels/subscriptions/`);
         return response.data;
-    } catch (_error) {
+    } catch {
         // Return empty array if not authenticated or endpoint fails
         return [];
     }

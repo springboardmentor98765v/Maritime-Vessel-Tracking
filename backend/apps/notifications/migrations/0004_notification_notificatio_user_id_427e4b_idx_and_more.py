@@ -6,16 +6,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifications', '0003_notification_event'),
+        ('notifications', '0003_alter_notification_vessel'),
     ]
 
     operations = [
-        migrations.AddIndex(
-            model_name='notification',
-            index=models.Index(fields=['user', 'is_read'], name='notificatio_user_id_427e4b_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='notification',
-            index=models.Index(fields=['timestamp'], name='notificatio_timesta_ccadc8_idx'),
-        ),
     ]

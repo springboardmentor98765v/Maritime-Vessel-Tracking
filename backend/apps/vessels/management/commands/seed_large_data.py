@@ -3,7 +3,7 @@ Management command: seed_large_data
 Usage:  python manage.py seed_large_data
         python manage.py seed_large_data --clear
 
-Seeds the database with 150 vessels, 60 ports, 300+ voyages, 600+ vessel
+Seeds the database with 1000 vessels, 60 ports, 300+ voyages, 600+ vessel
 events and 25 safety events so the frontend looks fully populated.
 """
 import random
@@ -288,7 +288,7 @@ def rand_vessel_name(used):
 
 
 class Command(BaseCommand):
-    help = "Seeds a large, realistic dataset: 150 vessels, 60 ports, 300+ voyages, safety events."
+    help = "Seeds a large, realistic dataset: 1000 vessels, 60 ports, 300+ voyages, safety events."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -334,13 +334,13 @@ class Command(BaseCommand):
         self.stdout.write(f"  {ports_created} ports created, {len(port_objs)} total.")
 
         # ── 2. VESSELS ────────────────────────────────────────────────────────
-        self.stdout.write("Seeding 150 vessels...")
+        self.stdout.write("Seeding 1000 vessels...")
         used_names = set(Vessel.objects.values_list("name", flat=True))
         used_imos = set(Vessel.objects.values_list("imo_number", flat=True))
         vessel_objs = list(Vessel.objects.all())
         vessels_created = 0
 
-        target = 150
+        target = 1000
         existing = len(vessel_objs)
         to_create = max(0, target - existing)
 

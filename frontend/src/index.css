@@ -16,34 +16,40 @@
   --brand-indigo: #6366f1;
   --brand-grad: linear-gradient(135deg, var(--brand-cyan), var(--brand-indigo));
 
-  --bg-0: #040c18;
-  --bg-1: #071224;
-  --bg-2: #0b1a35;
-  --bg-3: #0f2248;
+  /* Dark Navy Theme - Linear/Palantir inspired */
+  --bg-0: #040914; /* Deep, almost black navy */
+  --bg-1: #081126; /* Dark navy */
+  --bg-2: #0d1a38;
+  --bg-3: #15264a;
+  
+  --surface-1: rgba(13, 26, 56, 0.5); /* Glass surface */
+  --surface-2: rgba(21, 38, 74, 0.6);
+  --border: rgba(34, 211, 238, 0.12); /* Subtle cyan border */
+  --border-hi: rgba(34, 211, 238, 0.25);
 
-  --surface-1: rgba(15, 31, 60, 0.75);
-  --surface-2: rgba(20, 40, 75, 0.65);
-  --border: rgba(100, 160, 255, 0.12);
-  --border-hi: rgba(100, 200, 255, 0.25);
+  --text-0: #f8fafc;
+  --text-1: #cbd5e1;
+  --text-2: #94a3b8;
 
-  --text-0: #f0f8ff;
-  --text-1: rgba(220, 240, 255, 0.8);
-  --text-2: rgba(160, 200, 240, 0.6);
-
-  --success: #22c55e;
+  --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --info: #38bdf8;
+  --info: #0ea5e9;
 
-  --surface-50: rgba(7, 18, 36, 0.9);
-  --surface-100: rgba(11, 26, 53, 0.8);
-  --text-weak: rgba(160, 200, 240, 0.5);
-  --brand-primary: #22d3ee;
+  --chart-cyan: #38bdf8;
+  --chart-indigo: #6366f1;
+  --chart-amber: #f59e0b;
+  --chart-red: #ef4444;
 
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --surface-50: rgba(4, 9, 20, 0.9);
+  --surface-100: rgba(8, 17, 38, 0.8);
+  --text-weak: rgba(148, 163, 184, 0.5);
+  --brand-primary: #00f0ff; /* Neon highlight */
+
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 14px;
@@ -59,13 +65,28 @@ body {
   min-height: 100vh;
   background-color: var(--bg-0);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34, 211, 238, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(99, 102, 241, 0.07) 0%, transparent 60%);
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(13, 26, 56, 0.5) 0%, transparent 100%);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
+}
+
+/* ── App Grid Overlay ── */
+.app-bg-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  z-index: -1;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
 }
 
 /* ── Scrollbar ── */
@@ -111,31 +132,74 @@ p {
   color: var(--text-1);
 }
 
+/* ── Typography Scale & Spacing ── */
+.hero-title {
+  font-size: 44px !important;
+  line-height: 1.15 !important;
+  font-weight: 700 !important;
+}
+
+.page-title {
+  font-size: clamp(1.75rem, 3vw, 2.5rem) !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  letter-spacing: -0.02em !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.page-subtitle {
+  color: var(--text-2) !important;
+  font-size: 0.95rem !important;
+  margin-top: 0.5rem !important;
+  max-width: 600px !important;
+}
+.section-title {
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  margin-bottom: 32px !important;
+}
+.card-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin-bottom: 16px;
+}
+.label-sm {
+  font-size: 12px !important;
+  color: var(--text-2);
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px !important;
+}
+
 /* ── Layout helpers ── */
 .container {
-  width: min(1280px, 96%);
+  width: 100%;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 24px;
 }
 
 @media (max-width: 1024px) {
   .container {
-    width: min(100%, 95%);
-    padding: 0 0.85rem;
+    padding: 0 20px;
   }
 }
 
 @media (max-width: 768px) {
   .container {
-    width: 100%;
-    padding: 0 0.85rem;
+    padding: 0 16px;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    width: 100%;
-    padding: 0 0.75rem;
+    padding: 0 12px;
   }
 }
 
@@ -175,8 +239,8 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  width: min(1280px, 96%);
-  padding: 0 1rem;
+  width: 100%;
+  padding: 0;
 }
 
 .ticker-badge {
@@ -289,14 +353,45 @@ body {
 /* =====================================================
    PREMIUM GLASSMORPHISM & ANIMATIONS
    ===================================================== */
-/* Smooth row hover effects for data tables */
-.vessels-table tbody tr {
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2.25);
+    opacity: 0;
+  }
 }
-.vessels-table tbody tr:hover {
-  background: rgba(34, 211, 238, 0.04) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+/* Global Icon micro-interactions */
+button svg, a svg {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+button:hover svg, a:hover svg {
+  transform: scale(1.15) !important;
+}
+
+/* Global Table Improvements */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--text-2) !important;
+  text-align: left;
+  padding: 14px 18px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+td {
+  padding: 14px 18px !important;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+tbody tr {
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+tbody tr:hover {
+  background: rgba(56, 189, 248, 0.06) !important;
 }
 
 /* Deep glass effect for the header to look ultra-premium */
@@ -308,24 +403,51 @@ body {
 }
 
 /* Enhanced glowing buttons */
-.btn--primary {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  background-size: 200% auto !important;
+.btn {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
 }
-.btn--primary:hover {
-  background-position: right center !important;
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 8px 24px rgba(34, 211, 238, 0.4) !important;
+.btn:hover {
+  transform: translateY(-2px) scale(1.02);
 }
 
-/* 3D Dashboard Cards */
-.dash-card {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+.btn--primary {
+  background: var(--brand-grad) !important;
+  color: #040914 !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(34, 211, 238, 0.2) !important;
 }
-.dash-card:hover {
-  border-color: rgba(34, 211, 238, 0.5) !important;
-  transform: translateY(-4px) scale(1.01) !important;
-  box-shadow: 0 12px 32px rgba(34, 211, 238, 0.15) !important;
+.btn--primary:hover {
+  box-shadow: 0 8px 32px rgba(34, 211, 238, 0.5) !important;
+}
+
+.btn--ghost {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: #fff !important;
+  backdrop-filter: blur(8px) !important;
+}
+.btn--ghost:hover {
+  background: rgba(255,255,255,0.08) !important;
+  border-color: rgba(34, 211, 238, 0.4) !important;
+  box-shadow: 0 8px 24px rgba(34, 211, 238, 0.15) !important;
+}
+
+/* Premium SaaS Cards */
+.card, .dash-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 18px 20px !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.card:hover, .dash-card:hover {
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), inset 0 0 12px rgba(56, 189, 248, 0.05) !important;
 }
 
 /* Shimmer skeleton for loading states */

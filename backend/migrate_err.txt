@@ -1,0 +1,60 @@
+﻿Operations to perform:
+  Apply all migrations: admin, auth, authentication, contenttypes, notifications, ports, sessions, token_blacklist, vessels, voyages
+Running migrations:
+python : Traceback (most recent call last):
+At line:1 char:1
++ python manage.py migrate 2>&1 | Out-File -Encoding utf8 migrate_err.t ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], Remot 
+   eException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\LENOVO\Desktop\teamm3\backend\manage.py", line 30, in <module>
+    main()
+  File "C:\Users\LENOVO\Desktop\teamm3\backend\manage.py", line 26, in main
+    execute_from_command_line(sys.argv)
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\mana
+gement\__init__.py", line 442, in execute_from_command_line
+    utility.execute()
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\mana
+gement\__init__.py", line 436, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\mana
+gement\base.py", line 412, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\mana
+gement\base.py", line 458, in execute
+    output = self.handle(*args, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\mana
+gement\base.py", line 106, in wrapper
+    res = handle_func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\mana
+gement\commands\migrate.py", line 356, in handle
+    post_migrate_state = executor.migrate(
+                         ^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\db\migrat
+ions\executor.py", line 135, in migrate
+    state = self._migrate_all_forwards(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\db\migrat
+ions\executor.py", line 167, in _migrate_all_forwards
+    state = self.apply_migration(
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\db\migrat
+ions\executor.py", line 252, in apply_migration
+    state = migration.apply(state, schema_editor)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\db\migrat
+ions\migration.py", line 118, in apply
+    operation.state_forwards(self.app_label, project_state)
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\db\migrat
+ions\operations\fields.py", line 165, in state_forwards
+    state.remove_field(app_label, self.model_name_lower, self.name)
+  File "C:\Users\LENOVO\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\db\migrat
+ions\state.py", line 258, in remove_field
+    old_field = model_state.fields.pop(name)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'type'
+  Applying vessels.0005_remove_vessel_type_vessel_destination_vessel_heading_and_more...

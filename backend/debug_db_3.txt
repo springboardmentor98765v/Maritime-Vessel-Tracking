@@ -1,0 +1,313 @@
+﻿python : Traceback (most 
+recent call last):
+At line:1 char:31
++ ... 
+nv\Scripts\Activate.ps1; 
+python manage.py 
+showmigrations 2>&1 | 
+Out-F ...
++                         
+     ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (T  
+  raceback (most recent   
+  call last)::String)     
+[], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\base\base.py",
+ line 288, in 
+ensure_connection
+    self.connect()
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+utils\asyncio.py", line 
+26, in inner
+    return func(*args, 
+**kwargs)
+           
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\base\base.py",
+ line 269, in connect
+    self.connection = self
+.get_new_connection(conn_p
+arams)
+                      ^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+utils\asyncio.py", line 
+26, in inner
+    return func(*args, 
+**kwargs)
+           
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\postgresql\bas
+e.py", line 275, in 
+get_new_connection
+    connection = self.Data
+base.connect(**conn_params
+)
+                 ^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\psycopg
+2\__init__.py", line 135, 
+in connect
+    conn = _connect(dsn, c
+onnection_factory=connecti
+on_factory, **kwasync)
+           ^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError:
+ connection to server at "
+db.dealdikgxoibbnlomyoy.su
+pabase.co" (2406:da1a:6b0:
+f622:7294:697b:7d34:84c6),
+ port 6543 failed: FATAL: 
+ SASL authentication 
+failed
+
+
+The above exception was 
+the direct cause of the 
+following exception:
+
+Traceback (most recent 
+call last):
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\manag
+e.py", line 30, in 
+<module>
+    main()
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\manag
+e.py", line 26, in main
+    execute_from_command_l
+ine(sys.argv)
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+core\management\__init__.p
+y", line 442, in 
+execute_from_command_line
+    utility.execute()
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+core\management\__init__.p
+y", line 436, in execute
+    self.fetch_command(sub
+command).run_from_argv(sel
+f.argv)
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+core\management\base.py", 
+line 412, in run_from_argv
+    self.execute(*args, 
+**cmd_options)
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+core\management\base.py", 
+line 458, in execute
+    output = 
+self.handle(*args, 
+**options)
+             ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+core\management\commands\s
+howmigrations.py", line 
+66, in handle
+    return self.show_list(
+connection, 
+options["app_label"])
+           ^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+core\management\commands\s
+howmigrations.py", line 
+85, in show_list
+    loader = MigrationLoad
+er(connection, 
+ignore_no_migrations=True)
+             ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\migrations\loader.py", 
+line 58, in __init__
+    self.build_graph()
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\migrations\loader.py", 
+line 235, in build_graph
+    
+self.applied_migrations = 
+recorder.applied_migration
+s()
+                          
+    ^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\migrations\recorder.py"
+, line 81, in 
+applied_migrations
+    if self.has_table():
+       ^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\migrations\recorder.py"
+, line 57, in has_table
+    with 
+self.connection.cursor() 
+as cursor:
+         
+^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+utils\asyncio.py", line 
+26, in inner
+    return func(*args, 
+**kwargs)
+           
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\base\base.py",
+ line 329, in cursor
+    return self._cursor()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\base\base.py",
+ line 305, in _cursor
+    
+self.ensure_connection()
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+utils\asyncio.py", line 
+26, in inner
+    return func(*args, 
+**kwargs)
+           
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\base\base.py",
+ line 287, in 
+ensure_connection
+    with 
+self.wrap_database_errors:
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\utils.py", line 91, in 
+__exit__
+    raise dj_exc_value.wit
+h_traceback(traceback) 
+from exc_value
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\base\base.py",
+ line 288, in 
+ensure_connection
+    self.connect()
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+utils\asyncio.py", line 
+26, in inner
+    return func(*args, 
+**kwargs)
+           
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\base\base.py",
+ line 269, in connect
+    self.connection = self
+.get_new_connection(conn_p
+arams)
+                      ^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+utils\asyncio.py", line 
+26, in inner
+    return func(*args, 
+**kwargs)
+           
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\django\
+db\backends\postgresql\bas
+e.py", line 275, in 
+get_new_connection
+    connection = self.Data
+base.connect(**conn_params
+)
+                 ^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^
+  File "C:\Users\LENOVO\De
+sktop\teamm3\backend\.venv
+\Lib\site-packages\psycopg
+2\__init__.py", line 135, 
+in connect
+    conn = _connect(dsn, c
+onnection_factory=connecti
+on_factory, **kwasync)
+           ^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.Operationa
+lError: connection to 
+server at "db.dealdikgxoib
+bnlomyoy.supabase.co" (240
+6:da1a:6b0:f622:7294:697b:
+7d34:84c6), port 6543 
+failed: FATAL:  SASL 
+authentication failed
+

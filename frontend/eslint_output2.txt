@@ -1,0 +1,55 @@
+﻿
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\CommandPalette.jsx
+   3:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  30:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  28 |     useEffect(() => {
+  29 |         if (isOpen) {
+> 30 |             setSearch('')
+     |             ^^^^^^^^^ Avoid calling setState() directly within an effect
+  31 |             setSelectedIndex(0)
+  32 |             setResults(baseLinks)
+  33 |             setTimeout(() => inputRef.current?.focus(), 100)  react-hooks/set-state-in-effect
+  35:8   warning  React Hook useEffect has a missing dependency: 'baseLinks'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  71:8   warning  React Hook useEffect has a missing dependency: 'baseLinks'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  99:8   warning  React Hook useEffect has missing dependencies: 'handleSelect' and 'onClose'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\Header.jsx
+  5:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\RadarDisplay.jsx
+  1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\AnalyticsDashboardPage.jsx
+  9:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\ChangePasswordPage.jsx
+  1:20  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\DashboardPage.jsx
+  5:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\HomePage.jsx
+  2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\MapPage.jsx
+  10:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                  no-unused-vars
+  76:12  warning  'lastRefreshed' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\PortsPage.jsx
+  6:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\VesselDetailPage.jsx
+  12:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\VesselsPage.jsx
+  6:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+Γ£û 16 problems (1 error, 15 warnings)
+

@@ -1,0 +1,41 @@
+﻿
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\CommandPalette.jsx
+   3:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                       no-unused-vars
+  30:13  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  36:9   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  73:9   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\Header.jsx
+  5:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\RadarDisplay.jsx
+  1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\AnalyticsDashboardPage.jsx
+  9:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\ChangePasswordPage.jsx
+  1:20  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\DashboardPage.jsx
+  5:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\HomePage.jsx
+  2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\MapPage.jsx
+  10:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                  no-unused-vars
+  76:12  warning  'lastRefreshed' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\PortsPage.jsx
+  6:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\VesselDetailPage.jsx
+  12:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\VesselsPage.jsx
+  6:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+Γ£û 15 problems (0 errors, 15 warnings)
+  0 errors and 3 warnings potentially fixable with the `--fix` option.
+

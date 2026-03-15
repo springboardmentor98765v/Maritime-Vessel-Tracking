@@ -10,25 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveIndex(
-            model_name='vessel',
-            name='vessels_ves_type_2d352a_idx',
-        ),
-        migrations.RemoveIndex(
-            model_name='vessel',
-            name='vessels_ves_type_f46f01_idx',
-        ),
-        migrations.RenameField(
-            model_name='vessel',
-            old_name='type',
-            new_name='vessel_type',
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['vessel_type'], name='vessels_ves_vessel__b7df03_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='vessel',
-            index=models.Index(fields=['vessel_type', 'flag'], name='vessels_ves_vessel__3f084a_idx'),
-        ),
     ]
