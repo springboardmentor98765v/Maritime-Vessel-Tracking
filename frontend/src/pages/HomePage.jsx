@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { Activity, Anchor, ShieldAlert, Navigation, ChevronRight, Zap } from 'lucide-react'
+import { motion } from 'framer-motion'
 import RadarDisplay from '../components/common/RadarDisplay'
 
 function HomePage() {
@@ -17,6 +17,8 @@ function HomePage() {
     <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', background: 'radial-gradient(ellipse at 50% 15%, rgba(14, 30, 64, 0.45) 0%, rgba(4, 9, 20, 1) 65%)' }}>
       {/* ── Background Glow & Vignette ── */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80vh', background: 'radial-gradient(circle at 50% 25%, rgba(34,211,238,0.04) 0%, transparent 60%)', filter: 'blur(40px)', zIndex: 0, pointerEvents: 'none' }} />
+      {/* Soft background grid with low opacity */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '40px 40px', zIndex: 0, pointerEvents: 'none', maskImage: 'radial-gradient(ellipse at 50% 40%, black 40%, transparent 80%)', WebkitMaskImage: 'radial-gradient(ellipse at 50% 40%, black 40%, transparent 80%)' }} />
 
       {/* ── Live Ticker ── */}
       <motion.div
@@ -68,17 +70,17 @@ function HomePage() {
           {/* Heading */}
           <motion.h1
             variants={itemVariants}
-            style={{ fontSize: '56px', lineHeight: 1.3, margin: '1rem 0 1rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: '"Space Grotesk", sans-serif', maxWidth: '14ch', position: 'relative', zIndex: 1 }}
+            style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1.15, margin: '16px 0 24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: '"Space Grotesk", sans-serif', maxWidth: '560px', position: 'relative', zIndex: 1 }}
           >
-            Track every <span style={{ background: 'linear-gradient(90deg, #38bdf8, #60a5fa, #38bdf8)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(56,189,248,0.3))', animation: 'shimmer 5s linear infinite', paddingBottom: '0.1em' }}>vessel</span>,<br />
-            forecast <span style={{ background: 'linear-gradient(90deg, #60a5fa, #22d3ee, #60a5fa)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(96,165,250,0.3))', animation: 'shimmer 5s linear infinite', paddingBottom: '0.1em' }}>congestion</span>,<br />
-            surface <span style={{ background: 'linear-gradient(90deg, #fb923c, #f97316, #fb923c)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(251,146,60,0.3))', animation: 'shimmer 5s linear infinite', paddingBottom: '0.1em' }}>safety risks</span>.
+            Track every <span style={{ background: 'linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(59,130,246,0.3))', animation: 'shimmer 6s linear infinite', paddingBottom: '0.1em' }}>vessel</span>,<br />
+            forecast <span style={{ background: 'linear-gradient(90deg, #22d3ee, #06b6d4, #22d3ee)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(34,211,238,0.3))', animation: 'shimmer 6s linear infinite', paddingBottom: '0.1em' }}>congestion</span>,<br />
+            surface <span style={{ background: 'linear-gradient(90deg, #fb923c, #f59e0b, #fb923c)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(245,158,11,0.3))', animation: 'shimmer 6s linear infinite', paddingBottom: '0.1em' }}>safety risks</span>.
           </motion.h1>
 
           {/* Description */}
           <motion.p
             variants={itemVariants}
-            style={{ fontSize: '16px', color: '#f8fafc', opacity: 0.85, lineHeight: 1.65, margin: '18px 0 0 0', maxWidth: '520px', letterSpacing: '0.01em', position: 'relative', zIndex: 1 }}
+            style={{ fontSize: 'clamp(1rem, 1.5vw, 1.125rem)', color: '#f8fafc', opacity: 0.85, lineHeight: 1.65, margin: '0', maxWidth: '520px', letterSpacing: '0.01em', position: 'relative', zIndex: 1 }}
           >
             Maritime Vista unifies live vessel tracking, port analytics, and safety
             overlays for operators, analysts, and fleet managers — all inside a powerful command view.
@@ -141,6 +143,9 @@ function HomePage() {
           transition={{ duration: 0.75, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '24px', position: 'relative', zIndex: 1, marginTop: '-32px' }}
         >
+          {/* Slow radar glow animation */}
+          <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', width: '120%', height: '120%', background: 'radial-gradient(circle, rgba(34,211,238,0.12) 0%, transparent 60%)', filter: 'blur(40px)', animation: 'pulseRadarGlow 4s ease-in-out infinite', zIndex: -1, pointerEvents: 'none' }} />
+          <style>{`@keyframes pulseRadarGlow { 0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }`}</style>
           <motion.div
             whileHover={{ rotateX: 2, rotateY: -2, y: -4, boxShadow: '0 32px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.15)' }}
             transition={{ type: 'spring', stiffness: 300, damping: 24 }}

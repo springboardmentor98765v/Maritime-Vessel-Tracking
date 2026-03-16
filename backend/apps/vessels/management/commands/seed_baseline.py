@@ -32,25 +32,26 @@ class Command(BaseCommand):
         vessels_created = 0
         vessels = list(Vessel.objects.all())
         
-        if not vessels:
-            for i in range(1, 16):
-                v, _ = Vessel.objects.get_or_create(
-                    imo_number=f"IMO900{i:03d}",
-                    defaults={
-                        "name": f"Global Voyager {i}",
-                        "vessel_type": random.choice(vessel_types),
-                        "flag": random.choice(flags),
-                        "cargo_type": "General Cargo" if i % 2 == 0 else "Crude Oil",
-                        "operator": f"TransGlobal Line {chr(65 + i % 5)}",
-                        "last_position_lat": round(random.uniform(-40, 60), 4),
-                        "last_position_lon": round(random.uniform(-100, 100), 4),
-                        "speed": round(random.uniform(10.0, 22.0), 1),
-                        "heading": random.randint(0, 359),
-                        "last_update": timezone.now()
-                    }
-                )
-                vessels.append(v)
-                vessels_created += 1
+        # Clear existing vessels to start fresh with 1200
+        Vessel.objects.all().delete()
+        vessels = []
+        
+        for i in range(1, 1201):
+            v = Vessel.objects.create(
+                imo_number=f"IMO900{i:04d}",
+                name=f"Global Voyager {i}",
+                vessel_type=random.choice(vessel_types),
+                flag=random.choice(flags),
+                cargo_type="General Cargo" if i % 2 == 0 else "Crude Oil",
+                operator=f"TransGlobal Line {chr(65 + i % 5)}",
+                last_position_lat=round(random.uniform(-60, 60), 4),
+                last_position_lon=round(random.uniform(-180, 180), 4),
+                speed=round(random.uniform(10.0, 22.0), 1),
+                heading=random.randint(0, 359),
+                last_update=timezone.now()
+            )
+            vessels.append(v)
+            vessels_created += 1
 
         self.stdout.write(f"Created {vessels_created} baseline vessels.")
 
@@ -64,48 +65,48 @@ class Command(BaseCommand):
 
         status_choices = ['completed', 'in_transit', 'delayed', 'cancelled']
 
-        for v in vessels:
-            # Create 1-3 voyages per vessel
-            for _ in range(random.randint(1, 3)):
-                p_from, p_to = random.sample(ports, 2)
-                
-                # Historic voyage (1 to 30 days ago)
-                days_ago = random.randint(1, 40)
-                dep_time = now - timedelta(days=days_ago)
-                arr_time = dep_time + timedelta(days=random.randint(3, 14))
-                
-                status = random.choice(status_choices)
-                if arr_time > now:
-                    arr_time = None
-                    status = 'in_transit'
+        TARGET_VOYAGES = 1500
+        TARGET_EVENTS_TOTAL = 3000
+        events_per_voyage = TARGET_EVENTS_TOTAL // TARGET_VOYAGES # exactly 2
 
-                voyage = Voyage.objects.create(
+        for i in range(TARGET_VOYAGES):
+            v = random.choice(vessels)
+            p_from, p_to = random.sample(ports, 2)
+            
+            # Historic voyage (1 to 30 days ago)
+            days_ago = random.randint(1, 40)
+            dep_time = now - timedelta(days=days_ago)
+            arr_time = dep_time + timedelta(days=random.randint(3, 14))
+            
+            status = random.choice(status_choices)
+            if arr_time > now:
+                arr_time = None
+                status = 'in_transit'
+
+            voyage = Voyage.objects.create(
+                vessel=v,
+                port_from=p_from,
+                port_to=p_to,
+                departure_time=dep_time,
+                arrival_time=arr_time,
+                status=status
+            )
+            voyages_created += 1
+
+            # Generate exactly 2 waypoints (Events) for the Replay timeline
+            for w in range(events_per_voyage):
+                event_time = dep_time + timedelta(days=w*2 + 1)
+                
+                event_types = ['underway', 'route_changed', 'weather', 'inspection']
+                
+                VesselEvent.objects.create(
                     vessel=v,
-                    port_from=p_from,
-                    port_to=p_to,
-                    departure_time=dep_time,
-                    arrival_time=arr_time,
-                    status=status
+                    event_type=random.choice(event_types),
+                    location=f"Navigating near {p_from.country} Sector {w+1}",
+                    latitude=v.last_position_lat + random.uniform(-5, 5),
+                    longitude=v.last_position_lon + random.uniform(-5, 5),
+                    timestamp=event_time,
+                    details="Standard transit waypoint recorded autonomously."
                 )
-                voyages_created += 1
 
-                # Generate 2-4 waypoints (Events) for the Replay timeline
-                waypoints_count = random.randint(2, 4)
-                for w in range(waypoints_count):
-                    event_time = dep_time + timedelta(days=w*2 + 1)
-                    if arr_time and event_time > arr_time:
-                        break
-
-                    event_types = ['underway', 'route_changed', 'weather', 'inspection']
-                    
-                    VesselEvent.objects.create(
-                        vessel=v,
-                        event_type=random.choice(event_types),
-                        location=f"Navigating near {p_from.country} Sector {w+1}",
-                        latitude=v.last_position_lat + random.uniform(-5, 5),
-                        longitude=v.last_position_lon + random.uniform(-5, 5),
-                        timestamp=event_time,
-                        details="Standard transit waypoint recorded autonomously."
-                    )
-
-        self.stdout.write(self.style.SUCCESS(f"Successfully seeded {voyages_created} Historical Voyages & Waypoints."))
+        self.stdout.write(self.style.SUCCESS(f"Successfully seeded {voyages_created} Historical Voyages & {TARGET_EVENTS_TOTAL} Waypoints."))

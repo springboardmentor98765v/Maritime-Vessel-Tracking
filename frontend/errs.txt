@@ -1,0 +1,19 @@
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\CommandPalette.jsx (0err2warn)
+  L3: 'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. [no-unused-vars]
+  L100: React Hook useEffect has missing dependencies: 'handleSelect' and 'onClose'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback. [react-hooks/exhaustive-deps]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\components\common\Header.jsx (0err1warn)
+  L5: 'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. [no-unused-vars]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\AnalyticsDashboardPage.jsx (0err1warn)
+  L9: 'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. [no-unused-vars]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\DashboardPage.jsx (0err1warn)
+  L5: 'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. [no-unused-vars]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\HomePage.jsx (0err1warn)
+  L2: 'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. [no-unused-vars]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\MapPage.jsx (1err0warn)
+  L130: Parsing error: Unexpected token << [null]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\PortsPage.jsx (0err1warn)
+  L6: 'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. [no-unused-vars]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\VesselDetailPage.jsx (0err1warn)
+  L12: 'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. [no-unused-vars]
+C:\Users\LENOVO\Desktop\teamm3\frontend\src\pages\VesselsPage.jsx (1err0warn)
+  L130: Parsing error: Unexpected token << [null]

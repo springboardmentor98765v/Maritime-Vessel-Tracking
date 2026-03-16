@@ -3,7 +3,7 @@ import { fetchPortCongestion } from '../services/portService'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell
 } from 'recharts'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Anchor, Search, Filter, AlertTriangle, Activity, BarChart3, Database, Globe, Clock, Ship, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import SkeletonLoader from '../components/common/SkeletonLoader'
 
@@ -98,15 +98,15 @@ export default function PortsPage() {
     )
 
     return (
-        <motion.div initial="hidden" animate="show" variants={containerVariants} style={{ paddingBottom: '4rem' }}>
+        <motion.div initial="hidden" animate="show" variants={containerVariants} style={{ padding: '1.5rem 2rem', paddingBottom: '4rem' }}>
             
             {/* Header */}
             <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '1.5rem' }}>
                 <div>
-                    <h1 style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: '"Space Grotesk", sans-serif', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <h1 className="page-title">
                         <Anchor color="var(--brand-cyan)" size={32} /> Global Terminal Congestion
                     </h1>
-                    <p style={{ color: 'var(--text-1)', fontSize: '0.95rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <p className="page-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {loading ? 'Aggregating terminal data...' : `Monitoring ${ports.length} global trade hubs`} 
                         &middot; <span style={{ color: criticalCount > 0 ? '#ef4444' : 'var(--text-1)', fontWeight: criticalCount > 0 ? 700 : 400 }}>{criticalCount} CRITICAL THREATS</span>
                         {lastRefresh && <span>&middot; SYNOD: {lastRefresh}</span>}
@@ -131,19 +131,19 @@ export default function PortsPage() {
             ) : (
                 <>
                     {/* Summary Matrix */}
-                    <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+                    <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
                         {['critical', 'high', 'moderate', 'low'].map(level => {
                             const count = ports.filter(p => p.congestion_level === level).length;
                             const isActive = levelFilter === level;
                             const color = LEVEL_COLORS[level];
                             return (
                                 <motion.div key={level} variants={itemVariants}
-                                    whileHover={{ y: -4, boxShadow: `0 16px 32px ${color}25`, borderColor: `${color}80` }}
+                                    className="card"
                                     onClick={() => setLevelFilter(prev => prev === level ? '' : level)}
                                     style={{ 
-                                        cursor: 'pointer', background: isActive ? `linear-gradient(180deg, ${color}20 0%, ${color}05 100%)` : 'linear-gradient(180deg, rgba(30,41,59,0.3) 0%, rgba(15,23,42,0.6) 100%)', 
-                                        border: `1px solid ${isActive ? color : 'rgba(255,255,255,0.06)'}`, 
-                                        borderRadius: '16px', padding: '1.5rem', backdropFilter: 'blur(16px)', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column', gap: '0.75rem',
+                                        cursor: 'pointer', background: isActive ? `linear-gradient(180deg, ${color}20 0%, ${color}05 100%)` : undefined, 
+                                        border: isActive ? `1px solid ${color}` : undefined, 
+                                        display: 'flex', flexDirection: 'column', gap: '0.75rem',
                                         position: 'relative', overflow: 'hidden'
                                     }}
                                 >
@@ -162,10 +162,10 @@ export default function PortsPage() {
 
                     {/* Analytics Charts */}
                     <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
-                        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', backdropFilter: 'blur(12px)' }}>
-                            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontFamily: '"Space Grotesk", sans-serif' }}>
+                        <div className="card">
+                            <h2 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <BarChart3 size={18} color="var(--brand-cyan)" /> Top 15 Operations Bottlenecks
-                            </h3>
+                            </h2>
                             <div style={{ width: '100%', height: 300 }}>
                                 <ResponsiveContainer>
                                     <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
@@ -203,10 +203,10 @@ export default function PortsPage() {
                             </div>
                         </div>
 
-                        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', backdropFilter: 'blur(12px)' }}>
-                            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontFamily: '"Space Grotesk", sans-serif' }}>
+                        <div className="card">
+                            <h2 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <ArrowUpRight size={18} color="#8b5cf6" /> Vessel Traffic Flow (Arrivals/Departures)
-                            </h3>
+                            </h2>
                             <div style={{ width: '100%', height: 300 }}>
                                 <ResponsiveContainer>
                                     <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
@@ -234,7 +234,7 @@ export default function PortsPage() {
                     </motion.div>
 
                     {/* Filter Bar */}
-                    <motion.div variants={itemVariants} style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1rem', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', backdropFilter: 'blur(12px)' }}>
+                    <motion.div variants={itemVariants} className="card" style={{ padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--brand-cyan)', fontWeight: 600, fontSize: '0.85rem', paddingRight: '1rem', borderRight: '1px solid var(--border)' }}>
                             <Filter size={16} /> Filters
                         </div>
@@ -265,7 +265,7 @@ export default function PortsPage() {
                     </motion.div>
 
                     {/* Matrix Grid */}
-                    <div style={{ overflowX: 'auto', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', backdropFilter: 'blur(12px)' }}>
+                    <div className="card" style={{ overflowX: 'auto', padding: '0.5rem 1.5rem' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '900px' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(0,0,0,0.2)' }}>

@@ -56,28 +56,20 @@ const CustomTooltip = ({ active, payload, label }) => {
 function SummaryCard({ label, value, accent }) {
     return (
         <motion.div 
-            whileHover={{ y: -4, boxShadow: '0 16px 32px rgba(0,0,0,0.3)', borderColor: 'rgba(255,255,255,0.15)' }}
+            className="card"
             style={{ 
-                background: 'linear-gradient(180deg, rgba(30,41,59,0.3) 0%, rgba(15,23,42,0.6) 100%)', 
-                border: '1px solid rgba(255,255,255,0.06)', 
-                borderRadius: '16px', 
-                padding: '24px', 
-                backdropFilter: 'blur(16px)',
-                position: 'relative',
-                overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '8px',
-                transition: 'border-color 0.3s ease'
             }}
         >
             <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '1px', background: `linear-gradient(90deg, transparent, ${accent || 'rgba(56,189,248,0.5)'}, transparent)` }} />
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: accent || 'var(--brand-cyan)', boxShadow: `0 0 10px ${accent || 'var(--brand-cyan)'}` }} />
-                <div style={{ fontSize: '12px', color: 'var(--text-2)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{label}</div>
+                <div className="label-sm">{label}</div>
             </div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif", color: '#fff', letterSpacing: '-0.02em', lineHeight: 1 }}>{value}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: "'Inter', sans-serif", color: '#fff', letterSpacing: '-0.01em', lineHeight: 1, marginTop: '0.25rem' }}>{value}</div>
         </motion.div>
     )
 }
@@ -124,15 +116,17 @@ export default function AnalyticsDashboardPage() {
         fill: COLORS[(i + 3) % COLORS.length],
     }))
 
-    return (
-        <div style={{ display: 'grid', gap: '2rem', animation: 'fadeUp .38s ease both' }}>
-            <div>
+  return (
+        <div style={{ display: 'grid', gap: '2rem', animation: 'fadeUp .4s ease both', padding: '1.5rem 0', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, right: '10%', width: '400px', height: '200px', background: 'radial-gradient(ellipse at top right, rgba(56,189,248,0.1), transparent 60%)', filter: 'blur(50px)', zIndex: 0, pointerEvents: 'none' }} />
+            
+            <div style={{ marginBottom: '0.5rem', position: 'relative', zIndex: 1 }}>
                 <h1 className="page-title">Analytics Dashboard</h1>
-                <p className="page-subtitle">Platform-wide maritime intelligence and statistics.</p>
+                <p className="page-subtitle" style={{ fontSize: '0.95rem' }}>Platform-wide maritime intelligence and real-time statistical aggregates.</p>
             </div>
 
             {/* Summary cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', position: 'relative', zIndex: 1 }}>
                 <SummaryCard label="Total Vessels" value={s.total_vessels} accent="#38bdf8" />
                 <SummaryCard label="Total Ports" value={s.total_ports} accent="#6366f1" />
                 <SummaryCard label="Total Voyages" value={s.total_voyages} accent="#22d3ee" />
@@ -142,29 +136,29 @@ export default function AnalyticsDashboardPage() {
 
             {/* Port congestion bar chart */}
             {portChartData.length > 0 && (
-                <div className="card">
-                <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '1.25rem', color: '#fff' }}>Top Ports by Congestion Score</h2>
-                    <ResponsiveContainer width="100%" height={240}>
+                <div className="card" style={{ position: 'relative', zIndex: 1 }}>
+                    <h2 className="card-title" style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: '0.01em', marginBottom: '1.5rem' }}>Top Ports by Congestion</h2>
+                    <ResponsiveContainer width="100%" height={260}>
                         <BarChart data={portChartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                             <defs>
                                 <linearGradient id="bar-gradient-critical" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#ef4444" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#ef4444" stopOpacity={0.2}/>
+                                    <stop offset="100%" stopColor="#991b1b" stopOpacity={0.4}/>
                                 </linearGradient>
                                 <linearGradient id="bar-gradient-high" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#f59e0b" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#f59e0b" stopOpacity={0.2}/>
+                                    <stop offset="100%" stopColor="#b45309" stopOpacity={0.4}/>
                                 </linearGradient>
                                 <linearGradient id="bar-gradient-normal" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#38bdf8" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#38bdf8" stopOpacity={0.2}/>
+                                    <stop offset="100%" stopColor="#0369a1" stopOpacity={0.4}/>
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                            <XAxis dataKey="name" stroke="var(--text-2)" fontSize={11} tickLine={false} axisLine={false} />
-                            <YAxis domain={[0, 100]} stroke="var(--text-2)" fontSize={11} tickLine={false} axisLine={false} />
-                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
-                            <Bar dataKey="score" name="Congestion Score" radius={[6, 6, 0, 0]}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
+                            <XAxis dataKey="name" stroke="var(--text-2)" fontSize={11} tickLine={false} axisLine={false} tickMargin={10} />
+                            <YAxis domain={[0, 100]} stroke="var(--text-2)" fontSize={11} tickLine={false} axisLine={false} tickMargin={10} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                            <Bar dataKey="score" name="Congestion Score" radius={[6, 6, 0, 0]} isAnimationActive={true} animationDuration={1200} animationEasing="ease-out">
                                 {portChartData.map((entry, i) => (
                                     <Cell key={i} fill={entry.score >= 80 ? 'url(#bar-gradient-critical)' : entry.score >= 60 ? 'url(#bar-gradient-high)' : 'url(#bar-gradient-normal)'} />
                                 ))}
@@ -175,21 +169,22 @@ export default function AnalyticsDashboardPage() {
             )}
 
             {/* Two pie charts */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', position: 'relative', zIndex: 1 }}>
                 {vesselPieData.length > 0 && (
                     <div className="card">
-                        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '1.25rem', color: '#fff' }}>Vessel Type Breakdown</h2>
-                        <ResponsiveContainer width="100%" height={220}>
-                            <PieChart>
+                        <h2 className="card-title" style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: '0.01em', marginBottom: '1.5rem' }}>Vessel Type Breakdown</h2>
+                        <ResponsiveContainer width="100%" height={260}>
+                            <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                                 <Pie
                                     data={vesselPieData}
-                                    cx="50%" cy="50%" innerRadius={60} outerRadius={85} dataKey="value"
-                                    stroke="rgba(8, 17, 38, 0.8)"
-                                    strokeWidth={3}
+                                    cx="50%" cy="50%" innerRadius={70} outerRadius={100} dataKey="value"
+                                    stroke="var(--bg-2)"
+                                    strokeWidth={4}
+                                    isAnimationActive={true} animationDuration={1200} animationEasing="ease-out"
                                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                    labelLine={{ stroke: 'rgba(255,255,255,0.2)', strokeWidth: 1 }}
+                                    labelLine={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, length1: 10, length2: 15 }}
                                 >
-                                    {vesselPieData.map((entry, i) => <Cell key={i} fill={entry.fill} style={{ filter: `drop-shadow(0px 4px 12px ${entry.fill}40)` }} />)}
+                                    {vesselPieData.map((entry, i) => <Cell key={i} fill={entry.fill} style={{ filter: `drop-shadow(0px 8px 16px ${entry.fill}40)`, outline: 'none' }} />)}
                                 </Pie>
                                 <Tooltip content={<CustomTooltip />} />
                             </PieChart>
@@ -199,18 +194,19 @@ export default function AnalyticsDashboardPage() {
 
                 {voyagePieData.length > 0 && (
                     <div className="card">
-                        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '1.25rem', color: '#fff' }}>Voyage Status Breakdown</h2>
-                        <ResponsiveContainer width="100%" height={220}>
-                            <PieChart>
+                        <h2 className="card-title" style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: '0.01em', marginBottom: '1.5rem' }}>Voyage Status Breakdown</h2>
+                        <ResponsiveContainer width="100%" height={260}>
+                            <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                                 <Pie
                                     data={voyagePieData}
-                                    cx="50%" cy="50%" innerRadius={60} outerRadius={85} dataKey="value"
-                                    stroke="rgba(8, 17, 38, 0.8)"
-                                    strokeWidth={3}
+                                    cx="50%" cy="50%" innerRadius={70} outerRadius={100} dataKey="value"
+                                    stroke="var(--bg-2)"
+                                    strokeWidth={4}
+                                    isAnimationActive={true} animationDuration={1200} animationEasing="ease-out"
                                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                    labelLine={{ stroke: 'rgba(255,255,255,0.2)', strokeWidth: 1 }}
+                                    labelLine={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, length1: 10, length2: 15 }}
                                 >
-                                    {voyagePieData.map((entry, i) => <Cell key={i} fill={entry.fill} style={{ filter: `drop-shadow(0px 4px 12px ${entry.fill}40)` }} />)}
+                                    {voyagePieData.map((entry, i) => <Cell key={i} fill={entry.fill} style={{ filter: `drop-shadow(0px 8px 16px ${entry.fill}40)`, outline: 'none' }} />)}
                                 </Pie>
                                 <Tooltip content={<CustomTooltip />} />
                             </PieChart>
@@ -220,8 +216,8 @@ export default function AnalyticsDashboardPage() {
             </div>
 
             {portChartData.length === 0 && vesselPieData.length === 0 && (
-                <div className="vessels-empty">
-                    <p>No analytics data yet. Run <code>python manage.py seed_data</code> in your backend to populate sample data.</p>
+                <div className="vessels-empty" style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border)', borderRadius: '16px', padding: '4rem', textAlign: 'center' }}>
+                    <p style={{ color: 'var(--text-1)', fontSize: '1.1rem' }}>No analytics data yet. Run <code style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>python manage.py seed_data</code> in your backend to populate sample data.</p>
                 </div>
             )}
         </div>

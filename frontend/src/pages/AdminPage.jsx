@@ -4,27 +4,31 @@ import SkeletonLoader from '../components/common/SkeletonLoader'
 
 function StatusDot({ color }) {
     return (
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />
+        <span style={{ position: 'relative', width: 8, height: 8, display: 'inline-block', flexShrink: 0 }}>
+            <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: color }} />
+            <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: color, animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+        </span>
     )
 }
 
 function StatusCard({ title, abbr, status, detail, color }) {
     return (
-        <div className="card" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <div className="card" style={{ display: 'flex', gap: '1rem', alignItems: 'center', border: `1px solid ${color}40`, boxShadow: `0 4px 12px ${color}10`, position: 'relative', overflow: 'hidden', padding: '1.25rem' }}>
+            <div style={{ position: 'absolute', top: 0, right: 0, width: '100px', height: '100px', background: `radial-gradient(circle at top right, ${color}20, transparent 70%)`, pointerEvents: 'none' }} />
             <div style={{
                 width: 44, height: 44, borderRadius: 10,
-                background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.18)',
+                background: `linear-gradient(135deg, ${color}15, ${color}05)`, border: `1px solid ${color}30`,
                 display: 'grid', placeItems: 'center', flexShrink: 0,
                 fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800,
-                fontSize: '.62rem', letterSpacing: '.05em', color: 'var(--brand-cyan)'
+                fontSize: '.62rem', letterSpacing: '.05em', color: color
             }}>{abbr}</div>
-            <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{title}</div>
+            <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#fff' }}>{title}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginTop: '.3rem' }}>
                     <StatusDot color={color} />
-                    <span style={{ fontSize: '.78rem', color: 'var(--text-2)' }}>{status}</span>
+                    <span style={{ fontSize: '.78rem', color: color === '#ef4444' ? '#fca5a5' : 'var(--text-2)', fontWeight: color === '#ef4444' ? 600 : 400 }}>{status}</span>
                 </div>
-                {detail && <div style={{ fontSize: '.73rem', color: 'var(--text-2)', marginTop: '.2rem' }}>{detail}</div>}
+                {detail && <div style={{ fontSize: '.73rem', color: 'var(--text-3)', marginTop: '.2rem' }}>{detail}</div>}
             </div>
         </div>
     )
@@ -117,16 +121,16 @@ export default function AdminPage() {
                         { label: 'Safety Zones (active)', value: activeSafety.length, abbr: 'SAF' },
                         { label: 'Critical Alerts', value: criticalSafety, abbr: 'CRT' },
                     ].map(item => (
-                        <div key={item.label} className="vessel-detail-card" style={{ textAlign: 'center' }}>
+                        <div key={item.label} className="card" style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <div style={{
-                                display: 'inline-grid', placeItems: 'center',
-                                width: 40, height: 40, borderRadius: 10, marginBottom: '.5rem',
-                                background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.14)',
-                                fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '.58rem',
+                                display: 'grid', placeItems: 'center',
+                                width: 44, height: 44, borderRadius: 12, marginBottom: '.75rem',
+                                background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.05))', border: '1px solid rgba(34,211,238,0.2)',
+                                fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '.6rem',
                                 letterSpacing: '.06em', color: 'var(--brand-cyan)'
                             }}>{item.abbr}</div>
-                            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif" }}>{item.value.toLocaleString()}</div>
-                            <div className="detail-label" style={{ marginTop: '.2rem' }}>{item.label}</div>
+                            <div style={{ fontSize: '1.6rem', fontWeight: 800, fontFamily: "'Inter', sans-serif", color: '#fff', lineHeight: 1 }}>{item.value.toLocaleString()}</div>
+                            <div className="detail-label" style={{ marginTop: '.4rem', fontSize: '0.8rem' }}>{item.label}</div>
                         </div>
                     ))}
                 </div>

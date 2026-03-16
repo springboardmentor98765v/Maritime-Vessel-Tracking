@@ -76,24 +76,23 @@ function Header() {
     }
 
     const unreadCount = notifications.filter(n => !n.is_read).length
-
     return (
-        <header className="header" style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(4, 9, 20, 0.65)', backdropFilter: 'blur(32px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <header className="header" style={{ position: 'sticky', top: 0, zIndex: 100, background: 'var(--surface-50)', backdropFilter: 'blur(24px) saturate(150%)', WebkitBackdropFilter: 'blur(24px) saturate(150%)', borderBottom: '1px solid var(--border)' }}>
             <div className="container header__inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.9rem 0' }}>
 
                 {/* Brand */}
-                <NavLink to="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-                    <div className="brand__mark" style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'var(--brand-grad)', display: 'grid', placeItems: 'center', boxShadow: '0 0 16px rgba(34, 211, 238, 0.25)' }}>
-                        <Ship size={20} color="#040914" strokeWidth={2.5} />
+                <NavLink to="/" className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
+                    <div className="brand__mark" style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--brand-grad)', display: 'grid', placeItems: 'center', boxShadow: '0 0 16px rgba(0, 229, 255, 0.25)' }}>
+                        <Ship size={18} color="#030B18" strokeWidth={2.5} />
                     </div>
                     <div>
-                        <span className="brand__title" style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#fff', display: 'block' }}>Maritime Vista</span>
-                        <span className="brand__subtitle" style={{ fontSize: '0.68rem', color: 'var(--brand-cyan)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Intelligence Hub</span>
+                        <span className="brand__title" style={{ fontSize: '1.05rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#fff', display: 'block', fontFamily: '"Inter", sans-serif' }}>Maritime Vista</span>
+                        <span className="brand__subtitle" style={{ fontSize: '0.65rem', color: 'var(--brand-accent)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Intelligence Hub</span>
                     </div>
                 </NavLink>
 
                 {/* Central Navigation */}
-                <nav className="nav" aria-label="Main navigation" style={{ display: 'flex', gap: '1.75rem', position: 'relative' }}>
+                <nav className="nav" aria-label="Main navigation" style={{ display: 'flex', gap: '1.5rem', position: 'relative' }}>
                     {links.map(({ to, label, end }) => {
                         const isActive = end ? location.pathname === to : location.pathname.startsWith(to)
                         return (
@@ -102,17 +101,17 @@ function Header() {
                                 to={to}
                                 style={{
                                     position: 'relative',
-                                    padding: '0.5rem 0.25rem',
-                                    fontSize: '0.85rem',
-                                    fontWeight: isActive ? 600 : 500,
+                                    padding: '0.5rem 0.5rem',
+                                    fontSize: '0.875rem',
+                                    fontWeight: isActive ? 500 : 500,
                                     color: isActive ? '#fff' : 'var(--text-1)',
-                                    transition: 'color 0.2s ease',
+                                    transition: 'all 0.2s ease',
                                     zIndex: 1,
                                     letterSpacing: '0.01em',
                                     textDecoration: 'none'
                                 }}
-                                onMouseOver={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--brand-cyan)' }}
-                                onMouseOut={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--text-1)' }}
+                                onMouseOver={(e) => { if (!isActive) { e.currentTarget.style.color = '#fff'; e.currentTarget.style.textShadow = '0 0 8px rgba(255,255,255,0.3)'; } }}
+                                onMouseOut={(e) => { if (!isActive) { e.currentTarget.style.color = 'var(--text-1)'; e.currentTarget.style.textShadow = 'none'; } }}
                             >
                                 {isActive && (
                                     <motion.div
@@ -121,14 +120,14 @@ function Header() {
                                             position: 'absolute',
                                             left: 0,
                                             right: 0,
-                                            bottom: '-4px',
-                                            height: '1.5px',
-                                            background: 'var(--brand-cyan)',
-                                            boxShadow: '0 -1px 8px rgba(34,211,238,0.5)',
+                                            bottom: '-2px',
+                                            height: '2px',
+                                            background: 'var(--brand-primary)',
+                                            boxShadow: '0 -2px 12px rgba(59, 164, 255, 0.6)',
                                             borderRadius: '2px',
                                             zIndex: -1
                                         }}
-                                        transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
                                 )}
                                 {label}
@@ -138,26 +137,28 @@ function Header() {
                 </nav>
 
                 {/* Actions */}
-                <div className="header__actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div className="header__actions" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
 
-                    {/* System Status Indicator */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.8rem', background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.2)', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 600, color: '#86efac', cursor: 'default' }}>
-                        <div style={{ position: 'relative', width: 8, height: 8 }}>
-                            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#22c55e' }} />
-                            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#22c55e', animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+                    {/* System Status Indicator - Operational Pulse badge */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.3rem 0.75rem', background: 'rgba(0, 200, 83, 0.1)', border: '1px solid rgba(0, 200, 83, 0.2)', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 600, color: 'var(--success)', cursor: 'default' }}>
+                        <div style={{ position: 'relative', width: 6, height: 6 }}>
+                            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'var(--success)' }} />
+                            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'var(--success)', animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
                         </div>
                         Operational
                     </div>
 
-                    {/* Command Palette Trigger */}
-                    <button
+                    {/* Expandable Command Palette Trigger */}
+                    <motion.button
+                        whileHover={{ width: '150px' }}
+                        initial={{ width: '130px' }}
                         onClick={() => setShowCommand(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.4rem 0.8rem', color: 'var(--text-1)', fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s', fontFamily: '"Space Grotesk", sans-serif' }}
-                        onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--brand-cyan)'; e.currentTarget.style.color = '#fff' }}
-                        onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-1)' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '0.35rem 0.6rem', color: 'var(--text-1)', fontSize: '0.8rem', cursor: 'pointer', fontFamily: '"Inter", sans-serif', transition: 'all 0.2sease', overflow: 'hidden', whiteSpace: 'nowrap' }}
+                        onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--border-hi)'; e.currentTarget.style.color = '#fff' }}
+                        onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-1)' }}
                     >
-                        <Command size={14} color="var(--brand-cyan)" /> <span style={{ marginRight: '0.25rem' }}>Search</span> <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 4px', borderRadius: '4px', fontSize: '0.7rem', color: 'var(--text-2)', fontFamily: 'monospace' }}>Ctrl+K</kbd>
-                    </button>
+                        <Command size={14} color="var(--text-2)" style={{ flexShrink: 0 }} /> <span style={{ marginRight: 'auto', opacity: 0.8 }}>Search...</span> <kbd style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 4px', borderRadius: '4px', fontSize: '0.65rem', color: 'var(--text-2)', fontFamily: 'monospace', flexShrink: 0 }}>⌘K</kbd>
+                    </motion.button>
 
                     {isAuthenticated ? (
                         <>

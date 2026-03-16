@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 
 export default function LoginPage() {
@@ -62,8 +63,13 @@ export default function LoginPage() {
     </button>
   )
 
-  return (
-    <div className="auth-wrapper">
+   return (
+    <motion.div 
+      className="auth-wrapper"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       {/* Info panel */}
       <div className="auth-info">
         <h2>Welcome back to<br />Maritime Vista</h2>
@@ -90,7 +96,7 @@ export default function LoginPage() {
           <p className="auth-card__sub">Access your maritime command center</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.25rem' }}>
           <div className="field">
             <label htmlFor="username">Username</label>
             <input
@@ -134,18 +140,18 @@ export default function LoginPage() {
 
           {error && <div className="form-error">{error}</div>}
 
-          <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+          <button type="submit" className="btn btn--primary btn--full" disabled={loading} style={{ marginTop: '0.25rem' }}>
             {loading ? 'Signing in…' : 'Sign in →'}
           </button>
         </form>
 
-        <p className="auth-footer-link">
+        <p className="auth-footer-link" style={{ marginTop: '1.5rem' }}>
           Don&apos;t have an account?{' '}
           <Link to="/register">Create one free</Link>
-          <span style={{ margin: '0 0.5rem' }}>·</span>
+          <span style={{ margin: '0 0.5rem', color: 'var(--text-3)' }}>·</span>
           <Link to="/forgot-password">Forgot password?</Link>
         </p>
       </div>
-    </div>
+    </motion.div>
   )
 }

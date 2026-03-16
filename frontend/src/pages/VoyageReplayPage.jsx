@@ -25,17 +25,9 @@ function VoyageCard({ voyage, onClick }) {
 
     return (
         <div
+            className="card"
             onClick={() => onClick(voyage)}
-            style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '12px',
-                padding: '18px 20px',
-                cursor: 'pointer',
-                transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
-            }}
-            onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(56,189,248,0.3)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.2)'; }}
-            onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}
+            style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
         >
             {/* Top: vessel name + status */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
@@ -54,10 +46,10 @@ function VoyageCard({ voyage, onClick }) {
                     <Anchor size={13} />
                     <span>{voyage.port_from_name || 'Origin'}</span>
                 </div>
-                <div style={{ flex: 1, position: 'relative', height: '3px', background: 'rgba(255,255,255,0.08)', borderRadius: '99px' }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #38bdf8, #6366f1)', borderRadius: '99px', transition: 'width 0.6s ease' }} />
+                <div style={{ flex: 1, position: 'relative', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '99px', overflow: 'visible' }}>
+                    <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #38bdf8, #6366f1)', borderRadius: '99px', transition: 'width 0.6s ease', boxShadow: '0 0 10px rgba(56,189,248,0.5)' }} />
                     {progress > 0 && progress < 100 && (
-                        <div style={{ position: 'absolute', top: '50%', left: `${progress}%`, transform: 'translate(-50%, -50%)', width: 10, height: 10, borderRadius: '50%', background: '#38bdf8', boxShadow: '0 0 8px #38bdf8' }} />
+                        <div style={{ position: 'absolute', top: '50%', left: `${progress}%`, transform: 'translate(-50%, -50%)', width: 12, height: 12, borderRadius: '50%', background: '#fff', boxShadow: '0 0 12px #38bdf8, inset 0 0 4px #000' }} />
                     )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-2)', fontSize: '13px' }}>
@@ -87,6 +79,7 @@ function ReplayPanel({ voyage, onClose }) {
     const [replay, setReplay] = useState(null)
     const [step, setStep] = useState(0)
     const [playing, setPlaying] = useState(false)
+    const [speed, setSpeed] = useState(1)
 
     useEffect(() => {
         api.get(`/voyages/${voyage.id}/replay/`)
@@ -96,11 +89,10 @@ function ReplayPanel({ voyage, onClose }) {
 
     useEffect(() => {
         if (!playing || !replay) return
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (step >= replay.waypoints.length - 1) { setPlaying(false); return }
-        const t = setTimeout(() => setStep(s => s + 1), 1200)
+        const t = setTimeout(() => setStep(s => s + 1), 1200 / speed)
         return () => clearTimeout(t)
-    }, [playing, step, replay])
+    }, [playing, step, replay, speed])
 
     if (!replay) return <div className="detail-loading">Loading replay data…</div>
 
@@ -108,10 +100,10 @@ function ReplayPanel({ voyage, onClose }) {
     const total = replay.waypoints.length
 
     return (
-        <div className="card card--glow">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h2 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Voyage Replay</h2>
-                <button className="btn btn--ghost btn--sm" onClick={onClose}>Close</button>
+        <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <h2 className="card-title" style={{ marginBottom: 0 }}>Voyage Replay</h2>
+                <button className="btn btn--ghost btn--sm" style={{ padding: '0.25rem 0.75rem' }} onClick={onClose}>Close</button>
             </div>
 
             {/* Route header */}
@@ -175,6 +167,13 @@ function ReplayPanel({ voyage, onClose }) {
                     {playing ? 'Pause' : step >= total - 1 ? 'Restart' : 'Play'}
                 </button>
                 <button className="btn btn--ghost btn--sm" onClick={() => setStep(s => Math.min(total - 1, s + 1))} disabled={step >= total - 1}>Next</button>
+                
+                <div style={{ marginLeft: '1rem', display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.05)', padding: '2px', borderRadius: '6px' }}>
+                    {[1, 2, 4].map(s => (
+                        <button key={s} onClick={() => setSpeed(s)} style={{ background: speed === s ? 'rgba(255,255,255,0.15)' : 'transparent', border: 'none', color: speed === s ? '#fff' : 'var(--text-2)', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: speed === s ? 700 : 500 }}>{s}x</button>
+                    ))}
+                </div>
+
                 <span style={{ marginLeft: 'auto', fontSize: '.75rem', color: 'var(--text-2)' }}>Step {step + 1} / {total}</span>
             </div>
 
@@ -215,11 +214,11 @@ export default function VoyageReplayPage() {
     }
 
     return (
-        <div style={{ display: 'grid', gap: '2rem', animation: 'fadeUp .38s ease both' }}>
+        <div style={{ display: 'grid', gap: '1.5rem', animation: 'fadeUp .38s ease both', padding: '1.5rem 0' }}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
                 <div>
-                    <h1 className="page-title" style={{ fontSize: '28px', fontWeight: 700 }}>Voyage Replay</h1>
+                    <h1 className="page-title">Voyage Replay</h1>
                     <p className="page-subtitle">Select a voyage to replay its route and view waypoint events.</p>
                 </div>
                 <input
@@ -233,7 +232,7 @@ export default function VoyageReplayPage() {
 
             {/* Stats Row */}
             {!loading && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
                     {[
                         { label: 'Total Voyages', value: stats.total, color: '#38bdf8' },
                         { label: 'In Transit', value: stats.active, color: '#7dd3fc' },
@@ -242,20 +241,17 @@ export default function VoyageReplayPage() {
                     ].map(stat => (
                         <div
                             key={stat.label}
+                            className="card"
                             style={{
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(255,255,255,0.08)',
-                                borderRadius: '12px',
-                                padding: '16px 20px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '1rem',
+                                gap: '1.25rem',
                             }}
                         >
                             <div style={{ width: 4, height: 36, borderRadius: 99, background: stat.color, flexShrink: 0 }} />
                             <div>
-                                <div style={{ fontSize: '22px', fontWeight: 700, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1 }}>{stat.value}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-2)', marginTop: '4px', fontWeight: 500 }}>{stat.label}</div>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', fontFamily: '"Inter", sans-serif', lineHeight: 1 }}>{stat.value}</div>
+                                <div className="label-sm" style={{ marginTop: '0.5rem' }}>{stat.label}</div>
                             </div>
                         </div>
                     ))}
@@ -271,14 +267,19 @@ export default function VoyageReplayPage() {
                     ) : filtered.length === 0 ? (
                         <div className="vessels-empty">No voyages found. Run <code>python manage.py seed_data</code> to populate data.</div>
                     ) : (
-                        <div style={{ display: 'grid', gap: '10px', maxHeight: '70vh', overflowY: 'auto', paddingRight: '4px' }}>
-                            {filtered.map(v => (
+                        <div style={{ display: 'grid', gap: '1.5rem', maxHeight: '70vh', overflowY: 'auto', paddingRight: '4px' }}>
+                            {filtered.slice(0, 100).map(v => (
                                 <VoyageCard
                                     key={v.id}
                                     voyage={v}
                                     onClick={voy => setSelected(voy.id === selected?.id ? null : voy)}
                                 />
                             ))}
+                            {filtered.length > 100 && (
+                                <div style={{ textAlign: 'center', color: 'var(--text-3)', fontSize: '0.85rem', padding: '1rem 0' }}>
+                                    Showing top 100 of {filtered.length} results. Use the search to refine.
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

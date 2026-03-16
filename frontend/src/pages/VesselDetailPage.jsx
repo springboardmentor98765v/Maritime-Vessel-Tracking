@@ -9,8 +9,33 @@ import {
 } from "../services/vesselService";
 import { useAuthContext } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
+import { formatFlagCountry } from '../utils/flags';
 import { ArrowLeft, Ship, MapPin, Compass, Navigation, Activity, Box, Map, AlertTriangle, ShieldCheck, Database, Calendar, Anchor } from "lucide-react";
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Custom cyan ship icon for detail page
+const vesselDetailIcon = L.divIcon({
+    html: `<div style="
+        width:18px;height:18px;border-radius:50%;
+        background:rgba(34,211,238,0.25);
+        border:2px solid #22d3ee;
+        box-shadow:0 0 14px rgba(34,211,238,0.8), 0 0 4px rgba(34,211,238,1);
+        display:flex;align-items:center;justify-content:center;
+    "><div style="width:6px;height:6px;border-radius:50%;background:#22d3ee;"></div></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+    className: '',
+});
+
+// Helper: fly to vessel position on mount
+function FlyTo({ lat, lon }) {
+    const map = useMap();
+    useEffect(() => { map.setView([lat, lon], 9, { animate: true }); }, [lat, lon, map]);
+    return null;
+}
 
 export default function VesselDetailPage() {
     const { id } = useParams();
@@ -125,7 +150,7 @@ export default function VesselDetailPage() {
                         </div>
                         <p style={{ color: 'var(--text-1)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '1.5rem', fontFamily: 'monospace' }}>
                             <span>IMO: <span style={{ color: '#fff' }}>{vessel.imo_number}</span></span>
-                            <span>FLAG: <span style={{ color: '#fff' }}>{vessel.flag.toUpperCase()}</span></span>
+                            <span>FLAG: <span style={{ color: '#fff', fontSize: '1.1em' }}>{vessel.flag ? formatFlagCountry(vessel.flag) : '—'}</span></span>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: isSubscribed ? 'var(--brand-cyan)' : 'var(--text-2)' }}>
                                 <ShieldCheck size={14} /> {isSubscribed ? 'SIGNAL SECURED' : 'UNSECURED SIGNAL'}
                             </span>
@@ -189,7 +214,7 @@ export default function VesselDetailPage() {
                                 <tbody>
                                     {[
                                         ['Asset Class', vessel.vessel_type],
-                                        ['Registry Flag', vessel.flag],
+                                        ['Registry Flag', vessel.flag ? formatFlagCountry(vessel.flag) : '—'],
                                         ['Primary Cargo', vessel.cargo_type || 'Unknown'],
                                         ['Assigned Operator', vessel.operator || 'Unregistered'],
                                     ].map(([label, value]) => (
@@ -207,41 +232,79 @@ export default function VesselDetailPage() {
                 {/* Right Column: Map & Events */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                     
-                    {/* Tactical Map Preview */}
-                    <motion.div variants={itemVariants} style={{ background: 'linear-gradient(135deg, rgba(8,17,38,0.8), rgba(4,9,20,0.9))', border: '1px solid var(--border-hi)', borderRadius: '16px', overflow: 'hidden', backdropFilter: 'blur(12px)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                        <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Space Grotesk", sans-serif', m: 0 }}>
+                    {/* Tactical Map Preview — embedded Leaflet */}
+                    <motion.div variants={itemVariants} style={{ border: '1px solid var(--border-hi)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(8,17,38,0.85)', backdropFilter: 'blur(12px)' }}>
+                            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Space Grotesk", sans-serif', margin: 0 }}>
                                 <Map size={16} color="var(--brand-primary)" /> Tactical Position
                             </h2>
-                            {hasPosition && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 10px var(--success)', animation: 'pulse 2s infinite' }} />}
-                        </div>
-                        
-                        <div style={{ padding: '2rem 1.25rem', textAlign: 'center' }}>
-                            {hasPosition ? (
-                                <>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-                                        {Number(vessel.last_position_lat).toFixed(4)}° N<br/>
-                                        {Number(vessel.last_position_lon).toFixed(4)}° E
-                                    </div>
-                                    <p style={{ color: 'var(--text-2)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>Coordinate lock confirmed.</p>
-                                    <a
-                                        href={`https://www.openstreetmap.org/?mlat=${vessel.last_position_lat}&mlon=${vessel.last_position_lon}&zoom=10`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.3)', color: 'var(--brand-cyan)', padding: '0.75rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.2s' }}
-                                        onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-cyan)'; e.currentTarget.style.color = '#000' }}
-                                        onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(34,211,238,0.1)'; e.currentTarget.style.color = 'var(--brand-cyan)' }}
-                                    >
-                                        Access Global Grid ↗
-                                    </a>
-                                </>
-                            ) : (
-                                <div style={{ color: 'var(--text-2)', fontSize: '0.9rem' }}>
-                                    <MapPin size={32} opacity={0.3} style={{ margin: '0 auto 1rem', display: 'block' }} />
-                                    No reliable coordinate lock achieved.
+                            {hasPosition && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e', animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite' }} />
+                                    <span style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 700, letterSpacing: '0.05em' }}>COORD LOCKED</span>
                                 </div>
                             )}
                         </div>
+
+                        {hasPosition ? (
+                            <>
+                                {/* Mini coordinate bar */}
+                                <div style={{ padding: '0.6rem 1.25rem', background: 'rgba(4,9,20,0.9)', display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--brand-cyan)', fontWeight: 600 }}>
+                                        {Number(vessel.last_position_lat).toFixed(5)}° N &nbsp; {Number(vessel.last_position_lon).toFixed(5)}° E
+                                    </span>
+                                    <a
+                                        href={`https://www.openstreetmap.org/?mlat=${vessel.last_position_lat}&mlon=${vessel.last_position_lon}&zoom=10`}
+                                        target="_blank" rel="noreferrer"
+                                        style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-2)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem', transition: 'color 0.2s' }}
+                                        onMouseOver={e => e.currentTarget.style.color = 'var(--brand-cyan)'}
+                                        onMouseOut={e => e.currentTarget.style.color = 'var(--text-2)'}
+                                    >
+                                        Open OSM ↗
+                                    </a>
+                                </div>
+
+                                {/* Map */}
+                                <div style={{ height: '280px', width: '100%' }}>
+                                    <MapContainer
+                                        center={[vessel.last_position_lat, vessel.last_position_lon]}
+                                        zoom={9}
+                                        style={{ height: '100%', width: '100%' }}
+                                        zoomControl={false}
+                                        attributionControl={false}
+                                        scrollWheelZoom={false}
+                                    >
+                                        <TileLayer
+                                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                                        />
+                                        <FlyTo lat={vessel.last_position_lat} lon={vessel.last_position_lon} />
+                                        {/* Watch-circle */}
+                                        <Circle
+                                            center={[vessel.last_position_lat, vessel.last_position_lon]}
+                                            radius={18000}
+                                            pathOptions={{ color: '#22d3ee', weight: 1, opacity: 0.35, fillColor: '#22d3ee', fillOpacity: 0.04 }}
+                                        />
+                                        <Marker
+                                            position={[vessel.last_position_lat, vessel.last_position_lon]}
+                                            icon={vesselDetailIcon}
+                                        >
+                                            <Popup>
+                                                <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#000' }}>
+                                                    <strong>{vessel.name}</strong><br />
+                                                    {vessel.vessel_type} · {vessel.flag.toUpperCase()}<br />
+                                                    {vessel.speed != null ? `${vessel.speed.toFixed(1)} kts` : 'Stationary'}
+                                                </div>
+                                            </Popup>
+                                        </Marker>
+                                    </MapContainer>
+                                </div>
+                            </>
+                        ) : (
+                            <div style={{ padding: '3rem 2rem', textAlign: 'center', background: 'rgba(4,9,20,0.8)', color: 'var(--text-2)' }}>
+                                <MapPin size={36} opacity={0.25} style={{ margin: '0 auto 1rem', display: 'block' }} />
+                                <div style={{ fontSize: '0.9rem' }}>No coordinate lock — vessel signal unavailable.</div>
+                            </div>
+                        )}
                     </motion.div>
 
                     {/* Operational Log */}

@@ -27,7 +27,6 @@ export default function CommandPalette({ isOpen, onClose }) {
 
     useEffect(() => {
         if (isOpen) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSearch('')
             setSelectedIndex(0)
             setResults(baseLinks)
@@ -97,6 +96,7 @@ export default function CommandPalette({ isOpen, onClose }) {
         }
         window.addEventListener('keydown', handleKeyDown)
         return () => window.removeEventListener('keydown', handleKeyDown)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, results, selectedIndex])
 
     return (

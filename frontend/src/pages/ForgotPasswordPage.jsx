@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import api from '../services/api'
 
 export default function ForgotPasswordPage() {
@@ -108,7 +109,12 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="auth-wrapper">
+    <motion.div 
+      className="auth-wrapper"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       <div className="auth-card" style={{ maxWidth: 440 }}>
         <div className="auth-card__header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '.5rem' }}>
@@ -215,7 +221,7 @@ export default function ForgotPasswordPage() {
 
         {/* RESET PASSWORD STEP */}
         {step === 'resetPassword' && (
-          <form onSubmit={handleResetPassword} style={{ display: 'grid', gap: '1rem' }}>
+          <form onSubmit={handleResetPassword} style={{ display: 'grid', gap: '1.25rem' }}>
             {success && <div className="form-success">{success}</div>}
 
             <div className="field">
@@ -321,7 +327,7 @@ export default function ForgotPasswordPage() {
 
             {error && <div className="form-error">{error}</div>}
 
-            <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+            <button type="submit" className="btn btn--primary btn--full" disabled={loading} style={{ marginTop: '0.25rem' }}>
               {loading ? 'Resetting...' : 'Reset Password →'}
             </button>
 
@@ -331,6 +337,6 @@ export default function ForgotPasswordPage() {
           </form>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }

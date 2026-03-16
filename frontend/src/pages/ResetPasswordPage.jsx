@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import api from '../services/api'
 
 export default function ResetPasswordPage() {
@@ -70,14 +71,19 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="auth-wrapper">
+    <motion.div 
+      className="auth-wrapper"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       <div className="auth-card">
         <div className="auth-card__header">
           <h2 className="auth-card__title">Create new password</h2>
           <p className="auth-card__sub">Enter a strong password to secure your account.</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.25rem' }}>
           <div className="field">
             <label htmlFor="new_password">New Password</label>
             <div style={{ position: 'relative' }}>
@@ -158,8 +164,7 @@ export default function ResetPasswordPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#6b7280'
-                  ,
+                  color: '#6b7280',
                   zIndex: 2
                 }}
                 aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
@@ -182,11 +187,11 @@ export default function ResetPasswordPage() {
           {error && <div className="form-error">{error}</div>}
           {success && <div className="form-success">{success}</div>}
 
-          <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+          <button type="submit" className="btn btn--primary btn--full" disabled={loading} style={{ marginTop: '0.25rem' }}>
             {loading ? 'Resetting…' : 'Reset password →'}
           </button>
         </form>
       </div>
-    </div>
+    </motion.div>
   )
 }

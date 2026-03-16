@@ -2,6 +2,7 @@ import { useState } from "react";
 import { changePassword } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
+import { motion } from "framer-motion";
 
 export default function ChangePassword() {
   const navigate = useNavigate();
@@ -97,7 +98,12 @@ export default function ChangePassword() {
   )
 
   return (
-    <div className="auth-wrapper">
+    <motion.div 
+      className="auth-wrapper"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       <div className="auth-card">
         <div className="auth-card__header">
           <h2 className="auth-card__title">Change Password</h2>
@@ -162,12 +168,12 @@ export default function ChangePassword() {
           {error && <div className="form-error">{error}</div>}
           {success && <div className="form-success">{success}</div>}
 
-          <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+          <button type="submit" className="btn btn--primary btn--full" disabled={loading} style={{ marginTop: '0.25rem' }}>
             {loading ? 'Updating…' : 'Update password →'}
           </button>
         </form>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

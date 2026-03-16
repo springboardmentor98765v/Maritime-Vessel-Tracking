@@ -1,8 +1,14 @@
+import { motion } from 'framer-motion'
 import RegisterForm from '../components/auth/RegisterForm'
 
 function RegisterPage() {
   return (
-    <div className="auth-wrapper">
+    <motion.div 
+      className="auth-wrapper"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       {/* Info panel */}
       <div className="auth-info">
         <h2>Join Maritime Vista</h2>
@@ -26,7 +32,7 @@ function RegisterPage() {
 
       {/* Register form card */}
       <RegisterForm />
-    </div>
+    </motion.div>
   )
 }
 
