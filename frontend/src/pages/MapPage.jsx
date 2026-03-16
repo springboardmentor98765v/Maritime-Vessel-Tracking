@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, Circle, ZoomControl } from 'react-leaflet'
 import L from 'leaflet'
@@ -8,6 +8,7 @@ import { fetchVessels } from '../services/vesselService'
 import { fetchSafetyZones, fetchSafetyAlerts } from '../services/portService'
 import api from '../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
+import { formatFlagCountry } from '../utils/flags'
 import { ShieldAlert, Layers, RefreshCw, Command, Target, Activity, MapPin } from 'lucide-react'
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -90,7 +91,7 @@ export default function MapPage() {
         setLoading(true)
         try {
             const [vesselData, safetyData, zonesData, alertsData] = await Promise.all([
-                fetchVessels(),
+                fetchVessels({ page_size: 2000 }),
                 api.get('/safety-events/').then(r => r.data).catch(() => []),
                 fetchSafetyZones().catch(() => []),
                 fetchSafetyAlerts().catch(() => []),
@@ -109,7 +110,7 @@ export default function MapPage() {
     // Silent background refresh — does NOT trigger loading spinner
     const refreshVessels = async () => {
         try {
-            const vesselData = await fetchVessels()
+            const vesselData = await fetchVessels({ page_size: 2000 })
             setVessels(vesselData.filter(v => v.last_position_lat != null && v.last_position_lon != null))
         } catch (err) {
             console.error('Vessel refresh failed:', err)
@@ -127,21 +128,19 @@ export default function MapPage() {
 
     const toggleLayer = (type) => setLayerToggles(prev => ({ ...prev, [type]: !prev[type] }))
 
-<<<<<<< HEAD
-    const allTypes = [...new Set([
-        ...safetyZones.map(z => z.zone_type),
-        ...safetyEvents.map(e => e.event_type),
-    ])].filter(t => ZONE_LABELS[t])
-
-=======
     // Unique zone types present in data (from both sources)
    const allTypes = Object.keys(ZONE_LABELS)
->>>>>>> 31b8725ea6237bd7730b9fe1ebd91572efda51dc
     const criticalAlerts = alerts.filter(a => a.severity === 'critical' || a.severity === 'high')
+
+    // Pre-compute a Set for O(1) lookups during vessel map rendering — avoids O(N*M) loop
+    const criticalVesselNames = useMemo(
+        () => new Set(criticalAlerts.map(a => a.vessel)),
+        [criticalAlerts]
+    )
 
     // Find if a vessel is actively in a critical alert
     const getVesselIcon = (vesselName) => {
-        if (criticalAlerts.some(a => a.vessel === vesselName)) return alertShipIcon;
+        if (criticalVesselNames.has(vesselName)) return alertShipIcon;
         return shipIcon;
     }
 
@@ -184,30 +183,11 @@ export default function MapPage() {
                 }
             `}</style>
 
-<<<<<<< HEAD
             <MapContainer center={[15, 0]} zoom={3} style={{ height: '100%', width: '100%', zIndex: 1 }} scrollWheelZoom zoomControl={false}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <ZoomControl position="bottomright" />
-=======
-            {/* Overlay Layer Toggles */}
-            <div className="map-layer-controls">
-    <span style={{ color: '#64748b', fontSize: 12, marginRight: 8 }}>
-        Overlays:
-    </span>
-
-    <label className="map-layer-toggle">
-        <input
-            type="checkbox"
-            checked={showLegacySafety}
-            onChange={() => setShowLegacySafety(p => !p)}
-        />
-        <span className="map-layer-dot" style={{ background: '#f97316' }} />
-        Safety Events
-    </label>
-</div>
->>>>>>> 31b8725ea6237bd7730b9fe1ebd91572efda51dc
 
                 {/* Milestone-3 Safety Zones circles */}
                 {safetyZones.map(zone => {
@@ -275,6 +255,7 @@ export default function MapPage() {
                                     <div style={{ fontSize: '0.8rem', color: 'var(--text-1)', marginTop: '8px', display: 'grid', gap: '4px' }}>
                                         <div><strong style={{ color: 'var(--text-2)' }}>IMO:</strong> <span style={{ fontFamily: 'monospace' }}>{v.imo_number}</span></div>
                                         <div><strong style={{ color: 'var(--text-2)' }}>TYPE:</strong> {v.vessel_type}</div>
+                                    <div><strong style={{ color: 'var(--text-2)' }}>FLAG:</strong> {v.flag ? formatFlagCountry(v.flag) : '—'}</div>
                                         <div><strong style={{ color: 'var(--text-2)' }}>CARGO:</strong> {v.cargo_type || 'Unknown'}</div>
                                         {v.last_update && (
                                             <div style={{ marginTop: '4px', paddingTop: '4px', borderTop: '1px dashed rgba(255,255,255,0.1)', color: 'var(--brand-cyan)', fontSize: '0.7rem' }}>
@@ -331,7 +312,6 @@ export default function MapPage() {
                 </div>
             </motion.div>
 
-<<<<<<< HEAD
             {/* Bottom Layers Panel */}
             <motion.div 
                 initial={{ y: 50, opacity: 0 }}
@@ -356,43 +336,6 @@ export default function MapPage() {
                     </label>
                 </div>
             </motion.div>
-=======
-                        {/* Milestone-3 Safety Zones circles (per-type toggle) */}
-                        { safetyZones.map(zone => {
-
-    if (layerToggles[zone.zone_type] === false) return null
-
-    const color = ZONE_TYPE_COLORS[zone.zone_type] || '#eab308'
-
-    return (
-        <Circle
-            key={`sz-${zone.id}`}
-            center={[zone.latitude, zone.longitude]}
-            radius={kmToMeters(zone.radius || 100)}
-            pathOptions={{
-                color,
-                fillColor: color,
-                fillOpacity: 0.13,
-                weight: 2,
-                dashArray: '6 3',
-            }}
-        >
-                                    <Popup>
-                                        <div className="map-popup">
-                                            <strong style={{ color }}>{ZONE_LABELS[zone.zone_type] || zone.zone_type}</strong>
-                                            <p style={{ color: SEVERITY_COLORS[zone.severity] || '#eab308', fontWeight: 700, margin: 0, textTransform: 'capitalize' }}>
-                                                Severity: {zone.severity}
-                                            </p>
-                                            <p style={{ opacity: .6, margin: 0, fontSize: '.7rem' }}>
-                                                Radius: {zone.radius} km
-                                                {zone.expires_at && <><br />Expires: {new Date(zone.expires_at).toLocaleDateString()}</>}
-                                            </p>
-                                        </div>
-                                    </Popup>
-                                </Circle>
-                            )
-                        })}
->>>>>>> 31b8725ea6237bd7730b9fe1ebd91572efda51dc
 
             {/* Floating Risk Alerts Panel */}
             <AnimatePresence>
