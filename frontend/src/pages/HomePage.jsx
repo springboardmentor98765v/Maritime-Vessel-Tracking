@@ -38,8 +38,8 @@ function HomePage() {
         overflow: 'hidden'
     }}>
       {/* ── Background Grid & Aurora Glow ── */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1000px', background: 'radial-gradient(ellipse 80% 60% at 50% -20%, rgba(34,211,238,0.12), transparent)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '800px', background: 'radial-gradient(circle at 80% 20%, rgba(99,102,241,0.08), transparent 40%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1000px', background: 'radial-gradient(ellipse 80% 60% at 50% -20%, rgba(34,211,238,0.06), transparent)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '800px', background: 'radial-gradient(circle at 80% 20%, rgba(99,102,241,0.04), transparent 40%)', pointerEvents: 'none' }} />
       <div style={{ 
           position: 'absolute', 
           inset: 0, 
@@ -85,13 +85,13 @@ function HomePage() {
 
       {/* ── Main Hero Section ── */}
       <div style={{
-        maxWidth: '1400px',
+        maxWidth: '1200px',
         margin: '0 auto',
         width: '100%',
-        padding: '6rem 2rem',
+        padding: '4rem 2rem',
         display: 'grid',
-        gridTemplateColumns: 'minmax(400px, 1.1fr) 0.9fr',
-        gap: '4rem',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '2.5rem',
         alignItems: 'center',
         position: 'relative',
         zIndex: 10
@@ -127,16 +127,15 @@ function HomePage() {
 
           <style>{`@keyframes shimmerText { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }`}</style>
 
-          {/* Heading */}
           <motion.h1
             variants={itemVariants}
             style={{ 
-                fontSize: 'clamp(3rem, 6vw, 4.5rem)', 
-                lineHeight: 1.05, 
-                margin: '0 0 1.5rem', 
-                fontWeight: 800, 
+                fontSize: 'clamp(36px, 4vw, 44px)', 
+                lineHeight: 1.1, 
+                margin: '0 0 1rem', 
+                fontWeight: 700, 
                 color: '#fff', 
-                letterSpacing: '-0.03em', 
+                letterSpacing: '-0.02em', 
                 fontFamily: '"Space Grotesk", sans-serif'
             }}
           >
@@ -152,15 +151,14 @@ function HomePage() {
             Surface risks.
           </motion.h1>
 
-          {/* Description */}
           <motion.p
             variants={itemVariants}
             style={{ 
-                fontSize: 'clamp(1.1rem, 1.5vw, 1.25rem)', 
+                fontSize: '15px', 
                 color: 'rgba(255,255,255,0.65)', 
                 lineHeight: 1.6, 
                 margin: '0', 
-                maxWidth: '560px', 
+                maxWidth: '520px', 
                 letterSpacing: '0.01em',
                 fontWeight: 400
             }}
@@ -175,21 +173,21 @@ function HomePage() {
           >
             <NavLink to="/register" style={{ textDecoration: 'none' }}>
               <motion.button
-                whileHover={{ scale: 1.02, y: -2, boxShadow: '0 12px 32px rgba(0, 229, 255, 0.35)' }}
+                whileHover={{ scale: 1.02, y: -1, boxShadow: '0 8px 24px rgba(0, 229, 255, 0.25)' }}
                 whileTap={{ scale: 0.98 }}
                 style={{ 
                     display: 'inline-flex', 
                     alignItems: 'center', 
-                    gap: '0.5rem', 
+                    gap: '0.4rem', 
                     background: 'linear-gradient(135deg, #00E5FF, #0055FF)', 
                     color: '#020617', 
                     border: 'none', 
-                    padding: '1rem 2.25rem', 
-                    borderRadius: '14px', 
-                    fontSize: '1rem', 
-                    fontWeight: 700, 
+                    padding: '0.75rem 1.5rem', 
+                    borderRadius: '8px', 
+                    fontSize: '0.9rem', 
+                    fontWeight: 600, 
                     cursor: 'pointer', 
-                    boxShadow: '0 8px 24px rgba(0,229,255,0.2), inset 0 2px 4px rgba(255,255,255,0.3)', 
+                    boxShadow: '0 4px 12px rgba(0,229,255,0.1), inset 0 1px 2px rgba(255,255,255,0.2)', 
                     transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)' 
                 }}
               >
@@ -198,22 +196,22 @@ function HomePage() {
             </NavLink>
             <NavLink to="/map" style={{ textDecoration: 'none' }}>
               <motion.button
-                whileHover={{ scale: 1.02, y: -2, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}
+                whileHover={{ scale: 1.02, y: -1, background: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.15)' }}
                 whileTap={{ scale: 0.98 }}
                 style={{ 
                     display: 'inline-flex', 
                     alignItems: 'center', 
-                    gap: '0.5rem', 
-                    background: 'rgba(255,255,255,0.03)', 
+                    gap: '0.4rem', 
+                    background: 'rgba(255,255,255,0.02)', 
                     color: '#fff', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
-                    padding: '1rem 2.25rem', 
-                    borderRadius: '14px', 
-                    fontSize: '1rem', 
-                    fontWeight: 600, 
+                    border: '1px solid rgba(255,255,255,0.08)', 
+                    padding: '0.75rem 1.5rem', 
+                    borderRadius: '8px', 
+                    fontSize: '0.9rem', 
+                    fontWeight: 500, 
                     cursor: 'pointer', 
-                    backdropFilter: 'blur(24px)', 
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    backdropFilter: 'blur(12px)', 
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                     transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)' 
                 }}
               >
@@ -261,7 +259,7 @@ function HomePage() {
                 transformStyle: 'preserve-3d'
             }}
           >
-            <RadarDisplay radarColor="#00E5FF" alertColor="#ef4444" />
+            <RadarDisplay radarColor="#00E5FF" alertColor="#ef4444" targetCount={8} />
           </motion.div>
         </motion.div>
       </div>
@@ -287,10 +285,10 @@ function HomePage() {
                           {stat.icon}
                       </div>
                       <div>
-                          <div style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', letterSpacing: '-0.02em' }}>
+                          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', letterSpacing: '-0.02em' }}>
                               <AnimatedCounter value={stat.value} delay={0.2} />
                           </div>
-                          <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{stat.label}</div>
+                          <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{stat.label}</div>
                       </div>
                   </motion.div>
               ))}

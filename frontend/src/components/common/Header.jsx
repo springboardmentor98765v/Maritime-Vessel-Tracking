@@ -90,8 +90,8 @@ function Header() {
 
     const unreadCount = notifications.filter(n => !n.is_read).length
 
-    const headerBg = scrolled ? 'rgba(4, 10, 24, 0.85)' : 'rgba(4, 10, 24, 0.4)'
-    const headerBlur = scrolled ? 'blur(24px) saturate(180%)' : 'blur(12px)'
+    const headerBg = scrolled ? 'rgba(4, 10, 24, 0.95)' : 'rgba(4, 10, 24, 0.8)'
+    const headerBlur = scrolled ? 'blur(12px)' : 'blur(8px)'
     const headerBorder = scrolled ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid transparent'
     const headerShadow = scrolled ? '0 12px 40px rgba(0,0,0,0.5)' : 'none'
 
@@ -146,8 +146,8 @@ function Header() {
                                 to={to}
                                 style={{
                                     position: 'relative',
-                                    padding: '0.5rem 1rem',
-                                    fontSize: '0.825rem',
+                                    padding: '0.35rem 0.75rem',
+                                    fontSize: '13px',
                                     fontWeight: isActive ? 600 : 500,
                                     color: isActive ? '#fff' : 'rgba(255,255,255,0.6)',
                                     transition: 'color 0.2s',
@@ -185,7 +185,7 @@ function Header() {
                             whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.08)' }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setShowCommand(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '0.45rem 0.8rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', cursor: 'pointer', fontFamily: '"Inter", sans-serif', transition: 'all 0.2s', whiteSpace: 'nowrap', width: '200px' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '0.4rem 0.6rem', color: 'rgba(255,255,255,0.6)', fontSize: '12px', cursor: 'pointer', fontFamily: '"Inter", sans-serif', transition: 'all 0.2s', whiteSpace: 'nowrap', width: '180px' }}
                         >
                             <Command size={14} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} /> 
                             <span style={{ marginRight: 'auto' }}>Search...</span> 
@@ -221,7 +221,7 @@ function Header() {
                                             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
                                             exit={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
                                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                            style={{ position: 'absolute', right: 0, top: '50px', width: '360px', background: 'rgba(8,17,38,0.95)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)', overflow: 'hidden' }}
+                                            style={{ position: 'absolute', right: 0, top: '50px', width: '360px', background: 'rgba(8,17,38,0.95)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', boxShadow: '0 12px 32px rgba(0,0,0,0.6)', overflow: 'hidden' }}
                                         >
                                             <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)', fontWeight: '700', fontSize: '0.9rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.03), transparent)' }}>
                                                 Notifications
@@ -269,7 +269,7 @@ function Header() {
                                             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
                                             exit={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
                                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                            style={{ position: 'absolute', right: 0, top: '50px', width: '240px', background: 'rgba(8,17,38,0.95)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)', padding: '0.5rem', overflow: 'hidden' }}
+                                            style={{ position: 'absolute', right: 0, top: '50px', width: '240px', background: 'rgba(8,17,38,0.95)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', boxShadow: '0 12px 32px rgba(0,0,0,0.6)', padding: '0.5rem', overflow: 'hidden' }}
                                         >
                                             <div style={{ padding: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--brand-grad)', padding: 1 }}>
@@ -308,13 +308,13 @@ function Header() {
                     ) : (
                         <div style={{ display: 'flex', gap: '0.75rem' }}>
                             <NavLink to="/login" style={{ textDecoration: 'none' }}>
-                                <motion.button whileHover={{ scale: 1.05, background: 'rgba(255,255,255,0.08)' }} whileTap={{ scale: 0.95 }} style={{ background: 'transparent', border: 'none', color: '#fff', padding: '0.5rem 1rem', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', borderRadius: '10px' }}>Log In</motion.button>
+                                <motion.button whileHover={{ scale: 1.02, background: 'rgba(255,255,255,0.08)' }} whileTap={{ scale: 0.98 }} style={{ background: 'transparent', border: 'none', color: '#fff', padding: '0.4rem 0.8rem', fontSize: '13px', fontWeight: 600, cursor: 'pointer', borderRadius: '6px' }}>Log In</motion.button>
                             </NavLink>
                             <NavLink to="/register" style={{ textDecoration: 'none' }}>
                                 <motion.button 
-                                    whileHover={{ scale: 1.05, boxShadow: '0 8px 24px rgba(34,211,238,0.4)' }} 
-                                    whileTap={{ scale: 0.95 }} 
-                                    style={{ background: 'linear-gradient(135deg, #00E5FF, #0055FF)', border: 'none', color: '#030B18', padding: '0.5rem 1.25rem', fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer', borderRadius: '10px', boxShadow: '0 4px 14px rgba(34,211,238,0.25)', textShadow: '0 1px 2px rgba(255,255,255,0.3)' }}
+                                    whileHover={{ scale: 1.02, boxShadow: '0 4px 12px rgba(34,211,238,0.2)' }} 
+                                    whileTap={{ scale: 0.98 }} 
+                                    style={{ background: 'linear-gradient(135deg, #00E5FF, #0055FF)', border: 'none', color: '#030B18', padding: '0.4rem 1rem', fontSize: '13px', fontWeight: 700, cursor: 'pointer', borderRadius: '6px', boxShadow: '0 2px 8px rgba(34,211,238,0.15)' }}
                                 >
                                     Get Started
                                 </motion.button>

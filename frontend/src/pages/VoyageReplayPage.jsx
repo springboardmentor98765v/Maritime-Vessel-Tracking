@@ -30,15 +30,15 @@ const VoyageCard = memo(function VoyageCard({ voyage, isSelected, onClick }) {
             style={{
                 cursor: 'pointer',
                 background: isSelected
-                    ? 'linear-gradient(160deg, rgba(34,211,238,0.12) 0%, rgba(8,17,38,0.95) 100%)'
-                    : 'linear-gradient(160deg, rgba(16,26,52,0.85) 0%, rgba(8,14,30,0.95) 100%)',
-                border: `1px solid ${isSelected ? 'rgba(34,211,238,0.4)' : 'rgba(255,255,255,0.07)'}`,
-                borderRadius: '16px',
-                padding: '1.25rem 1.5rem',
+                    ? 'linear-gradient(160deg, rgba(34,211,238,0.08) 0%, rgba(8,17,38,0.95) 100%)'
+                    : 'linear-gradient(160deg, rgba(16,26,52,0.65) 0%, rgba(8,14,30,0.85) 100%)',
+                border: `1px solid ${isSelected ? 'rgba(34,211,238,0.3)' : 'rgba(255,255,255,0.07)'}`,
+                borderRadius: '12px',
+                padding: '1rem 1.25rem',
                 position: 'relative',
                 overflow: 'hidden',
-                backdropFilter: 'blur(12px)',
-                boxShadow: isSelected ? '0 12px 36px rgba(34,211,238,0.2), 0 4px 12px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.3)',
+                backdropFilter: 'blur(8px)',
+                boxShadow: isSelected ? '0 8px 24px rgba(34,211,238,0.15), 0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.2)',
                 transition: 'all 0.2s',
             }}
         >
@@ -129,10 +129,10 @@ function ReplayPanel({ voyage, onClose }) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            style={{ position: 'sticky', top: '90px', background: 'linear-gradient(160deg, rgba(12,22,46,0.97) 0%, rgba(6,12,28,0.99) 100%)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(34,211,238,0.1)' }}
+            style={{ position: 'sticky', top: '90px', background: 'linear-gradient(160deg, rgba(12,22,46,0.97) 0%, rgba(6,12,28,0.99) 100%)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(34,211,238,0.05)' }}
         >
             {/* Header */}
-            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(34,211,238,0.04)' }}>
+            <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(34,211,238,0.02)' }}>
                 <div>
                     <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <PlayCircle size={18} color="#22d3ee" /> Voyage Replay
@@ -303,12 +303,12 @@ export default function VoyageReplayPage() {
                             key={stat.label}
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ y: -3, borderColor: `${stat.color}40` }}
-                            style={{ background: 'rgba(8,17,38,0.85)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', backdropFilter: 'blur(12px)', cursor: 'default', transition: 'all 0.2s' }}
+                            whileHover={{ y: -2, borderColor: `${stat.color}40` }}
+                            style={{ background: 'rgba(8,17,38,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', backdropFilter: 'blur(8px)', cursor: 'default', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}
                         >
-                            <div style={{ width: 4, height: 36, borderRadius: 99, background: stat.color, flexShrink: 0, boxShadow: `0 0 12px ${stat.color}80` }} />
+                            <div style={{ width: 4, height: 36, borderRadius: 99, background: stat.color, flexShrink: 0, boxShadow: `0 0 8px ${stat.color}60` }} />
                             <div>
-                                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1 }}>{stat.value}</div>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1 }}>{stat.value}</div>
                                 <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginTop: '4px' }}>{stat.label}</div>
                             </div>
                         </motion.div>
@@ -321,9 +321,9 @@ export default function VoyageReplayPage() {
                 {/* Left: voyage list */}
                 <div>
                     {loading ? (
-                        <div style={{ display: 'grid', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gap: '0.75rem' }}>
                             {Array.from({ length: 6 }).map((_, i) => (
-                                <div key={i} style={{ height: '110px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', animation: 'pulseOpacity 1.5s infinite', animationDelay: `${i * 0.1}s` }} />
+                                <div key={i} style={{ height: '90px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', animation: 'pulseOpacity 1.5s infinite', animationDelay: `${i * 0.1}s` }} />
                             ))}
                         </div>
                     ) : filtered.length === 0 ? (

@@ -47,17 +47,17 @@ html, body {
   --brand-indigo: #6366f1;
   --surface-50: rgba(8, 31, 58, 0.6);
 
-  /* Spacing Scale */
-  --spacing-xs: 8px;
-  --spacing-sm: 12px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
+  /* Spacing Scale - Condensed for Enterprise Density */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
 
   /* Border Radii */
-  --radius-sm: 8px;
-  --radius: 12px;
+  --radius-sm: 6px;
+  --radius: 8px;
   --radius-lg: 20px;
   --radius-xl: 32px;
 
@@ -105,9 +105,9 @@ body {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background: radial-gradient(circle at 10% 20%, rgba(34, 211, 238, 0.07), transparent 40%),
-              radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.07), transparent 40%),
-              radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.03), transparent 50%);
+  background: radial-gradient(circle at 10% 20%, rgba(34, 211, 238, 0.04), transparent 40%),
+              radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.04), transparent 40%),
+              radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.02), transparent 50%);
   background-size: 200% 200%;
   animation: aurora 20s ease-in-out infinite;
   pointer-events: none;
@@ -158,13 +158,13 @@ p {
 
 /* ── Typography Scale & Spacing ── */
 .hero-title {
-  font-size: 44px !important;
+  font-size: 40px !important;
   line-height: 1.15 !important;
   font-weight: 700 !important;
 }
 
 .page-title {
-  font-size: 1.875rem !important; /* text-3xl */
+  font-size: 1.5rem !important; /* text-2xl/3xl */
   font-weight: 600 !important;
   color: #fff !important;
   letter-spacing: -0.01em !important;
@@ -187,12 +187,12 @@ p {
   margin-bottom: 1.5rem !important; /* gap-6 equivalent */
 }
 .card-title {
-  font-size: 1.125rem !important; /* text-lg */
+  font-size: 1rem !important; /* text-base */
   font-weight: 600 !important;
-  margin-bottom: 1.25rem !important;
+  margin-bottom: 1rem !important;
 }
 .label-sm {
-  font-size: 0.75rem !important; /* text-xs */
+  font-size: 0.72rem !important; /* text-xs */
   color: var(--text-2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -455,13 +455,13 @@ tbody tr:hover {
 
 /* Premium SaaS Cards - Unified System */
 .card, .dash-card {
-  background: var(--bg-2) !important; 
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: var(--radius-lg) !important; 
+  background: rgba(8, 20, 38, 0.75) !important; 
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: var(--radius-sm) !important; 
   padding: var(--spacing-lg) !important; 
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255,255,255,0.03) !important;
-  backdrop-filter: blur(16px) saturate(140%) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(12px) !important;
   position: relative;
   overflow: hidden;
 }
@@ -477,9 +477,9 @@ tbody tr:hover {
 }
 
 .card:hover, .dash-card:hover {
-  border-color: rgba(34, 211, 238, 0.25) !important;
-  transform: translateY(-4px) !important;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(34,211,238,0.12), 0 8px 24px rgba(34,211,238,0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255,255,255,0.08) !important;
 }
 
 /* Shimmer skeleton for loading states */
