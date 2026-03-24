@@ -110,9 +110,11 @@ function Header() {
                 transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
         >
-            <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 0' }}>
+            <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 0', gap: '2rem' }}>
 
-                <NavLink to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', textDecoration: 'none', position: 'relative', zIndex: 110 }}>
+                {/* Left: Logo */}
+                <div style={{ flex: '1 1 0%', display: 'flex', justifyContent: 'flex-start' }}>
+                    <NavLink to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', textDecoration: 'none', position: 'relative', zIndex: 110 }}>
                     <motion.div 
                         whileHover={{ scale: 1.05, rotate: 5, boxShadow: '0 0 24px rgba(34,211,238,0.5)' }}
                         whileTap={{ scale: 0.95 }}
@@ -130,8 +132,11 @@ function Header() {
                         <span style={{ fontSize: '0.65rem', color: 'var(--brand-cyan)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>Intelligence OS</span>
                     </div>
                 </NavLink>
+                </div>
 
-                <nav className="nav" aria-label="Main navigation" style={{ display: 'none', gap: '0.2rem', position: 'absolute', left: '50%', transform: 'translateX(-50%)', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(16px)' }}>
+                {/* Center: Navigation */}
+                <div style={{ flex: '0 1 auto', display: 'flex', justifyContent: 'center' }}>
+                    <nav className="nav" aria-label="Main navigation" style={{ display: 'none', gap: '0.35rem', background: 'rgba(255,255,255,0.03)', padding: '5px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(24px)' }}>
                     <style>{`@media(min-width: 1100px) { .nav { display: flex !important; } }`}</style>
                     {links.map(({ to, label, end }) => {
                         const isActive = end ? location.pathname === to : location.pathname.startsWith(to)
@@ -171,9 +176,11 @@ function Header() {
                         )
                     })}
                 </nav>
+                </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', position: 'relative', zIndex: 110 }}>
-                    <div style={{ display: 'none' }} className="cmdkr"><style>{`@media(min-width: 768px) { .cmdkr { display: block !important; } }`}</style>
+                {/* Right: Actions */}
+                <div style={{ flex: '1 1 0%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem', position: 'relative', zIndex: 110 }}>
+                    <div style={{ display: 'none' }} className="cmdkr"><style>{`@media(min-width: 900px) { .cmdkr { display: block !important; } }`}</style>
                         <motion.button
                             whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.08)' }}
                             whileTap={{ scale: 0.98 }}

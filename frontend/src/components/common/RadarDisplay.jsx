@@ -7,14 +7,17 @@ const RadarDisplay = memo(function RadarDisplay({
   alertColor = "#f87171",
 }) {
   const [targets] = useState(() =>
-    Array.from({ length: targetCount }, (_, i) => ({
-      id: i,
-      angle: Math.random() * 360,
-      distance: 15 + Math.random() * 65,
-      orbitSpeed: 8 + Math.random() * 24, // seconds per orbit
-      alert: Math.random() > 0.8,
-      duration: 1.8 + Math.random() * 1.2,
-    }))
+    Array.from({ length: targetCount }, (_, i) => {
+      const angle = Math.random() * 360;
+      return {
+        id: i,
+        angle: angle,
+        distance: 18 + Math.random() * 62,
+        alert: Math.random() > 0.85,
+        // The delay precisely matches when the scanner arm (5s total) crosses this angle.
+        pingDelay: (angle / 360) * 5,
+      };
+    })
   );
 
   const polarToXY = (angleDeg, distance) => {
@@ -29,19 +32,20 @@ const RadarDisplay = memo(function RadarDisplay({
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
-        @keyframes target-pulse {
-          0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
-          50%       { transform: translate(-50%,-50%) scale(1.9); opacity: 0.3; }
-        }
-        @keyframes orbit {
-          from { --orbit-angle: 0deg; }
-          to   { --orbit-angle: 360deg; }
+        @keyframes target-ping {
+          0%   { transform: translate(-50%,-50%) scale(0.5); opacity: 0; box-shadow: 0 0 0px var(--ping-color); }
+          2%   { transform: translate(-50%,-50%) scale(1.5); opacity: 1; box-shadow: 0 0 20px var(--ping-color); }
+          10%  { transform: translate(-50%,-50%) scale(1); opacity: 0.8; box-shadow: 0 0 10px var(--ping-color); }
+          50%  { opacity: 0.1; box-shadow: 0 0 2px var(--ping-color); }
+          100% { opacity: 0; }
         }
         .radar-target {
           position: absolute;
           border-radius: 50%;
           transform: translate(-50%, -50%);
-          animation: target-pulse 2.4s ease-in-out infinite;
+          animation: target-ping 5s infinite;
+          /* ease-out helps the ping fade smoothly after the hit */
+          animation-timing-function: ease-out;
         }
         .radar-sweep-arm {
           position: absolute;
@@ -49,6 +53,7 @@ const RadarDisplay = memo(function RadarDisplay({
           border-radius: 50%;
           animation: radar-sweep 5s linear infinite;
           transform-origin: center;
+          border-right: 2px solid rgba(34,211,238,0.9);
         }
       `}</style>
 
@@ -56,16 +61,16 @@ const RadarDisplay = memo(function RadarDisplay({
       <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "linear-gradient(135deg,rgba(8,17,38,0.7),rgba(4,9,20,0.97))", boxShadow: "0 0 60px rgba(34,211,238,0.1),inset 0 0 40px rgba(34,211,238,0.05)", border: "1px solid rgba(34,211,238,0.2)" }} />
 
       {/* Inner radar surface */}
-      <div style={{ position: "absolute", inset: "12px", borderRadius: "50%", overflow: "hidden", background: "radial-gradient(circle at center,rgba(13,26,56,0.5),rgba(4,9,20,0.95))", boxShadow: "inset 0 0 60px rgba(0,0,0,0.8)" }}>
+      <div style={{ position: "absolute", inset: "12px", borderRadius: "50%", overflow: "hidden", background: "radial-gradient(circle at center,rgba(13,26,56,0.5),rgba(4,9,20,0.95))", boxShadow: "inset 0 0 80px rgba(0,0,0,0.9)", backgroundImage: `radial-gradient(rgba(34,211,238,0.05) 1px, transparent 1px)`, backgroundSize: "20px 20px", backgroundPosition: "center" }}>
 
         {/* Concentric rings */}
-        {[22, 42, 62, 82].map(r => (
-          <div key={r} style={{ position: "absolute", borderRadius: "50%", border: `1px solid ${radarColor}`, opacity: 0.13, inset: `${50 - r / 2}%` }} />
+        {[20, 40, 60, 80].map(r => (
+          <div key={r} style={{ position: "absolute", borderRadius: "50%", border: `1px solid ${radarColor}`, opacity: r === 80 ? 0.3 : 0.1, inset: `${50 - r / 2}%` }} />
         ))}
 
-        {/* Cross-hair lines */}
-        {[0, 45, 90, 135].map(deg => (
-          <div key={deg} style={{ position: "absolute", left: "50%", top: "50%", width: "100%", height: "1px", background: `linear-gradient(to right,transparent,${radarColor}35,transparent)`, transformOrigin: "left center", transform: `rotate(${deg}deg)` }} />
+        {/* Cross-hair lines with degree ticks */}
+        {[0, 30, 60, 90, 120, 150].map(deg => (
+          <div key={deg} style={{ position: "absolute", left: "50%", top: "50%", width: "100%", height: deg % 90 === 0 ? "2px" : "1px", background: `linear-gradient(to right, ${radarColor}60 0%, transparent 10%, transparent 90%, ${radarColor}60 100%)`, transformOrigin: "left center", transform: `translate(-50%, -50%) rotate(${deg}deg)` }} />
         ))}
 
         {/* CSS-animated targets — no JS setState each frame */}
@@ -77,14 +82,13 @@ const RadarDisplay = memo(function RadarDisplay({
               key={t.id}
               className="radar-target"
               style={{
+                "--ping-color": color,
                 left: `${x}%`,
                 top: `${y}%`,
-                width: t.alert ? 8 : 5,
-                height: t.alert ? 8 : 5,
+                width: t.alert ? 8 : 4,
+                height: t.alert ? 8 : 4,
                 background: color,
-                boxShadow: `0 0 ${t.alert ? "14px 3px" : "8px 1px"} ${color}`,
-                animationDelay: `${t.id * 0.19}s`,
-                animationDuration: `${t.duration}s`,
+                animationDelay: `${t.pingDelay}s`,
               }}
             />
           );
