@@ -28,17 +28,21 @@ def fetch_port_data(port_name: str | None = None) -> list[dict]:
     ]
 
     results = []
-    for name in SIMULATED_PORTS:
-        if port_name and name.lower() != port_name.lower():
-            continue
-        arrivals = random.randint(80, 200)
-        departures = random.randint(70, arrivals)
-        results.append({
-            "port": name,
-            "arrivals": arrivals,
-            "departures": departures,
-            "trade_flow_usd": round(random.uniform(1e8, 5e9), 2),
-            "recorded_at": datetime.utcnow().isoformat(),
-        })
-
+    try:
+        for name in SIMULATED_PORTS:
+            if port_name and name.lower() != port_name.lower():
+                continue
+            arrivals = random.randint(80, 200)
+            departures = random.randint(70, arrivals)
+            results.append({
+                "port": name,
+                "arrivals": arrivals,
+                "departures": departures,
+                "trade_flow_usd": round(random.uniform(1e8, 5e9), 2),
+                "recorded_at": datetime.utcnow().isoformat(),
+            })
+    except Exception as e:
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="UNCTAD", error_message=str(e))
+        
     return results

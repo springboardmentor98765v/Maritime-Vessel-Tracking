@@ -27,10 +27,12 @@ export default function CommandPalette({ isOpen, onClose }) {
 
     useEffect(() => {
         if (isOpen) {
-            setSearch('')
-            setSelectedIndex(0)
-            setResults(baseLinks)
-            setTimeout(() => inputRef.current?.focus(), 100)
+            setTimeout(() => {
+                setSearch('')
+                setSelectedIndex(0)
+                setResults(baseLinks)
+                inputRef.current?.focus()
+            }, 10)
         }
     }, [isOpen])
 
@@ -45,12 +47,16 @@ export default function CommandPalette({ isOpen, onClose }) {
 
             setLoading(true)
             let filteredLinks = baseLinks.filter(l => l.title.toLowerCase().includes(q))
-            let vesselResults = []
+            let fetchResults = []
             
             try {
                 if (isAuthenticated && q.length > 2) {
-                    const res = await api.get(`/vessels/?search=${q}`)
-                    vesselResults = (res.data || []).slice(0, 5).map(v => ({
+                    const [vesselsRes, portsRes] = await Promise.all([
+                        api.get(`/vessels/?search=${q}`).catch(() => ({ data: [] })),
+                        api.get(`/ports/?search=${q}`).catch(() => ({ data: [] }))
+                    ])
+                    
+                    const vesselItems = (vesselsRes.data || []).slice(0, 4).map(v => ({
                         id: `v_${v.id}`,
                         type: 'vessel',
                         title: `Track Vessel: ${v.name}`,
@@ -58,12 +64,23 @@ export default function CommandPalette({ isOpen, onClose }) {
                         icon: <Ship size={16} />,
                         to: `/vessels/${v.id}`
                     }))
+
+                    const portItems = (portsRes.data || []).slice(0, 4).map(p => ({
+                        id: `p_${p.id}`,
+                        type: 'port',
+                        title: `Port: ${p.name}`,
+                        subtitle: `${p.country || 'Global'} - UN/LOCODE: ${p.unlocode || p.code || 'N/A'}`,
+                        icon: <Anchor size={16} />,
+                        to: `/ports`
+                    }))
+
+                    fetchResults = [...vesselItems, ...portItems]
                 }
             } catch (err) {
                 console.error('Command search failed', err)
             }
 
-            setResults([...filteredLinks, ...vesselResults])
+            setResults([...filteredLinks, ...fetchResults])
             setSelectedIndex(0)
             setLoading(false)
         }, 300)
@@ -190,6 +207,9 @@ export default function CommandPalette({ isOpen, onClose }) {
                                                 )}
                                                 {item.type === 'vessel' && isSelected && (
                                                     <span style={{ fontSize: '0.7rem', color: 'var(--brand-indigo)', fontWeight: 600 }}>VIEW ASSET</span>
+                                                )}
+                                                {item.type === 'port' && isSelected && (
+                                                    <span style={{ fontSize: '0.7rem', color: 'var(--brand-accent)', fontWeight: 600 }}>VIEW ANALYTICS</span>
                                                 )}
                                             </div>
                                         )

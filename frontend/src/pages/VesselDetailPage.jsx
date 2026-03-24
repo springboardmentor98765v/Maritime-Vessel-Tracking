@@ -6,13 +6,14 @@ import {
     subscribeVessel,
     unsubscribeVessel,
     fetchSubscriptions,
+    fetchVesselHistory,
 } from "../services/vesselService";
 import { useAuthContext } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatFlagCountry } from '../utils/flags';
-import { ArrowLeft, Ship, MapPin, Compass, Navigation, Activity, Box, Map, AlertTriangle, ShieldCheck, Database, Calendar, Anchor } from "lucide-react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { ArrowLeft, Ship, MapPin, Compass, Navigation, Activity, Box, Map, AlertTriangle, ShieldCheck, Database, Calendar, Anchor, Play, Pause, SkipBack, SkipForward } from "lucide-react";
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -48,6 +49,11 @@ export default function VesselDetailPage() {
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [subLoading, setSubLoading] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const [isReplaying, setIsReplaying] = useState(false);
+    const [replayData, setReplayData] = useState([]);
+    const [replayStep, setReplayStep] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
         const load = async () => {
@@ -88,6 +94,39 @@ export default function VesselDetailPage() {
             setSubLoading(false);
         }
     };
+
+    const handleReplayToggle = async () => {
+        if (!isReplaying) {
+            try {
+                const hist = await fetchVesselHistory(id);
+                // filter positions only for Map coordinates tracking
+                const positions = hist.filter(x => x.lat != null && x.lon != null);
+                if (positions.length === 0) {
+                    addToast("No historical coordinates found for replay.", "info");
+                    return;
+                }
+                setReplayData(positions);
+                setReplayStep(0);
+                setIsReplaying(true);
+            } catch (err) {
+                console.error("Replay fetch error:", err);
+                addToast("Data uplink failed.", "error");
+            }
+        } else {
+            setIsReplaying(false);
+            setIsPlaying(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!isReplaying || replayData.length === 0 || !isPlaying) return;
+        if (replayStep >= replayData.length - 1) {
+            setIsPlaying(false);
+            return;
+        }
+        const t = setTimeout(() => setReplayStep(s => s + 1), 500);
+        return () => clearTimeout(t);
+    }, [isReplaying, replayData, replayStep, isPlaying]);
 
     if (loading) {
         return (
@@ -238,31 +277,64 @@ export default function VesselDetailPage() {
                             <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Space Grotesk", sans-serif', margin: 0 }}>
                                 <Map size={16} color="var(--brand-primary)" /> Tactical Position
                             </h2>
-                            {hasPosition && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e', animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite' }} />
-                                    <span style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 700, letterSpacing: '0.05em' }}>COORD LOCKED</span>
-                                </div>
-                            )}
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <button 
+                                    onClick={handleReplayToggle}
+                                    style={{ background: isReplaying ? 'var(--brand-cyan)' : 'transparent', color: isReplaying ? '#000' : 'var(--brand-cyan)', border: '1px solid var(--brand-cyan)', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', cursor: 'pointer', transition: 'all 0.2s' }}
+                                >
+                                    {isReplaying ? 'CLOSE REPLAY' : 'REPLAY VOYAGE'}
+                                </button>
+                                {hasPosition && !isReplaying && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e', animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite' }} />
+                                        <span style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 700, letterSpacing: '0.05em' }}>COORD LOCKED</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        {hasPosition ? (
+                        {(hasPosition || isReplaying) ? (
                             <>
-                                {/* Mini coordinate bar */}
-                                <div style={{ padding: '0.6rem 1.25rem', background: 'rgba(4,9,20,0.9)', display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--brand-cyan)', fontWeight: 600 }}>
-                                        {Number(vessel.last_position_lat).toFixed(5)}° N &nbsp; {Number(vessel.last_position_lon).toFixed(5)}° E
-                                    </span>
-                                    <a
-                                        href={`https://www.openstreetmap.org/?mlat=${vessel.last_position_lat}&mlon=${vessel.last_position_lon}&zoom=10`}
-                                        target="_blank" rel="noreferrer"
-                                        style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-2)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem', transition: 'color 0.2s' }}
-                                        onMouseOver={e => e.currentTarget.style.color = 'var(--brand-cyan)'}
-                                        onMouseOut={e => e.currentTarget.style.color = 'var(--text-2)'}
-                                    >
-                                        Open OSM ↗
-                                    </a>
-                                </div>
+                                {isReplaying ? (
+                                    <div style={{ padding: '0.8rem 1.25rem', background: 'rgba(4,9,20,0.95)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.75rem' }}>
+                                            <button onClick={() => setReplayStep(Math.max(0, replayStep - 1))} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}><SkipBack size={18} /></button>
+                                            <button onClick={() => { if(replayStep >= replayData.length - 1) setReplayStep(0); setIsPlaying(!isPlaying); }} style={{ background: 'var(--brand-cyan)', color: '#000', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
+                                                {isPlaying ? <Pause size={16} /> : <Play size={16} style={{ marginLeft: 2 }} />}
+                                            </button>
+                                            <button onClick={() => setReplayStep(Math.min(replayData.length - 1, replayStep + 1))} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#fff' }}><SkipForward size={18} /></button>
+                                            
+                                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <input 
+                                                    type="range" 
+                                                    min="0" 
+                                                    max={Math.max(0, replayData.length - 1)} 
+                                                    value={replayStep} 
+                                                    onChange={(e) => setReplayStep(Number(e.target.value))}
+                                                    style={{ width: '100%', accentColor: 'var(--brand-cyan)', cursor: 'pointer' }}
+                                                />
+                                            </div>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--brand-cyan)', fontFamily: 'monospace' }}>
+                                                {replayData[replayStep]?.time ? new Date(replayData[replayStep].time).toLocaleString() : ''}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div style={{ padding: '0.6rem 1.25rem', background: 'rgba(4,9,20,0.9)', display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--brand-cyan)', fontWeight: 600 }}>
+                                            {Number(vessel.last_position_lat).toFixed(5)}° N &nbsp; {Number(vessel.last_position_lon).toFixed(5)}° E
+                                        </span>
+                                        <a
+                                            href={`https://www.openstreetmap.org/?mlat=${vessel.last_position_lat}&mlon=${vessel.last_position_lon}&zoom=10`}
+                                            target="_blank" rel="noreferrer"
+                                            style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-2)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem', transition: 'color 0.2s' }}
+                                            onMouseOver={e => e.currentTarget.style.color = 'var(--brand-cyan)'}
+                                            onMouseOut={e => e.currentTarget.style.color = 'var(--text-2)'}
+                                        >
+                                            Open OSM ↗
+                                        </a>
+                                    </div>
+                                )}
 
                                 {/* Map */}
                                 <div style={{ height: '280px', width: '100%' }}>
@@ -277,22 +349,34 @@ export default function VesselDetailPage() {
                                         <TileLayer
                                             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                                         />
-                                        <FlyTo lat={vessel.last_position_lat} lon={vessel.last_position_lon} />
+                                        <FlyTo lat={isReplaying && replayData[replayStep] ? replayData[replayStep].lat : vessel.last_position_lat} lon={isReplaying && replayData[replayStep] ? replayData[replayStep].lon : vessel.last_position_lon} />
+                                        
+                                        {isReplaying && Array.isArray(replayData) && replayData.length > 0 && (
+                                            <Polyline 
+                                                positions={replayData.slice(0, replayStep + 1).map(x => [x.lat, x.lon])} 
+                                                pathOptions={{ color: '#22d3ee', weight: 3, opacity: 0.7, dashArray: '5, 5' }} 
+                                            />
+                                        )}
+
                                         {/* Watch-circle */}
-                                        <Circle
-                                            center={[vessel.last_position_lat, vessel.last_position_lon]}
-                                            radius={18000}
-                                            pathOptions={{ color: '#22d3ee', weight: 1, opacity: 0.35, fillColor: '#22d3ee', fillOpacity: 0.04 }}
-                                        />
+                                        {!isReplaying && (
+                                            <Circle
+                                                center={[vessel.last_position_lat, vessel.last_position_lon]}
+                                                radius={18000}
+                                                pathOptions={{ color: '#22d3ee', weight: 1, opacity: 0.35, fillColor: '#22d3ee', fillOpacity: 0.04 }}
+                                            />
+                                        )}
                                         <Marker
-                                            position={[vessel.last_position_lat, vessel.last_position_lon]}
+                                            position={isReplaying && replayData[replayStep] ? [replayData[replayStep].lat, replayData[replayStep].lon] : [vessel.last_position_lat, vessel.last_position_lon]}
                                             icon={vesselDetailIcon}
                                         >
                                             <Popup>
                                                 <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#000' }}>
                                                     <strong>{vessel.name}</strong><br />
-                                                    {vessel.vessel_type} · {vessel.flag.toUpperCase()}<br />
-                                                    {vessel.speed != null ? `${vessel.speed.toFixed(1)} kts` : 'Stationary'}
+                                                    {vessel.vessel_type} · {vessel.flag ? vessel.flag.toUpperCase() : 'UNKNOWN'}<br />
+                                                    {isReplaying && replayData[replayStep] ? 
+                                                        new Date(replayData[replayStep].time).toLocaleString() : 
+                                                        vessel.speed != null ? `${vessel.speed.toFixed(1)} kts` : 'Stationary'}
                                                 </div>
                                             </Popup>
                                         </Marker>

@@ -1,173 +1,300 @@
 import { NavLink } from 'react-router-dom'
-import { Activity, Anchor, ShieldAlert, Navigation, ChevronRight, Zap } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Activity, Anchor, ShieldAlert, Navigation, ChevronRight, Zap, Target, Globe, User } from 'lucide-react'
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { useEffect } from 'react'
 import RadarDisplay from '../components/common/RadarDisplay'
+
+const AnimatedCounter = ({ value, delay = 0 }) => {
+  const numericValue = parseInt(value.replace(/,/g, ''), 10);
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, Math.round);
+  const display = useTransform(rounded, (latest) => latest.toLocaleString());
+  
+  useEffect(() => {
+    const animation = animate(count, numericValue, { duration: 2.5, delay: delay, ease: "easeOut" });
+    return animation.stop;
+  }, [numericValue, delay, count]);
+
+  return <motion.span>{display}</motion.span>;
+};
 
 function HomePage() {
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.12 } }
+    show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
   }
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } }
+    hidden: { opacity: 0, y: 24, filter: 'blur(10px)' },
+    show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 280, damping: 24 } }
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', background: 'radial-gradient(ellipse at 50% 15%, rgba(14, 30, 64, 0.45) 0%, rgba(4, 9, 20, 1) 65%)' }}>
-      {/* ── Background Glow & Vignette ── */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80vh', background: 'radial-gradient(circle at 50% 25%, rgba(34,211,238,0.04) 0%, transparent 60%)', filter: 'blur(40px)', zIndex: 0, pointerEvents: 'none' }} />
-      {/* Soft background grid with low opacity */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '40px 40px', zIndex: 0, pointerEvents: 'none', maskImage: 'radial-gradient(ellipse at 50% 40%, black 40%, transparent 80%)', WebkitMaskImage: 'radial-gradient(ellipse at 50% 40%, black 40%, transparent 80%)' }} />
+    <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        position: 'relative', 
+        minHeight: '100vh',
+        background: '#020617', // Extremely dark slate for premium contrast
+        overflow: 'hidden'
+    }}>
+      {/* ── Background Grid & Aurora Glow ── */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1000px', background: 'radial-gradient(ellipse 80% 60% at 50% -20%, rgba(34,211,238,0.12), transparent)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '800px', background: 'radial-gradient(circle at 80% 20%, rgba(99,102,241,0.08), transparent 40%)', pointerEvents: 'none' }} />
+      <div style={{ 
+          position: 'absolute', 
+          inset: 0, 
+          backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)', 
+          backgroundSize: '48px 48px', 
+          pointerEvents: 'none', 
+          maskImage: 'linear-gradient(to bottom, black 20%, transparent 80%)', 
+          WebkitMaskImage: 'linear-gradient(to bottom, black 20%, transparent 80%)' 
+      }} />
 
-      {/* ── Live Ticker ── */}
+      {/* ── Live Intelligence Ticker ── */}
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ background: 'rgba(8,17,38,0.5)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '0.6rem 0', overflow: 'hidden', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{ 
+            background: 'rgba(2, 6, 23, 0.6)', 
+            borderBottom: '1px solid rgba(255,255,255,0.05)', 
+            padding: '0.5rem 0', 
+            overflow: 'hidden', 
+            whiteSpace: 'nowrap', 
+            display: 'flex', 
+            alignItems: 'center',
+            backdropFilter: 'blur(8px)',
+            position: 'relative',
+            zIndex: 10
+        }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', animation: 'marquee 32s linear infinite', minWidth: '100%' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--brand-cyan)', fontSize: '13px', fontWeight: 700, flexShrink: 0 }}>
-            LIVE
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem', animation: 'marquee 40s linear infinite', minWidth: '100%' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#00E5FF', fontSize: '0.75rem', fontWeight: 800, flexShrink: 0, letterSpacing: '0.1em' }}>
+            <div style={{ width: 6, height: 6, background: '#00E5FF', borderRadius: '50%', boxShadow: '0 0 8px #00E5FF', animation: 'pulse 2s infinite' }} /> LIVE INTEL
           </span>
-          <span style={{ color: '#fff', fontSize: '13px', opacity: 0.75 }}>Cargo Ship ZENITH entering Panama Canal zone</span>
-          <span style={{ color: '#fff', fontSize: '13px', opacity: 0.75 }}>•</span>
-          <span style={{ color: '#fff', fontSize: '13px', opacity: 0.75 }}>High congestion alert at Port of Singapore</span>
-          <span style={{ color: '#fff', fontSize: '13px', opacity: 0.75 }}>•</span>
-          <span style={{ color: '#fff', fontSize: '13px', opacity: 0.75 }}>Weather warning: Storm approaching North Sea transit lanes</span>
-          <span style={{ color: '#fff', fontSize: '13px', opacity: 0.75 }}>•</span>
-          <span style={{ color: '#fff', fontSize: '13px', opacity: 0.75 }}>Tanker OMEGA route recalibrated successfully</span>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500 }}><strong style={{ color: '#fff' }}>MSC ISABELLA</strong> departed Port of Rotterdam</span>
+          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem' }}>•</span>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500 }}><strong style={{ color: '#f59e0b' }}>CONGESTION ALERT</strong>: Port of Singapore wait times exceeded 48h</span>
+          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem' }}>•</span>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500 }}>Weather system detected near <strong style={{ color: '#fff' }}>Malacca Strait</strong> transit lanes</span>
+          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem' }}>•</span>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500 }}><strong style={{ color: '#10b981' }}>SYSTEM UPDATE</strong>: Global AIS stream is fully operational</span>
         </div>
-        <style>{`@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
+        <style>{`@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }`}</style>
       </motion.div>
 
-      {/* ── Hero Grid ── */}
+      {/* ── Main Hero Section ── */}
       <div style={{
+        maxWidth: '1400px',
+        margin: '0 auto',
+        width: '100%',
+        padding: '6rem 2rem',
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '24px',
+        gridTemplateColumns: 'minmax(400px, 1.1fr) 0.9fr',
+        gap: '4rem',
         alignItems: 'center',
-        paddingTop: '32px',
-        paddingBottom: '40px',
+        position: 'relative',
+        zIndex: 10
       }}>
 
-        {/* ── Left: Text Content ── */}
+        {/* ── Left: Copy & CTAs ── */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          style={{ maxWidth: '560px', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
         >
-          {/* Eyebrow */}
-          <motion.div variants={itemVariants}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--brand-cyan)', background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: '99px', padding: '0.35rem 1rem', fontWeight: 700 }}>
-              Live Maritime Intelligence
+          {/* Eyebrow badge */}
+          <motion.div variants={itemVariants} style={{ marginBottom: '1.5rem' }}>
+            <span style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.5rem', 
+                fontSize: '0.75rem', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.15em', 
+                color: '#00E5FF', 
+                background: 'rgba(0, 229, 255, 0.05)', 
+                border: '1px solid rgba(0, 229, 255, 0.15)', 
+                borderRadius: '100px', 
+                padding: '0.4rem 1.25rem', 
+                fontWeight: 700,
+                boxShadow: '0 0 20px rgba(0,229,255,0.1)' 
+            }}>
+              <Zap size={14} color="#00E5FF" /> Next-Gen Maritime OS
             </span>
           </motion.div>
 
-          <style>{`@keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }`}</style>
+          <style>{`@keyframes shimmerText { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }`}</style>
 
           {/* Heading */}
           <motion.h1
             variants={itemVariants}
-            style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1.15, margin: '16px 0 24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: '"Space Grotesk", sans-serif', maxWidth: '560px', position: 'relative', zIndex: 1 }}
+            style={{ 
+                fontSize: 'clamp(3rem, 6vw, 4.5rem)', 
+                lineHeight: 1.05, 
+                margin: '0 0 1.5rem', 
+                fontWeight: 800, 
+                color: '#fff', 
+                letterSpacing: '-0.03em', 
+                fontFamily: '"Space Grotesk", sans-serif'
+            }}
           >
-            Track every <span style={{ background: 'linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(59,130,246,0.3))', animation: 'shimmer 6s linear infinite', paddingBottom: '0.1em' }}>vessel</span>,<br />
-            forecast <span style={{ background: 'linear-gradient(90deg, #22d3ee, #06b6d4, #22d3ee)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(34,211,238,0.3))', animation: 'shimmer 6s linear infinite', paddingBottom: '0.1em' }}>congestion</span>,<br />
-            surface <span style={{ background: 'linear-gradient(90deg, #fb923c, #f59e0b, #fb923c)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent', display: 'inline-block', filter: 'drop-shadow(0 2px 8px rgba(245,158,11,0.3))', animation: 'shimmer 6s linear infinite', paddingBottom: '0.1em' }}>safety risks</span>.
+            Track every vessel.<br />
+            Monitor <span style={{ 
+                background: 'linear-gradient(90deg, #00E5FF, #0055FF, #00E5FF)', 
+                backgroundSize: '200% auto', 
+                WebkitBackgroundClip: 'text', 
+                WebkitTextFillColor: 'transparent', 
+                color: 'transparent', 
+                animation: 'shimmerText 6s linear infinite'
+            }}>global ports</span>.<br />
+            Surface risks.
           </motion.h1>
 
           {/* Description */}
           <motion.p
             variants={itemVariants}
-            style={{ fontSize: 'clamp(1rem, 1.5vw, 1.125rem)', color: '#f8fafc', opacity: 0.85, lineHeight: 1.65, margin: '0', maxWidth: '520px', letterSpacing: '0.01em', position: 'relative', zIndex: 1 }}
+            style={{ 
+                fontSize: 'clamp(1.1rem, 1.5vw, 1.25rem)', 
+                color: 'rgba(255,255,255,0.65)', 
+                lineHeight: 1.6, 
+                margin: '0', 
+                maxWidth: '560px', 
+                letterSpacing: '0.01em',
+                fontWeight: 400
+            }}
           >
-            Maritime Vista unifies live vessel tracking, port analytics, and safety
-            overlays for operators, analysts, and fleet managers — all inside a powerful command view.
+            Maritime Vista fundamentally changes how operators track fleets. Bring together live AIS data, predictive congestion, and real-time safety alerts into one shockingly powerful dashboard.
           </motion.p>
 
           {/* CTAs */}
           <motion.div
             variants={itemVariants}
-            style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '28px', alignItems: 'center', position: 'relative', zIndex: 1 }}
+            style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '2.5rem', alignItems: 'center' }}
           >
             <NavLink to="/register" style={{ textDecoration: 'none' }}>
               <motion.button
-                whileHover={{ scale: 1.02, y: -2, boxShadow: '0 8px 24px rgba(34,211,238,0.4)', background: 'linear-gradient(135deg,#2dd4bf,#3b82f6)' }}
+                whileHover={{ scale: 1.02, y: -2, boxShadow: '0 12px 32px rgba(0, 229, 255, 0.35)' }}
                 whileTap={{ scale: 0.98 }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: 'linear-gradient(135deg,#22d3ee,#3b82f6)', color: '#040914', border: '1px solid rgba(255,255,255,0.1)', padding: '0.85rem 2rem', borderRadius: '12px', fontSize: '0.95rem', fontWeight: 700, cursor: 'pointer', fontFamily: '"Inter", sans-serif', boxShadow: '0 4px 14px rgba(34,211,238,0.25), inset 0 1px 1px rgba(255,255,255,0.2)', transition: 'all 0.3s ease' }}
+                style={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem', 
+                    background: 'linear-gradient(135deg, #00E5FF, #0055FF)', 
+                    color: '#020617', 
+                    border: 'none', 
+                    padding: '1rem 2.25rem', 
+                    borderRadius: '14px', 
+                    fontSize: '1rem', 
+                    fontWeight: 700, 
+                    cursor: 'pointer', 
+                    boxShadow: '0 8px 24px rgba(0,229,255,0.2), inset 0 2px 4px rgba(255,255,255,0.3)', 
+                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)' 
+                }}
               >
-                Get started free <ChevronRight size={18} strokeWidth={2.5} />
+                Start deploying <ChevronRight size={18} strokeWidth={2.5} />
               </motion.button>
             </NavLink>
             <NavLink to="/map" style={{ textDecoration: 'none' }}>
               <motion.button
-                whileHover={{ scale: 1.02, y: -2, background: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }}
+                whileHover={{ scale: 1.02, y: -2, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}
                 whileTap={{ scale: 0.98 }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', padding: '0.85rem 2rem', borderRadius: '12px', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(12px)', transition: 'all 0.3s ease', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                style={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem', 
+                    background: 'rgba(255,255,255,0.03)', 
+                    color: '#fff', 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    padding: '1rem 2.25rem', 
+                    borderRadius: '14px', 
+                    fontSize: '1rem', 
+                    fontWeight: 600, 
+                    cursor: 'pointer', 
+                    backdropFilter: 'blur(24px)', 
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)' 
+                }}
               >
-                View live map
+                Explore Live Map
               </motion.button>
             </NavLink>
           </motion.div>
 
-          {/* Stats strip */}
-          <motion.div
-            variants={containerVariants}
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginTop: '40px' }}
-          >
-            {[
-              { icon: <Activity color="var(--brand-cyan)" size={18} />, value: '12,450', label: 'Active Vessels', accent: '#22d3ee' },
-              { icon: <Anchor color="var(--brand-indigo)" size={18} />, value: '245', label: 'Ports Monitored', accent: '#6366f1' },
-              { icon: <ShieldAlert color="#f59e0b" size={18} />, value: '18', label: 'Incidents Today', accent: '#f59e0b' },
-              { icon: <Activity color="#f87171" size={18} />, value: '5', label: 'Congestion Alerts', accent: '#f87171' },
-            ].map((s, i) => (
-              <motion.div
-                key={i}
-                variants={itemVariants}
-                whileHover={{ y: -3, borderColor: s.accent, boxShadow: `0 8px 24px ${s.accent}22` }}
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '14px', backdropFilter: 'blur(12px)', transition: 'all 0.25s ease' }}
-              >
-                {s.icon}
-                <div style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: '"Space Grotesk", sans-serif', color: '#fff', lineHeight: 1, marginTop: '6px' }}>{s.value}</div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', marginTop: '4px', fontWeight: 500 }}>{s.label}</div>
-              </motion.div>
-            ))}
+          {/* Social Proof / Tiny trust bar */}
+          <motion.div variants={itemVariants} style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem', opacity: 0.8 }}>
+              <div style={{ display: 'flex', marginLeft: '10px' }}>
+                  {[1,2,3,4].map(i => (
+                      <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', background: `linear-gradient(135deg, #00E5FF ${i*10}%, #0055FF)`, border: '2px solid #020617', marginLeft: -10, display: 'grid', placeItems: 'center', color: '#fff', fontSize: '10px' }}>
+                          <User size={14} />
+                      </div>
+                  ))}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
+                  Trusted by <span style={{ color: '#fff', fontWeight: 600 }}>10,000+</span> global fleet operators.
+              </div>
           </motion.div>
         </motion.div>
 
-        {/* ── Right: Radar Visual ── */}
+        {/* ── Right: Tech Visual Showcase ── */}
         <motion.div
-          initial={{ opacity: 0, x: 32 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.75, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '24px', position: 'relative', zIndex: 1, marginTop: '-32px' }}
+          initial={{ opacity: 0, x: 40, filter: 'blur(20px)' }}
+          animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+          transition={{ duration: 1, delay: 0.3, type: "spring", stiffness: 100, damping: 20 }}
+          style={{ position: 'relative' }}
         >
-          {/* Slow radar glow animation */}
-          <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', width: '120%', height: '120%', background: 'radial-gradient(circle, rgba(34,211,238,0.12) 0%, transparent 60%)', filter: 'blur(40px)', animation: 'pulseRadarGlow 4s ease-in-out infinite', zIndex: -1, pointerEvents: 'none' }} />
-          <style>{`@keyframes pulseRadarGlow { 0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }`}</style>
+          {/* Main Glow behind the radar */}
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%', height: '100%', background: 'radial-gradient(circle, rgba(0,229,255,0.15) 0%, transparent 60%)', filter: 'blur(60px)', zIndex: -1 }} />
+          
           <motion.div
-            whileHover={{ rotateX: 2, rotateY: -2, y: -4, boxShadow: '0 32px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.15)' }}
+            whileHover={{ rotateY: -2, rotateX: 2, scale: 1.02 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-            style={{ background: 'linear-gradient(135deg, rgba(16,24,39,0.5), rgba(4,9,20,0.85))', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '28px', padding: '2.5rem', textAlign: 'center', boxShadow: '0 24px 56px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.06)', backdropFilter: 'blur(32px)', width: '100%', maxWidth: '520px' }}
+            style={{ 
+                background: 'rgba(4, 10, 24, 0.4)', 
+                border: '1px solid rgba(255,255,255,0.08)', 
+                borderRadius: '32px', 
+                padding: '3rem 2rem', 
+                boxShadow: '0 32px 80px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)', 
+                backdropFilter: 'blur(40px)',
+                position: 'relative',
+                transformStyle: 'preserve-3d'
+            }}
           >
-            <RadarDisplay />
+            <RadarDisplay radarColor="#00E5FF" alertColor="#ef4444" />
           </motion.div>
-
-          <div style={{ background: 'linear-gradient(135deg,rgba(99,102,241,0.08),rgba(59,130,246,0.05))', border: '1px solid rgba(99,102,241,0.18)', borderRadius: '14px', padding: '1.1rem 1.4rem', backdropFilter: 'blur(10px)', width: '100%', maxWidth: '520px' }}>
-            <h3 style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.75rem', fontFamily: '"Space Grotesk", sans-serif', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Navigation size={14} color="var(--brand-indigo)" /> Built for maritime professionals
-            </h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {['Fleet Operator', 'Data Analyst', 'Safety Officer', 'Port Manager'].map(role => (
-                <span key={role} style={{ display: 'inline-flex', alignItems: 'center', padding: '0.28rem 0.75rem', borderRadius: '99px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.72rem', color: 'var(--text-1)', fontWeight: 500 }}>
-                  {role}
-                </span>
-              ))}
-            </div>
-          </div>
         </motion.div>
+      </div>
 
+      {/* ── Stats Strip Divider ── */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(2, 6, 23, 0.4)', backdropFilter: 'blur(24px)' }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '3rem 2rem', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
+              {[
+                  { icon: <Target size={24} color="#00E5FF" />, value: '12,450+', label: 'Vessels Tracked Live' },
+                  { icon: <Globe size={24} color="#6366f1" />, value: '3,800+', label: 'Ports Monitored' },
+                  { icon: <ShieldAlert size={24} color="#ef4444" />, value: '99.9%', label: 'Safety Alert Accuracy' },
+                  { icon: <Activity size={24} color="#10b981" />, value: '< 200ms', label: 'Telemetry Latency' },
+              ].map((stat, i) => (
+                  <motion.div 
+                      key={i} 
+                      initial={{ opacity: 0, y: 20 }} 
+                      whileInView={{ opacity: 1, y: 0 }} 
+                      viewport={{ once: true }} 
+                      transition={{ delay: i * 0.1, duration: 0.5 }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+                  >
+                      <div style={{ width: 48, height: 48, borderRadius: '14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', display: 'grid', placeItems: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                          {stat.icon}
+                      </div>
+                      <div>
+                          <div style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', letterSpacing: '-0.02em' }}>
+                              <AnimatedCounter value={stat.value} delay={0.2} />
+                          </div>
+                          <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{stat.label}</div>
+                      </div>
+                  </motion.div>
+              ))}
+          </div>
       </div>
     </div>
   )

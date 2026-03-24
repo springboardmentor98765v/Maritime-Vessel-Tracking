@@ -69,7 +69,10 @@ export default function PortsPage() {
     const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
     const criticalCount = ports.filter(p => p.congestion_level === 'critical').length
-    const chartData = ports.slice(0, 15)
+    const chartData = ports.slice(0, 15).map(p => ({
+        ...p,
+        name: p.name.length > 14 ? p.name.slice(0, 14) + '…' : p.name
+    }))
 
     const handleSort = (col) => {
         if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -154,7 +157,7 @@ export default function PortsPage() {
                                             {level} CONGESTION
                                         </div>
                                     </div>
-                                    <div style={{ fontSize: '2.75rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1 }}>{count}</div>
+                                    <div style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1 }}>{count}</div>
                                 </motion.div>
                             )
                         })}
@@ -234,33 +237,33 @@ export default function PortsPage() {
                     </motion.div>
 
                     {/* Filter Bar */}
-                    <motion.div variants={itemVariants} className="card" style={{ padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--brand-cyan)', fontWeight: 600, fontSize: '0.85rem', paddingRight: '1rem', borderRight: '1px solid var(--border)' }}>
-                            <Filter size={16} /> Filters
+                    <motion.div variants={itemVariants} className="card" style={{ padding: '1.25rem 1.5rem', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center', background: 'rgba(8, 20, 45, 0.65)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-1)', fontWeight: 700, fontSize: '0.85rem', paddingRight: '1.5rem', borderRight: '1px solid var(--border-hi)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            <Filter size={16} color="var(--brand-cyan)" /> TACTICAL FILTERS
                         </div>
                         
-                        <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
-                            <Search size={14} color="var(--text-2)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                            <input type="text" placeholder="Terminal or Country..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-hi)', borderRadius: '6px', padding: '0.55rem 1rem 0.55rem 2rem', color: '#fff', fontSize: '0.85rem', outline: 'none' }} />
+                        <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
+                            <Search size={16} color="var(--brand-cyan)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                            <input type="text" placeholder="Search Terminal or Territory..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: '8px', padding: '0.75rem 1rem 0.75rem 2.5rem', color: '#fff', fontSize: '0.9rem', outline: 'none', transition: 'border 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)' }} onFocus={e => e.target.style.borderColor = 'rgba(34,211,238,0.6)'} onBlur={e => e.target.style.borderColor = 'rgba(34,211,238,0.2)'} />
                         </div>
 
-                        <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)} style={{ flex: 1, minWidth: '150px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-hi)', borderRadius: '6px', padding: '0.55rem 1rem', color: '#fff', fontSize: '0.85rem', outline: 'none', appearance: 'none' }}>
+                        <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)} style={{ flex: 1, minWidth: '180px', background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', appearance: 'none', cursor: 'pointer', transition: 'border 0.2s' }} onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.3)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}>
                             <option value="" style={{ background: 'var(--bg-1)' }}>Global Territories</option>
                             {countries.map(c => <option key={c} value={c} style={{ background: 'var(--bg-1)' }}>{c}</option>)}
                         </select>
 
-                        <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)} style={{ flex: 1, minWidth: '150px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-hi)', borderRadius: '6px', padding: '0.55rem 1rem', color: '#fff', fontSize: '0.85rem', outline: 'none', appearance: 'none' }}>
+                        <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)} style={{ flex: 1, minWidth: '180px', background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', appearance: 'none', cursor: 'pointer', transition: 'border 0.2s' }} onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.3)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}>
                             <option value="" style={{ background: 'var(--bg-1)' }}>All Threat Levels</option>
                             {['critical', 'high', 'moderate', 'low'].map(l => <option key={l} value={l} style={{ background: 'var(--bg-1)' }}>{l.toUpperCase()}</option>)}
                         </select>
 
                         {(search || countryFilter || levelFilter) && (
-                            <button onClick={() => { setSearch(''); setCountryFilter(''); setLevelFilter('') }} style={{ background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.2s' }}>
-                                Clear
+                            <button onClick={() => { setSearch(''); setCountryFilter(''); setLevelFilter('') }} style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5', padding: '0.7rem 1.25rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, transition: 'all 0.2s', textTransform: 'uppercase' }} onMouseOver={e => e.target.style.background = 'rgba(239, 68, 68, 0.2)'} onMouseOut={e => e.target.style.background = 'rgba(239, 68, 68, 0.1)'}>
+                                Clear Filters
                             </button>
                         )}
-                        <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.8rem', fontFamily: 'monospace' }}>
-                            DISPLAYING {filtered.length} OF {ports.length}
+                        <span style={{ marginLeft: 'auto', opacity: 0.8, fontSize: '0.85rem', fontFamily: 'monospace', color: 'var(--brand-cyan)' }}>
+                            {filtered.length} / {ports.length} TRM
                         </span>
                     </motion.div>
 

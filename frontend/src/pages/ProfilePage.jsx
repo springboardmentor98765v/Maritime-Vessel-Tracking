@@ -166,21 +166,27 @@ export default function ProfilePage() {
         )}
 
         {/* Actions */}
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <button
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', position: 'relative', zIndex: 1 }}>
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2, boxShadow: '0 8px 24px rgba(34,211,238,0.25)' }}
+            whileTap={{ scale: 0.98 }}
             type="button"
             className="btn btn--primary"
             onClick={() => navigate('/profile/update')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.75rem 1.75rem', fontSize: '0.95rem', fontWeight: 600, borderRadius: '10px' }}
           >
             Edit Profile
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02, y: -2, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}
+            whileTap={{ scale: 0.98 }}
             type="button"
             className="btn btn--ghost"
             onClick={() => navigate('/profile/change-password')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.75rem 1.75rem', fontSize: '0.95rem', fontWeight: 600, borderRadius: '10px' }}
           >
             Change Password
-          </button>
+          </motion.button>
         </div>
       </motion.div>
     </motion.div>

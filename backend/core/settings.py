@@ -29,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qt2*)_9&^)bk^$s3)f^f404%d5cx)eq(tb8=g15p5@-1soca8@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.ports',
     'apps.voyages',
     'apps.notifications',
+    'apps.admin',
 
     'rest_framework_simplejwt.token_blacklist',
 ]
@@ -210,4 +211,9 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apps.vessels.tasks.sync_vessel_data',
         'schedule': crontab(minute='*/5'),
     },
+    # Clean old API logs every day at midnight
+    'clean-old-logs-daily': {
+        'task': 'apps.admin.tasks.clean_old_logs',
+        'schedule': crontab(hour=0, minute=0),
+    }
 }

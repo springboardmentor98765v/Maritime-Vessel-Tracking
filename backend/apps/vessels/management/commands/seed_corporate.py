@@ -562,6 +562,7 @@ class Command(BaseCommand):
                         "radius_nm": sed["radius_nm"],
                         "source": sed["source"],
                         "active_from": now - timedelta(days=random.randint(1, 30)),
+                        "active_until": now + timedelta(days=random.randint(2, 14)),
                         "is_active": True,
                     },
                 )

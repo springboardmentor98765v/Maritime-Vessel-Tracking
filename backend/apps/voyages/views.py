@@ -40,38 +40,105 @@ class VoyageDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
 
 
-class VoyageReplayView(APIView):
+class VoyageHistoryAPIView(APIView):
     """
-    GET /voyages/<pk>/replay/
-    Returns an ordered list of waypoints for a voyage replay animation.
+    GET /voyages/{id}/history/
+    Returns structured {voyage, waypoints} required by the frontend replay UI.
     """
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
+        from apps.voyages.models import Voyage
+        from apps.vessels.models import VesselPosition, VesselEvent
         try:
-            voyage = Voyage.objects.select_related(
-                'vessel', 'port_from', 'port_to'
-            ).get(pk=pk)
+            voyage = Voyage.objects.get(pk=pk)
+            vessel = voyage.vessel
         except Voyage.DoesNotExist:
-            return Response({'detail': 'Voyage not found.'}, status=404)
+            return Response({'error': 'Voyage not found'}, status=404)
 
-        # Build waypoints list
+        history = []
+        
+        # 1. Fetch positions for this specific voyage
+        positions = VesselPosition.objects.filter(vessel=vessel)
+        if voyage.arrival_time:
+            positions = positions.filter(timestamp__range=(voyage.departure_time, voyage.arrival_time))
+        else:
+            positions = positions.filter(timestamp__gte=voyage.departure_time)
+        positions = positions.order_by('timestamp')
+        
         waypoints = []
+        if voyage.port_from:
+            waypoints.append({
+                "lat": float(voyage.port_from.latitude), "lon": float(voyage.port_from.longitude),
+                "type": "departure", "label": f"Depart {voyage.port_from.name}", 
+                "time": voyage.departure_time.isoformat() if voyage.departure_time else ""
+            })
+            
+        for pos in positions:
+            waypoints.append({
+                "lat": float(pos.latitude), "lon": float(pos.longitude),
+                "type": "route", "label": "Position Update", 
+                "time": pos.timestamp.isoformat() if pos.timestamp else ""
+            })
+            
+        # 2. Fetch events for this voyage
+        events = VesselEvent.objects.filter(vessel=vessel)
+        if voyage.arrival_time:
+            events = events.filter(timestamp__range=(voyage.departure_time, voyage.arrival_time))
+        else:
+            events = events.filter(timestamp__gte=voyage.departure_time)
+            
+        for ev in events:
+            waypoints.append({
+                "lat": float(vessel.last_position_lat) if vessel.last_position_lat else 0.0,
+                "lon": float(vessel.last_position_lon) if vessel.last_position_lon else 0.0,
+                "type": "event", "label": ev.event_type.upper(), 
+                "details": ev.details,
+                "time": ev.timestamp.isoformat() if ev.timestamp else ""
+            })
+            
+        # Re-sort waypoints by time
+        waypoints.sort(key=lambda x: x['time'])
+        
+        if voyage.port_to and voyage.status == 'completed':
+            waypoints.append({
+                "lat": float(voyage.port_to.latitude), "lon": float(voyage.port_to.longitude),
+                "type": "arrival", "label": f"Arrive {voyage.port_to.name}", 
+                "time": voyage.arrival_time.isoformat() if voyage.arrival_time else ""
+            })
 
-        # 1. Departure port (use vessel's last known position as origin if port has no coords)
-        port_from = voyage.port_from
-        waypoints.append({
-            'type': 'departure',
-            'label': f'{port_from.name}, {port_from.country}',
-            'timestamp': voyage.departure_time,
-            # We store lat/lon in events; use a placeholder if port has none
-            'lat': None,
-            'lon': None,
+        return Response({
+            "voyage": {
+                "vessel_name": vessel.name,
+                "port_from_name": voyage.port_from.name if voyage.port_from else 'Unknown',
+                "port_to_name": voyage.port_to.name if voyage.port_to else 'Unknown'
+            },
+            "waypoints": waypoints
         })
 
-        # 2. Any vessel events during the voyage window
+
+class VoyageAuditAPIView(APIView):
+    """
+    GET /api/voyage/{id}/audit/
+    Basic rules:
+    - If event.type == "piracy_zone" or "piracy" -> flag risk
+    - If port_wait_time (or port_delay event) > threshold -> flag delay
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        from apps.voyages.models import Voyage
+        try:
+            voyage = Voyage.objects.get(pk=pk)
+        except Voyage.DoesNotExist:
+            return Response({'error': 'Voyage not found'}, status=404)
+
+        risk_flags = []
+        delay = False
+
         vessel = voyage.vessel
-        events_qs = vessel.events.all().order_by('timestamp')
+        # Check vessel events during this voyage
+        events_qs = vessel.events.all()
         if voyage.arrival_time:
             events_qs = events_qs.filter(
                 timestamp__gte=voyage.departure_time,
@@ -81,29 +148,19 @@ class VoyageReplayView(APIView):
             events_qs = events_qs.filter(timestamp__gte=voyage.departure_time)
 
         for ev in events_qs:
-            waypoints.append({
-                'type': 'event',
-                'label': f'{ev.event_type}: {ev.location or "en route"}',
-                'timestamp': ev.timestamp,
-                'lat': vessel.last_position_lat,
-                'lon': vessel.last_position_lon,
-                'event_type': ev.event_type,
-                'details': ev.details,
-            })
+            # Audit rules
+            if ev.event_type in ['piracy', 'piracy_zone', 'storm', 'accident']:
+                risk_flags.append(ev.event_type)
+            if ev.event_type == 'port_delay':
+                delay = True
 
-        # 3. Arrival port
-        port_to = voyage.port_to
-        waypoints.append({
-            'type': 'arrival',
-            'label': f'{port_to.name}, {port_to.country}',
-            'timestamp': voyage.arrival_time,
-            'lat': None,
-            'lon': None,
-        })
+        # Check port wait times (simplified: just checking if departure - arrival > 2 days)
+        # Actually the instruction says "If port_wait_time > threshold -> flag delay". 
+        # Since we use `port_from` we can check its avg_wait_time
+        if voyage.port_from and voyage.port_from.avg_wait_time and voyage.port_from.avg_wait_time > 24.0:
+            delay = True
 
         return Response({
-            'voyage': VoyageSerializer(voyage).data,
-            'waypoints': waypoints,
-            'vessel_last_lat': vessel.last_position_lat,
-            'vessel_last_lon': vessel.last_position_lon,
+            "risk_flags": list(set(risk_flags)),
+            "delay": delay
         })

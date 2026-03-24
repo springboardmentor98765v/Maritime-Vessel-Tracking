@@ -46,3 +46,8 @@ export const fetchSubscriptions = async () => {
         return [];
     }
 };
+
+export const fetchVesselHistory = async (id) => {
+    const response = await api.get(`/voyage/${id}/history/`);
+    return response.data;
+};

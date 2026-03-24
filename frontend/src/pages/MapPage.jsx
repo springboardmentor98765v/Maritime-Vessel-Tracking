@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, memo } from 'react'
 import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, Circle, ZoomControl } from 'react-leaflet'
 import L from 'leaflet'
@@ -68,13 +68,44 @@ const ZONE_LABELS = {
     restricted: 'Restricted Waters',
 }
 
+const VesselMarkers = memo(({ vessels, criticalVesselNames, alertShipIcon, shipIcon }) => {
+    return vessels.map(v => {
+        const icon = criticalVesselNames.has(v.name) ? alertShipIcon : shipIcon;
+        return (
+            <Marker key={v.id} position={[v.last_position_lat, v.last_position_lon]} icon={icon}>
+                <Tooltip direction="top" offset={[0, -10]} opacity={1} className="custom-tooltip">{v.name}</Tooltip>
+                <Popup className="custom-popup">
+                    <div style={{ padding: '0.25rem', minWidth: '180px' }}>
+                        <strong style={{ fontSize: '1rem', color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Target size={14} color="var(--brand-cyan)" /> {v.name}
+                        </strong>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-1)', marginTop: '8px', display: 'grid', gap: '4px' }}>
+                            <div><strong style={{ color: 'var(--text-2)' }}>IMO:</strong> <span style={{ fontFamily: 'monospace' }}>{v.imo_number}</span></div>
+                            <div><strong style={{ color: 'var(--text-2)' }}>TYPE:</strong> {v.vessel_type}</div>
+                            <div><strong style={{ color: 'var(--text-2)' }}>FLAG:</strong> {v.flag ? formatFlagCountry(v.flag) : '—'}</div>
+                            <div><strong style={{ color: 'var(--text-2)' }}>CARGO:</strong> {v.cargo_type || 'Unknown'}</div>
+                            {v.last_update && (
+                                <div style={{ marginTop: '4px', paddingTop: '4px', borderTop: '1px dashed rgba(255,255,255,0.1)', color: 'var(--brand-cyan)', fontSize: '0.7rem' }}>
+                                    <Activity size={10} style={{ display: 'inline' }} /> {new Date(v.last_update).toLocaleTimeString()}
+                                </div>
+                            )}
+                        </div>
+                        <Link to={`/vessels/${v.id}`} style={{ display: 'block', textAlign: 'center', background: 'var(--surface-2)', border: '1px solid var(--border-hi)', padding: '6px', marginTop: '12px', borderRadius: '4px', color: '#fff', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600 }}>
+                            INITIALIZE TELEMETRY →
+                        </Link>
+                    </div>
+                </Popup>
+            </Marker>
+        );
+    });
+});
+
 export default function MapPage() {
     const [vessels, setVessels] = useState([])
     const [safetyEvents, setSafetyEvents] = useState([])
     const [safetyZones, setSafetyZones] = useState([])
     const [alerts, setAlerts] = useState([])
     const [loading, setLoading] = useState(true)
-    // removed lastRefreshed
     const [showAlertPanel, setShowAlertPanel] = useState(false)
 
     const [layerToggles, setLayerToggles] = useState({
@@ -183,7 +214,7 @@ export default function MapPage() {
                 }
             `}</style>
 
-            <MapContainer center={[15, 0]} zoom={3} style={{ height: '100%', width: '100%', zIndex: 1 }} scrollWheelZoom zoomControl={false}>
+            <MapContainer center={[15, 0]} zoom={3} style={{ height: '100%', width: '100%', zIndex: 1 }} scrollWheelZoom zoomControl={false} preferCanvas={true}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
@@ -219,57 +250,49 @@ export default function MapPage() {
                 })}
 
                 {/* Legacy SafetyEvent circles */}
-                {showLegacySafety && safetyEvents.map(ev => (
-                    <Circle
-                        key={ev.id}
-                        center={[ev.latitude, ev.longitude]}
-                        radius={nmToMeters(ev.radius_nm || 50)}
-                        pathOptions={{ color: SEVERITY_COLORS[ev.severity] || '#eab308', fillColor: SEVERITY_COLORS[ev.severity] || '#eab308', fillOpacity: 0.12, weight: 1.5, dashArray: '4 4' }}
-                    >
-                        <Popup className="custom-popup">
-                            <div style={{ padding: '0.25rem' }}>
-                                <strong style={{ color: SEVERITY_COLORS[ev.severity] }}>{ev.title}</strong>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-1)', margin: '4px 0' }}>{ev.description}</p>
-                                <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-2)' }}>Radius: {ev.radius_nm} NM | Source: {ev.source}</p>
-                            </div>
-                        </Popup>
-                    </Circle>
-                ))}
+                {showLegacySafety && safetyEvents.map(ev => {
+                    const color = SEVERITY_COLORS[ev.severity] || '#eab308'
+                    return (
+                        <Circle
+                            key={ev.id}
+                            center={[ev.latitude, ev.longitude]}
+                            radius={nmToMeters(ev.radius_nm || 50)}
+                            pathOptions={{ color: color, fillColor: color, fillOpacity: 0.12, weight: 1.5, dashArray: '4 4' }}
+                        >
+                            <Popup className="custom-popup">
+                                <div style={{ padding: '0.25rem' }}>
+                                    <strong style={{ color, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                        <ShieldAlert size={16} /> {ev.title}
+                                    </strong>
+                                    <div style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', margin: '8px 0', fontSize: '0.8rem', borderLeft: `2px solid ${color}` }}>
+                                        <p style={{ fontSize: '0.8rem', color: 'var(--text-1)', margin: '0' }}>{ev.description}</p>
+                                    </div>
+                                    <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-2)', fontFamily: 'monospace' }}>
+                                        Radius: {ev.radius_nm} NM | Src: {ev.source}<br />
+                                        {ev.active_until && <>Expires: {new Date(ev.active_until).toLocaleDateString()}</>}
+                                    </p>
+                                </div>
+                            </Popup>
+                        </Circle>
+                    )
+                })}
 
                 {/* Vessel markers clustered */}
                 <MarkerClusterGroup
                     chunkedLoading
                     iconCreateFunction={createClusterCustomIcon}
-                    maxClusterRadius={60}
-                    spiderfyOnMaxZoom={true}
+                    maxClusterRadius={80}
+                    spiderfyOnMaxZoom={false}
                     showCoverageOnHover={false}
+                    disableClusteringAtZoom={11}
+                    animateAddingMarkers={false}
                 >
-                    {vessels.map(v => (
-                        <Marker key={v.id} position={[v.last_position_lat, v.last_position_lon]} icon={getVesselIcon(v.name)}>
-                            <Tooltip direction="top" offset={[0, -10]} opacity={1} className="custom-tooltip">{v.name}</Tooltip>
-                            <Popup className="custom-popup">
-                                <div style={{ padding: '0.25rem', minWidth: '180px' }}>
-                                    <strong style={{ fontSize: '1rem', color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                        <Target size={14} color="var(--brand-cyan)" /> {v.name}
-                                    </strong>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-1)', marginTop: '8px', display: 'grid', gap: '4px' }}>
-                                        <div><strong style={{ color: 'var(--text-2)' }}>IMO:</strong> <span style={{ fontFamily: 'monospace' }}>{v.imo_number}</span></div>
-                                        <div><strong style={{ color: 'var(--text-2)' }}>TYPE:</strong> {v.vessel_type}</div>
-                                    <div><strong style={{ color: 'var(--text-2)' }}>FLAG:</strong> {v.flag ? formatFlagCountry(v.flag) : '—'}</div>
-                                        <div><strong style={{ color: 'var(--text-2)' }}>CARGO:</strong> {v.cargo_type || 'Unknown'}</div>
-                                        {v.last_update && (
-                                            <div style={{ marginTop: '4px', paddingTop: '4px', borderTop: '1px dashed rgba(255,255,255,0.1)', color: 'var(--brand-cyan)', fontSize: '0.7rem' }}>
-                                                <Activity size={10} style={{ display: 'inline' }} /> {new Date(v.last_update).toLocaleTimeString()}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <Link to={`/vessels/${v.id}`} style={{ display: 'block', textAlign: 'center', background: 'var(--surface-2)', border: '1px solid var(--border-hi)', padding: '6px', marginTop: '12px', borderRadius: '4px', color: '#fff', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600 }}>
-                                        INITIALIZE TELEMETRY →
-                                    </Link>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+                    <VesselMarkers 
+                        vessels={vessels} 
+                        criticalVesselNames={criticalVesselNames} 
+                        alertShipIcon={alertShipIcon} 
+                        shipIcon={shipIcon} 
+                    />
                 </MarkerClusterGroup>
             </MapContainer>
 
@@ -298,7 +321,7 @@ export default function MapPage() {
                         <motion.button 
                             whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                             onClick={() => setShowAlertPanel(!showAlertPanel)}
-                            style={{ background: showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.15)', color: showAlertPanel ? '#fff' : '#fca5a5', border: `1px solid ${showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.4)'}`, borderRadius: '8px', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', backdropFilter: 'blur(8px)', boxShadow: showAlertPanel ? '0 0 20px rgba(239,68,68,0.4)' : 'none' }}
+                            style={{ background: showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.15)', color: showAlertPanel ? '#fff' : '#fca5a5', border: `1px solid ${showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.4)'}`, borderRadius: '8px', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', backdropFilter: 'blur(8px)', boxShadow: showAlertPanel ? '0 0 20px rgba(239,68,68,0.4)' : '0 4px 12px rgba(239,68,68,0.1)' }}
                         >
                             <ShieldAlert size={16} /> {criticalAlerts.length} PROTOCOL BREACHES
                         </motion.button>

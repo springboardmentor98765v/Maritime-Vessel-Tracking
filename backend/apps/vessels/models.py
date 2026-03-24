@@ -48,6 +48,28 @@ class Vessel(models.Model):
         return f"{self.name} ({self.imo_number})"
 
 
+class VesselPosition(models.Model):
+    """Historical vessel position data for voyage replay."""
+    vessel = models.ForeignKey(
+        Vessel,
+        on_delete=models.CASCADE,
+        related_name='positions'
+    )
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    timestamp = models.DateTimeField(db_index=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['vessel', 'timestamp'], name='idx_vessel_time'),
+            models.Index(fields=['vessel']),
+        ]
+
+    def __str__(self):
+        return f"{self.vessel.name} @ {self.timestamp}"
+
+
 class VesselSubscription(models.Model):
     """Tracks which users have subscribed to alerts for which vessels."""
     user = models.ForeignKey(

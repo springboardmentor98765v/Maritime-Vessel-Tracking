@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { fetchVessels, fetchSubscriptions, subscribeVessel, unsubscribeVessel } from '../services/vesselService'
 import { useAuthContext } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion'
 import { Search, Filter, Ship, Crosshair, Star, Anchor, Eye, Bell, BellOff, Activity, Navigation } from 'lucide-react'
 import SkeletonLoader from '../components/common/SkeletonLoader'

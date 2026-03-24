@@ -28,36 +28,39 @@ import LiveTicker from './components/common/LiveTicker'
 function App() {
   return (
     <div className="app-shell">
+      <div className="mesh-bg" />
       <div className="app-bg-grid" />
       <Header />
       <LiveTicker />
 
       <main className="main-content">
-        <div className="container">
-          <Routes>
-            {/* Public */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/vessels" element={<VesselsPage />} />
-            <Route path="/vessels/:id" element={<VesselDetailPage />} />
-            <Route path="/ports" element={<PortsPage />} />
-            <Route path="/voyages" element={<VoyageReplayPage />} />
-            <Route path="/analytics" element={<AnalyticsDashboardPage />} />
+        <Routes>
+          {/* Auth pages: full-bleed, no container */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/" element={<HomePage />} />
 
-            {/* Protected (Now Public) */}
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/profile/update" element={<UpdateProfilePage />} />
-            <Route path="/profile/change-password" element={<ChangePasswordPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-
-            {/* Fallback */}
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </div>
+          {/* All other pages: wrapped in container */}
+          <Route path="/*" element={
+            <div className="container" style={{ paddingTop: '2rem' }}>
+              <Routes>
+                <Route path="/map" element={<MapPage />} />
+                <Route path="/vessels" element={<VesselsPage />} />
+                <Route path="/vessels/:id" element={<VesselDetailPage />} />
+                <Route path="/ports" element={<PortsPage />} />
+                <Route path="/voyages" element={<VoyageReplayPage />} />
+                <Route path="/analytics" element={<AnalyticsDashboardPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/profile/update" element={<UpdateProfilePage />} />
+                <Route path="/profile/change-password" element={<ChangePasswordPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </div>
+          } />
+        </Routes>
       </main>
 
       <Footer />

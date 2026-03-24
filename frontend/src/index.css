@@ -1,13 +1,19 @@
 /* ── Google Fonts ── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-/* ── CSS Reset & Base ── */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Fix horizontal gap / overflow completely */
+  width: 100%;
 }
 
 :root {
@@ -38,6 +44,7 @@
 
   /* Alias tokens used across pages */
   --brand-cyan: #22d3ee;
+  --brand-indigo: #6366f1;
   --surface-50: rgba(8, 31, 58, 0.6);
 
   /* Spacing Scale */
@@ -49,10 +56,10 @@
   --spacing-2xl: 48px;
 
   /* Border Radii */
-  --radius-sm: 6px;
+  --radius-sm: 8px;
   --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
 
   /* Global Settings */
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -86,6 +93,24 @@ body {
   z-index: -1;
   mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
   -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+/* ── Premium Mesh Gradient Aurora ── */
+@keyframes aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: radial-gradient(circle at 10% 20%, rgba(34, 211, 238, 0.07), transparent 40%),
+              radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.07), transparent 40%),
+              radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.03), transparent 50%);
+  background-size: 200% 200%;
+  animation: aurora 20s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* ── Scrollbar ── */
@@ -200,14 +225,8 @@ p {
 
 @media (max-width: 480px) {
   .container {
-    padding: 0 12px;
+    padding: 0 16px;
   }
-}
-
-html,
-body {
-  overflow-x: hidden;
-  width: 100%;
 }
 
 .sr-only {
@@ -437,12 +456,12 @@ tbody tr:hover {
 /* Premium SaaS Cards - Unified System */
 .card, .dash-card {
   background: var(--bg-2) !important; 
-  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
   border-radius: var(--radius-lg) !important; 
   padding: var(--spacing-lg) !important; 
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-  backdrop-filter: blur(12px) !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255,255,255,0.03) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
   position: relative;
   overflow: hidden;
 }
@@ -458,9 +477,9 @@ tbody tr:hover {
 }
 
 .card:hover, .dash-card:hover {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35) !important;
+  border-color: rgba(34, 211, 238, 0.25) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(34,211,238,0.12), 0 8px 24px rgba(34,211,238,0.08) !important;
 }
 
 /* Shimmer skeleton for loading states */
@@ -497,6 +516,12 @@ tbody tr:hover {
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── pulseOpacity for skeleton loading states ── */
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
 }
 
 /* ── Focus ring (accessibility) ── */

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import api from '../services/api'
 import { motion, AnimatePresence, animate } from 'framer-motion'
-import { Map, Ship, Anchor, PlayCircle, BarChart3, Settings, Bell, Eye, Check, ChevronRight, Activity } from 'lucide-react'
+import { Map, Ship, Anchor, PlayCircle, BarChart3, Settings, Bell, Eye, Check, ChevronRight, Activity, Globe } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
 function AnimatedCounter({ to }) {
   const [value, setValue] = useState(0)
@@ -29,13 +30,20 @@ export default function DashboardPage() {
   const [subscriptions, setSubscriptions] = useState([])
   const [loadingNotifs, setLoadingNotifs] = useState(true)
 
+  const [dashboardData, setDashboardData] = useState(null)
+  const [portData, setPortData] = useState(null)
+
   useEffect(() => {
     Promise.all([
       api.get('/notifications/').then(r => r.data).catch(() => []),
       api.get('/vessels/subscriptions/').then(r => r.data).catch(() => []),
-    ]).then(([n, s]) => {
+      api.get('/api/dashboard/company/').then(r => r.data).catch(() => null),
+      api.get('/api/dashboard/port/').then(r => r.data).catch(() => null),
+    ]).then(([n, s, d, p]) => {
       setNotifications(n)
       setSubscriptions(s)
+      setDashboardData(d || { active_vessels_count: 0, delayed_vessels: 0, risk_alerts_count: 0, system_health: 100 })
+      setPortData(p || { congestion_score: 0, arrivals: 0, departures: 0, avg_wait_time: 0 })
     }).finally(() => setLoadingNotifs(false))
   }, [])
 
@@ -97,10 +105,10 @@ export default function DashboardPage() {
       {/* KPI Row */}
       <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
         {[
-          { label: 'Active Vessels', value: 12450, icon: <Ship size={20} color="var(--brand-primary)" />, accent: 'var(--brand-primary)' },
-          { label: 'Ports Monitored', value: 245, icon: <Anchor size={20} color="var(--brand-accent)" />, accent: 'var(--brand-accent)' },
-          { label: 'Safety Alerts', value: 18, icon: <Bell size={20} color="var(--warning)" />, accent: 'var(--warning)' },
-          { label: 'System Health', value: 100, suffix: '%', icon: <Activity size={20} color="var(--success)" />, accent: 'var(--success)' },
+          { label: 'Active Vessels', value: dashboardData?.active_vessels_count || 0, icon: <Ship size={20} color="var(--brand-primary)" />, accent: 'var(--brand-primary)' },
+          { label: 'Delayed Vessels', value: dashboardData?.delayed_vessels || 0, icon: <Anchor size={20} color="var(--brand-accent)" />, accent: 'var(--brand-accent)' },
+          { label: 'Risk Alerts', value: dashboardData?.risk_alerts_count || 0, icon: <Bell size={20} color="var(--warning)" />, accent: 'var(--warning)' },
+          { label: 'System Health', value: dashboardData?.system_health || 100, suffix: '%', icon: <Activity size={20} color="var(--success)" />, accent: 'var(--success)' },
         ].map((kpi, i) => (
           <motion.div key={i} variants={itemVariants} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ padding: '0.75rem', borderRadius: '12px', background: `linear-gradient(135deg, ${kpi.accent}15, ${kpi.accent}05)`, border: `1px solid ${kpi.accent}30` }}>
@@ -115,6 +123,45 @@ export default function DashboardPage() {
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Port Analytics Preview */}
+      {portData && (
+        <motion.div variants={itemVariants} className="card" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-hi)', paddingBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Space Grotesk", sans-serif' }}>
+              <Globe size={18} color="var(--brand-cyan)" /> Global Port Analytics
+            </h2>
+            <Link to="/ports" style={{ fontSize: '0.8rem', color: 'var(--brand-cyan)', textDecoration: 'none', fontWeight: 600 }}>View Full Report →</Link>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', alignItems: 'center' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '1rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-2)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Avg Delay</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>{portData.avg_wait_time} <span style={{ fontSize: '0.9rem', color: 'var(--text-2)' }}>hrs</span></div>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '1rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-2)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Congestion</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: portData.congestion_score > 60 ? '#ef4444' : '#34d399' }}>{portData.congestion_score}</div>
+              </div>
+            </div>
+
+            <div style={{ height: '120px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={[{ name: 'Arrivals', count: portData.arrivals }, { name: 'Departures', count: portData.departures }]} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis type="number" hide />
+                  <YAxis type="category" dataKey="name" width={80} stroke="var(--text-2)" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ background: '#081126', border: '1px solid var(--border)', borderRadius: '8px' }} />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={24}>
+                    <Cell fill="#38bdf8" />
+                    <Cell fill="#8b5cf6" />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Feature cards matrix */}
       <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>

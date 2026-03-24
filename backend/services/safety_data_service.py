@@ -57,11 +57,16 @@ def fetch_safety_data() -> list[dict]:
 
     now = datetime.utcnow()
     results = []
-    for ev in EVENTS:
-        results.append({
-            **ev,
-            "source": "NOAA-SIM",
-            "active_from": (now - timedelta(hours=random.randint(1, 24))).isoformat(),
-            "active_until": (now + timedelta(days=random.randint(1, 5))).isoformat(),
-        })
+    try:
+        for ev in EVENTS:
+            results.append({
+                **ev,
+                "source": "NOAA-SIM",
+                "active_from": (now - timedelta(hours=random.randint(1, 24))).isoformat(),
+                "active_until": (now + timedelta(days=random.randint(1, 5))).isoformat(),
+            })
+    except Exception as e:
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="NOAA", error_message=str(e))
+        
     return results

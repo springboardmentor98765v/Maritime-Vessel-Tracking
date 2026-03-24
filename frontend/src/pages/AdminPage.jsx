@@ -37,6 +37,8 @@ function StatusCard({ title, abbr, status, detail, color }) {
 export default function AdminPage() {
     const [safetyEvents, setSafetyEvents] = useState([])
     const [vessels, setVessels] = useState([])
+    const [apiStatus, setApiStatus] = useState(null)
+    const [logs, setLogs] = useState([])
     const [loading, setLoading] = useState(true)
     const [lastSync, setLastSync] = useState(new Date().toLocaleString())
 
@@ -47,13 +49,21 @@ export default function AdminPage() {
         Promise.all([
             api.get('/safety-events/').then(r => r.data).catch(() => []),
             api.get('/vessels/').then(r => r.data).catch(() => []),
+            api.get('/api/admin/api-status/').then(r => r.data).catch(() => null),
+            api.get('/api/admin/logs/').then(r => r.data).catch(() => []),
         ])
-            .then(([se, ve]) => {
+            .then(([se, ve, statusData, logsData]) => {
                 setSafetyEvents(se)
                 setVessels(ve)
+                setApiStatus(statusData)
+                setLogs(logsData)
                 setLastSync(new Date().toLocaleString())
             })
             .finally(() => setLoading(false))
+    }
+
+    const handleExport = () => {
+        window.open('http://127.0.0.1:8000/api/admin/export/voyages/', '_blank')
     }
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -71,9 +81,14 @@ export default function AdminPage() {
                     <h1 className="page-title">System Administration</h1>
                     <p className="page-subtitle">API source status, data overview, and platform monitoring.</p>
                 </div>
-                <button className="btn btn--ghost btn--sm" onClick={loadAll} disabled={loading}>
-                    {loading ? 'Refreshing...' : 'Refresh'}
-                </button>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button className="btn btn--outline btn--sm" onClick={handleExport} style={{ borderColor: 'var(--brand-cyan)', color: 'var(--brand-cyan)' }}>
+                        Export Voyages (CSV)
+                    </button>
+                    <button className="btn btn--ghost btn--sm" onClick={loadAll} disabled={loading}>
+                        {loading ? 'Refreshing...' : 'Refresh'}
+                    </button>
+                </div>
             </div>
 
             {/* API Source Status */}
@@ -81,18 +96,18 @@ export default function AdminPage() {
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '.85rem' }}>API Source Status</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '.85rem' }}>
                     <StatusCard
-                        title="AISHub — Vessel Positions"
-                        abbr="AIS"
-                        status={positionedVessels > 0 ? 'Connected — Data received' : 'No position data yet'}
-                        detail={`${positionedVessels} vessels with live position`}
-                        color={positionedVessels > 0 ? '#22c55e' : '#eab308'}
+                        title="MarineTraffic (Ext)"
+                        abbr="EXT"
+                        status={apiStatus?.marine_traffic === 'working' ? 'Connected — Data received' : 'Offline'}
+                        detail={`Status: ${apiStatus?.marine_traffic || 'Unknown'}`}
+                        color={apiStatus?.marine_traffic === 'working' ? '#22c55e' : '#ef4444'}
                     />
                     <StatusCard
                         title="NOAA — Safety Events"
                         abbr="NOAA"
-                        status={activeSafety.length > 0 ? 'Connected — Events loaded' : 'No active events'}
-                        detail={`${activeSafety.length} active, ${criticalSafety} critical`}
-                        color={criticalSafety > 0 ? '#ef4444' : activeSafety.length > 0 ? '#22c55e' : '#eab308'}
+                        status={apiStatus?.noaa === 'working' ? 'Connected — Events loaded' : 'Offline'}
+                        detail={`Status: ${apiStatus?.noaa || 'Unknown'}`}
+                        color={apiStatus?.noaa === 'working' ? '#22c55e' : '#ef4444'}
                     />
                     <StatusCard
                         title="UNCTAD — Port Analytics"
@@ -105,7 +120,7 @@ export default function AdminPage() {
                         title="Django Backend"
                         abbr="API"
                         status="Running at 127.0.0.1:8000"
-                        detail="REST API — JWT Auth — SQLite"
+                        detail={`Last Checked: ${apiStatus?.last_checked ? new Date(apiStatus.last_checked).toLocaleTimeString() : 'Unknown'}`}
                         color="#22c55e"
                     />
                 </div>
@@ -134,6 +149,43 @@ export default function AdminPage() {
                         </div>
                     ))}
                 </div>
+            </div>
+
+            {/* System Logs table */}
+            <div>
+                <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '.85rem', color: 'var(--brand-cyan)' }}>
+                    System Error Logs {logs.length > 0 && <span className="badge badge--red" style={{ marginLeft: '.5rem' }}>{logs.length}</span>}
+                </h2>
+                {loading ? (
+                    <div style={{ marginTop: '1rem' }}>
+                        <SkeletonLoader type="row" count={4} />
+                    </div>
+                ) : logs.length === 0 ? (
+                    <div className="vessels-empty" style={{ background: 'rgba(34,211,238,0.05)', borderColor: 'rgba(34,211,238,0.2)', color: 'var(--brand-cyan)' }}>No recent errors. System operates at optimal efficiency.</div>
+                ) : (
+                    <div className="vessels-table-wrap" style={{ border: '1px solid rgba(239,68,68,0.2)' }}>
+                        <table className="vessels-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Source</th>
+                                    <th>Error Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {logs.map(log => (
+                                    <tr key={log.id}>
+                                        <td className="mono" style={{ fontSize: '.78rem', color: 'var(--text-2)' }}>{new Date(log.timestamp).toLocaleString()}</td>
+                                        <td><span className="badge badge--type" style={{ background: 'rgba(239,68,68,0.15)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)' }}>{log.source}</span></td>
+                                        <td style={{ fontSize: '.82rem', fontFamily: 'monospace', color: '#fca5a5' }}>
+                                            {log.error_message}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             {/* Active Safety Events table */}
