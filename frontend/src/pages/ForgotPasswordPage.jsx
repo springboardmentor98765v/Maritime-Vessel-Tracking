@@ -1,10 +1,17 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import ReCAPTCHA from 'react-google-recaptcha'
 import api from '../services/api'
+
+// Google reCAPTCHA v2 test site key — works in dev without real registration.
+// Replace with your production site key when deploying.
+const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
+  const captchaRef = useRef(null)
+
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -16,18 +23,45 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [otpResendCountdown, setOtpResendCountdown] = useState(0)
+  const [captchaToken, setCaptchaToken] = useState(null)
 
-  // Step 1: Send OTP
+  const handleCaptchaChange = (token) => {
+    setCaptchaToken(token)
+    setError('')
+  }
+
+  const handleCaptchaExpired = () => {
+    setCaptchaToken(null)
+  }
+
+  // Step 1: Send OTP (with CAPTCHA verification)
   const handleSendOTP = async (e) => {
     e.preventDefault()
-    setLoading(true)
     setError('')
+
+    if (!captchaToken) {
+      setError('Please complete the CAPTCHA verification.')
+      return
+    }
+
+    setLoading(true)
     try {
+      // Verify CAPTCHA server-side first
+      await api.post('/auth/verify-captcha/', { token: captchaToken })
+
+      // Now send the OTP
       await api.post('/auth/send-otp/', { email })
       setStep('otp')
       startResendCountdown()
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to send OTP. Please try again.')
+      const msg =
+        err.response?.data?.error ||
+        err.response?.data?.detail ||
+        'Failed to send OTP. Please try again.'
+      setError(msg)
+      // Reset CAPTCHA on failure
+      captchaRef.current?.reset()
+      setCaptchaToken(null)
     } finally {
       setLoading(false)
     }
@@ -59,7 +93,6 @@ export default function ForgotPasswordPage() {
       setError('Passwords do not match')
       return
     }
-
     if (newPassword.length < 8) {
       setError('Password must be at least 8 characters')
       return
@@ -74,7 +107,11 @@ export default function ForgotPasswordPage() {
       setSuccess('Password reset successfully! Redirecting to login...')
       setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError(err.response?.data?.error || err.response?.data?.detail || 'Unable to reset password. Try again.')
+      setError(
+        err.response?.data?.error ||
+          err.response?.data?.detail ||
+          'Unable to reset password. Try again.'
+      )
     } finally {
       setLoading(false)
     }
@@ -109,11 +146,11 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="auth-wrapper"
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       <div className="auth-card" style={{ maxWidth: 440 }}>
         <div className="auth-card__header">
@@ -125,13 +162,15 @@ export default function ForgotPasswordPage() {
             <h2 className="auth-card__title" style={{ margin: 0 }}>Forgot password</h2>
           </div>
           <p className="auth-card__sub">
-            {step === 'email' ? 'Enter your account email to receive OTP.' : 
-             step === 'otp' ? 'Enter the OTP sent to your email.' :
-             'Set your new password'}
+            {step === 'email'
+              ? 'Enter your account email to receive OTP.'
+              : step === 'otp'
+              ? 'Enter the OTP sent to your email.'
+              : 'Set your new password'}
           </p>
         </div>
 
-        {/* EMAIL STEP */}
+        {/* ── STEP 1: EMAIL + CAPTCHA ── */}
         {step === 'email' && (
           <form onSubmit={handleSendOTP} style={{ display: 'grid', gap: '1rem' }}>
             <div className="field">
@@ -149,10 +188,26 @@ export default function ForgotPasswordPage() {
               />
             </div>
 
+            {/* CAPTCHA */}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <ReCAPTCHA
+                ref={captchaRef}
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={handleCaptchaChange}
+                onExpired={handleCaptchaExpired}
+                theme="dark"
+              />
+            </div>
+
             {error && <div className="form-error">{error}</div>}
 
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '.25rem' }}>
-              <button type="submit" className="btn btn--primary" disabled={loading} style={{ flex: 1 }}>
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={loading || !captchaToken}
+                style={{ flex: 1 }}
+              >
                 {loading ? 'Sending...' : 'Send OTP'}
               </button>
               <Link to="/login" className="btn btn--ghost" style={{ flex: 1, textAlign: 'center' }}>
@@ -162,7 +217,7 @@ export default function ForgotPasswordPage() {
           </form>
         )}
 
-        {/* OTP STEP */}
+        {/* ── STEP 2: OTP ── */}
         {step === 'otp' && (
           <form onSubmit={handleVerifyOTP} style={{ display: 'grid', gap: '1rem' }}>
             <div className="field">
@@ -205,7 +260,7 @@ export default function ForgotPasswordPage() {
                     border: 'none',
                     color: 'var(--brand)',
                     cursor: 'pointer',
-                    textDecoration: 'underline'
+                    textDecoration: 'underline',
                   }}
                 >
                   Resend OTP
@@ -219,7 +274,7 @@ export default function ForgotPasswordPage() {
           </form>
         )}
 
-        {/* RESET PASSWORD STEP */}
+        {/* ── STEP 3: RESET PASSWORD ── */}
         {step === 'resetPassword' && (
           <form onSubmit={handleResetPassword} style={{ display: 'grid', gap: '1.25rem' }}>
             {success && <div className="form-success">{success}</div>}
@@ -233,7 +288,7 @@ export default function ForgotPasswordPage() {
                   name="new_password"
                   placeholder="Enter new password"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={e => setNewPassword(e.target.value)}
                   required
                   autoComplete="new-password"
                   autoFocus
@@ -241,22 +296,12 @@ export default function ForgotPasswordPage() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((s) => !s)}
+                  onClick={() => setShowPassword(s => !s)}
                   style={{
-                    position: 'absolute',
-                    right: 8,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    width: 28,
-                    height: 28,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#6b7280',
-                    zIndex: 2
+                    position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    width: 28, height: 28, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', color: '#6b7280', zIndex: 2,
                   }}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -284,29 +329,19 @@ export default function ForgotPasswordPage() {
                   name="confirm_password"
                   placeholder="Confirm password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={e => setConfirmPassword(e.target.value)}
                   required
                   autoComplete="new-password"
                   style={{ paddingRight: 44 }}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirm((s) => !s)}
+                  onClick={() => setShowConfirm(s => !s)}
                   style={{
-                    position: 'absolute',
-                    right: 8,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    width: 28,
-                    height: 28,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#6b7280',
-                    zIndex: 2
+                    position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    width: 28, height: 28, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', color: '#6b7280', zIndex: 2,
                   }}
                   aria-label={showConfirm ? 'Hide password' : 'Show password'}
                 >
@@ -327,7 +362,12 @@ export default function ForgotPasswordPage() {
 
             {error && <div className="form-error">{error}</div>}
 
-            <button type="submit" className="btn btn--primary btn--full" disabled={loading} style={{ marginTop: '0.25rem' }}>
+            <button
+              type="submit"
+              className="btn btn--primary btn--full"
+              disabled={loading}
+              style={{ marginTop: '0.25rem' }}
+            >
               {loading ? 'Resetting...' : 'Reset Password →'}
             </button>
 

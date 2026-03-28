@@ -13,7 +13,7 @@ function StatusDot({ color }) {
 
 function StatusCard({ title, abbr, status, detail, color }) {
     return (
-        <div className="card" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', border: `1px solid ${color}40`, boxShadow: `0 4px 12px ${color}10`, position: 'relative', overflow: 'hidden', padding: '1rem' }}>
+        <div className="card" style={{ display: 'flex', gap: '1rem', alignItems: 'center', border: `1px solid ${color}40`, boxShadow: `0 4px 12px ${color}10`, position: 'relative', overflow: 'hidden', padding: '1.25rem' }}>
             <div style={{ position: 'absolute', top: 0, right: 0, width: '100px', height: '100px', background: `radial-gradient(circle at top right, ${color}20, transparent 70%)`, pointerEvents: 'none' }} />
             <div style={{
                 width: 44, height: 44, borderRadius: 10,
@@ -136,7 +136,7 @@ export default function AdminPage() {
                         { label: 'Safety Zones (active)', value: activeSafety.length, abbr: 'SAF' },
                         { label: 'Critical Alerts', value: criticalSafety, abbr: 'CRT' },
                     ].map(item => (
-                        <div key={item.label} className="card" style={{ textAlign: 'center', padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div key={item.label} className="card" style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <div style={{
                                 display: 'grid', placeItems: 'center',
                                 width: 44, height: 44, borderRadius: 12, marginBottom: '.75rem',

@@ -65,11 +65,11 @@ function HeroKPI({ label, value, icon: Icon, accent, suffix = '' }) {
                 position: 'relative',
                 background: 'linear-gradient(160deg, rgba(16,24,48,0.9) 0%, rgba(8,14,32,0.98) 100%)',
                 border: `1px solid rgba(255,255,255,0.07)`,
-                borderRadius: '12px',
-                padding: '1rem 1.25rem',
+                borderRadius: '20px',
+                padding: '1.5rem 1.75rem',
                 overflow: 'hidden',
-                backdropFilter: 'blur(12px)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
             }}
         >
             {/* Accent glow top-right */}
@@ -83,7 +83,7 @@ function HeroKPI({ label, value, icon: Icon, accent, suffix = '' }) {
                     <Icon size={18} color={accent} />
                 </div>
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1, letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1, letterSpacing: '-0.02em' }}>
                 {value}{suffix}
             </div>
         </motion.div>
@@ -163,12 +163,12 @@ export default function AnalyticsDashboardPage() {
 
             {/* Page Header */}
             <div style={{ position: 'relative', zIndex: 1 }}>
-                <h1 className="page-title">Analytics Dashboard</h1>
-                <p className="page-subtitle">Platform-wide maritime intelligence and real-time statistical aggregates.</p>
+                <h1 className="page-title gradient-text" style={{ fontSize: 'clamp(2.5rem, 4vw, 3.5rem)' }}>Analytics Dashboard</h1>
+                <p className="page-subtitle" style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', maxWidth: '600px', marginTop: '0.5rem' }}>Platform-wide maritime intelligence and real-time statistical aggregates.</p>
             </div>
 
             {/* Hero KPI Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', position: 'relative', zIndex: 1 }}>
                 {kpis.map((kpi, i) => <HeroKPI key={i} {...kpi} />)}
             </div>
 

@@ -24,21 +24,21 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
             transition={{ type: 'spring', stiffness: 350, damping: 25 }}
             style={{
                 position: 'relative',
-                background: isSubscribed ? 'rgba(56,189,248,0.06)' : 'rgba(15,23,42,0.85)',
-                border: `1px solid ${isSubscribed ? 'rgba(56,189,248,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                borderRadius: '8px',
-                padding: '16px',
+                background: isSubscribed ? 'radial-gradient(120% 120% at 50% 0%, rgba(56,189,248,0.2) 0%, rgba(15,23,42,0.85) 100%)' : 'linear-gradient(180deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.95) 100%)',
+                border: `1px solid ${isSubscribed ? 'rgba(56,189,248,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                borderRadius: '16px',
+                padding: '20px',
                 overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                boxShadow: isSubscribed ? '0 12px 32px rgba(56,189,248,0.15)' : '0 8px 24px rgba(0,0,0,0.3)',
             }}
             whileHover={{ 
-                y: -2, 
-                borderColor: 'rgba(255,255,255,0.15)', 
-                boxShadow: '0 8px 24px rgba(0,0,0,0.3)' 
+                y: -6, 
+                borderColor: 'rgba(56,189,248,0.5)', 
+                boxShadow: '0 20px 48px rgba(0,0,0,0.4), inset 0 0 24px rgba(56,189,248,0.08)' 
             }}
         >
             {/* Subtle top highlight for 3D effect */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: isSubscribed ? 'linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent)' : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' }} />
+            <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '1px', background: isSubscribed ? 'linear-gradient(90deg, transparent, rgba(56,189,248,0.6), transparent)' : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
 
             {/* Top row: vessel name + type badge */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '0.75rem' }}>
@@ -60,7 +60,7 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
             </div>
 
             {/* Bottom rows: metadata grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 12px', marginBottom: '16px', padding: '10px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', marginBottom: '16px', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.03)' }}>
                 <div>
                     <div style={{ fontSize: '10px', color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: '4px' }}>Cargo Type</div>
                     <div style={{ display: 'inline-block', fontSize: '11px', color: '#fff', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>{v.cargo_type || '—'}</div>
@@ -68,9 +68,9 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
                 <div>
                     <div style={{ fontSize: '10px', color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: '4px' }}>Destination</div>
                     <div style={{ fontSize: '12px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        {v.destination
+                        {v.destination && v.destination.toLowerCase() !== 'unknown'
                             ? <><span style={{ color: 'var(--brand-cyan)', fontSize: '10px' }}>▶</span>{v.destination}</>
-                            : <span style={{ color: 'var(--text-2)' }}>No destination set</span>
+                            : <span style={{ color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', fontWeight: 500 }}>Not Broadcasted</span>
                         }
                     </div>
                 </div>
@@ -93,8 +93,8 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
             </div>
 
             {/* Position */}
-            <div style={{ fontSize: '11px', color: 'var(--text-2)', fontFamily: 'monospace', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '4px 8px', borderRadius: '4px', borderLeft: '2px solid var(--border)' }}>
-                <Crosshair size={12} color="var(--text-2)" />
+            <div style={{ fontSize: '11px', color: 'var(--text-2)', fontFamily: 'monospace', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(90deg, rgba(34,211,238,0.1), transparent)', padding: '6px 10px', borderRadius: '6px', borderLeft: '2px solid var(--brand-cyan)' }}>
+                <Crosshair size={12} color="var(--brand-cyan)" />
                 {v.last_position_lat != null
                     ? `${Number(v.last_position_lat).toFixed(4)}°, ${Number(v.last_position_lon).toFixed(4)}°`
                     : 'Position unavailable'}
@@ -104,10 +104,10 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
             <div style={{ display: 'flex', gap: '10px' }}>
                 <Link to={`/vessels/${v.id}`} style={{ flex: 1, textDecoration: 'none' }}>
                     <motion.button 
-                        whileHover={{ scale: 1.02, background: 'rgba(255,255,255,0.1)' }} whileTap={{ scale: 0.98 }}
-                        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 600, transition: 'all 0.2s' }}
+                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #38bdf8, #6366f1)', color: '#040914', border: 'none', padding: '9px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 800, boxShadow: '0 4px 12px rgba(56,189,248,0.3)' }}
                     >
-                        <Eye size={14} /> View Details
+                        <Eye size={14} /> View Metadata
                     </motion.button>
                 </Link>
                 {isAuthenticated && (
@@ -119,11 +119,11 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
                         title={isSubscribed ? 'Unsubscribe from Vessel' : 'Subscribe to Vessel'}
                         style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                            background: isSubscribed ? 'rgba(56,189,248,0.1)' : 'rgba(255,255,255,0.02)',
+                            background: isSubscribed ? 'rgba(56,189,248,0.15)' : 'rgba(255,255,255,0.03)',
                             color: isSubscribed ? '#38bdf8' : 'var(--text-1)',
-                            border: isSubscribed ? '1px solid rgba(56,189,248,0.2)' : '1px solid rgba(255,255,255,0.1)',
-                            padding: '6px 12px', borderRadius: '4px', cursor: isToggling ? 'wait' : 'pointer',
-                            fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap',
+                            border: isSubscribed ? '1px solid rgba(56,189,248,0.4)' : '1px solid rgba(255,255,255,0.12)',
+                            padding: '9px 14px', borderRadius: '8px', cursor: isToggling ? 'wait' : 'pointer',
+                            fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap',
                         }}
                     >
                         {isSubscribed ? <BellOff size={14} /> : <Bell size={14} />}
@@ -228,8 +228,8 @@ export default function VesselsPage() {
             {/* Page Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', fontFamily: '"Space Grotesk", sans-serif', display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '6px' }}>
-                        <Ship color="#38bdf8" size={24} /> Live Vessel Tracking
+                    <h1 className="text-h1 gradient-text" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '6px' }}>
+                        <Ship color="#22d3ee" size={32} /> Live Vessel Tracking
                     </h1>
                     <p style={{ color: 'var(--text-2)', fontSize: '13px' }}>
                         {loading ? 'Loading vessel registry...' : `Showing ${paginated.length} of ${filtered.length} vessels (${allVessels.length} total in registry)`}
@@ -247,7 +247,7 @@ export default function VesselsPage() {
             {/* Filter Bar */}
             <motion.div 
                 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                style={{ position: 'sticky', top: '70px', zIndex: 40, background: 'rgba(8, 20, 38, 0.85)', backdropFilter: 'blur(12px)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
+                style={{ position: 'sticky', top: '80px', zIndex: 40, background: 'var(--surface-50)', backdropFilter: 'blur(24px) saturate(150%)', border: '1px solid var(--border)', borderRadius: '16px', padding: '16px 20px', display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', boxShadow: '0 12px 32px rgba(0,0,0,0.5)', overflow: 'hidden' }}
             >
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '400px', height: '100%', background: 'linear-gradient(90deg, rgba(34,211,238,0.05), transparent)', pointerEvents: 'none' }} />
                 
@@ -307,7 +307,7 @@ export default function VesselsPage() {
                 <>
                     {/* Vessel Cards Grid */}
                     <motion.div
-                        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}
+                        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(18.75rem, 1fr))', gap: '12px' }}
                     >
                         {paginated.map(v => (
                             <VesselCard

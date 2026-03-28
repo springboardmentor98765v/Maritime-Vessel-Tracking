@@ -113,10 +113,10 @@ def process_vessel_update(data: dict) -> object | None:
     prev_destination = vessel.destination or ""
 
     # ── Apply position / nav updates ─────────────────────────────────────────
-    lat = _safe_float(data.get("lat") or data.get("LAT") or data.get("LATITUDE"))
-    lon = _safe_float(data.get("lon") or data.get("LON") or data.get("LONGITUDE"))
-    speed = _safe_float(data.get("speed") or data.get("SPEED") or data.get("SOG"))
-    heading = _safe_float(data.get("heading") or data.get("HEADING") or data.get("COG"))
+    lat = _safe_float(_first_present(data, "lat", "LAT", "LATITUDE"))
+    lon = _safe_float(_first_present(data, "lon", "LON", "LONGITUDE"))
+    speed = _safe_float(_first_present(data, "speed", "SPEED", "SOG"))
+    heading = _safe_float(_first_present(data, "heading", "HEADING", "COG"))
     destination = str(data.get("destination") or data.get("DESTINATION") or "").strip()
 
     update_fields: list[str] = ["last_update"]
@@ -219,3 +219,18 @@ def _safe_float(val) -> float | None:
         return float(val)
     except (ValueError, TypeError):
         return None
+
+
+def _first_present(data: dict, *keys):
+    """
+    Return the value of the first key found in *data*, or None.
+    Unlike ``data.get(k1) or data.get(k2)``, this correctly handles
+    falsy-but-valid values such as 0 or 0.0.
+    """
+    _MISSING = object()
+    for key in keys:
+        val = data.get(key, _MISSING)
+        if val is not _MISSING:
+            return val
+    return None
+

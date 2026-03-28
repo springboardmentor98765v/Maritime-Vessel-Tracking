@@ -1,0 +1,31 @@
+ERROR: could not translate host name "1234@aws-0-ap-south-1.pooler.supabase.com" to address: Non-recoverable failure in name resolution
+
+ERROR: connection to server at "aws-0-ap-south-1.pooler.supabase.com" (3.111.105.85), port 6543 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-ap-south-1.pooler.supabase.com" (3.111.105.85), port 6543 failed: FATAL:  Tenant or user not found
+
+ERROR: connection to server at "aws-0-ap-south-1.pooler.supabase.com" (3.111.105.85), port 6543 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-ap-south-1.pooler.supabase.com" (3.111.105.85), port 6543 failed: FATAL:  Tenant or user not found
+
+ERROR: connection to server at "aws-0-ap-south-1.pooler.supabase.com" (3.111.105.85), port 6543 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-ap-south-1.pooler.supabase.com" (3.111.105.85), port 6543 failed: FATAL:  Tenant or user not found
+
+--- Testing /ports/analytics/ ---
+Status: 200
+{'summary': {'total_vessels': 1949, 'total_ports': 724, 'total_voyages': 4493, 'total_events': 15771, 'avg_congestion_score': 53.0}, 'top_congested_ports': [{'name': 'Terminal 119 - Automated Hub', 'country': 'Australia', 'congestion_score': 99.6, 'avg_wait_time': 71.7}, {'name': 'Terminal 253 - Automated Hub', 'country': 'South Korea', 'congestion_score': 99.4, 'avg_wait_time': 71.6}, {'name': 'Port of Mumbai (JNPT)', 'country': 'India', 'congestion_score': 99.3, 'avg_wait_time': 71.5}, {'name': 'Terminal 56 - Automated Hub', 'country': 'UK', 'congestion_score': 99.0, 'avg_wait_time': 71.3}, {'name': 'Terminal 170 - Automated Hub', 'country': 'Netherlands', 'congestion_score': 98.8, 'avg_wait_time': 71.1}, {'name': 'Terminal 160 - Automated Hub', 'country': 'Singapore', 'congestion_score': 98.5, 'avg_wait_time': 70.9}, {'name': 'Terminal 195 - Automated Hub', 'country': 'USA', 'congestion_score': 98.1, 'avg_wait_time': 70.6}, {'name': 'Terminal 129 - Automated Hub', 'country': 'USA', 'congestion_score': 98.1, 'avg_wait_time': 70.6}, {'name': 'Port of Rostock', 'country': 'Germany', 'congestion_score': 98.0, 'avg_wait_time': 88.5}, {'name': 'Port of Mobile', 'country': 'United States', 'congestion_score': 97.9, 'avg_wait_time': 32.2}], 'vessel_type_breakdown': [{'vessel_type': 'Container Ship', 'count': 321}, {'vessel_type': 'Bulk Carrier', 'count': 292}, {'vessel_type': 'Ro-Ro', 'count': 285}, {'vessel_type': 'Oil Tanker', 'count': 245}, {'vessel_type': 'Cruise Ship', 'count': 232}, {'vessel_type': 'LNG Carrier', 'count': 79}, {'vessel_type': 'Tug', 'count': 74}, {'vessel_type': 'Cargo', 'count': 67}], 'voyage_status_breakdown': [{'status': 'in_transit', 'count': 1712}, {'status': 'completed', 'count': 967}, {'status': 'cancelled', 'count': 922}, {'status': 'delayed', 'count': 892}], 'event_type_breakdown': [{'event_type': 'inspection', 'count': 2208}, {'event_type': 'underway', 'count': 2204}, {'event_type': 'route_changed', 'count': 2201}, {'event_type': 'weather', 'count': 2171}, {'event_type': 'stopped', 'count': 1427}, {'event_type': 'piracy', 'count': 1426}, {'event_type': 'ais_lost', 'count': 1419}, {'event_type': 'entered_port', 'count': 1366}, {'event_type': 'port_delay', 'count': 1349}]}
+
+--- Testing /vessels/safety/zones/ ---
+Status: 200
+[{'id': 4, 'zone_type': 'piracy', 'latitude': 3.5, 'longitude': 2.1, 'radius': 200.0, 'severity': 'high', 'created_at': '2026-03-23T13:23:52.729347Z', 'expires_at': '2026-03-28T13:23:52.633982Z'}, {'id': 3, 'zone_type': 'cyclone', 'latitude': 15.2, 'longitude': 64.8, 'radius': 450.0, 'severity': 'critical', 'created_at': '2026-03-23T13:23:52.728345Z', 'expires_at': '2026-03-29T13:23:52.633982Z'}]
+
+--- Testing /vessels/safety/alerts/ ---
+Status: 200
+[{'vessel': 'Global Voyager 484', 'vessel_id': 24048, 'risk': 'Cyclone Alert', 'zone_type': 'cyclone', 'severity': 'critical', 'zone_title': 'cyclone', 'distance_km': 447.51}, {'vessel': 'Global Voyager 484', 'vessel_id': 24048, 'risk': 'Cyclone Alert', 'zone_type': 'cyclone', 'severity': 'critical', 'zone_title': 'Cyclone Warning — Arabian Sea', 'distance_km': 447.51}]
+Found 7 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 2.868s
+
+OK
+Destroying test database for alias 'default'...

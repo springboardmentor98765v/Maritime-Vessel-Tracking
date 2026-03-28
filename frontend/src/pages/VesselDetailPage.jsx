@@ -230,7 +230,7 @@ export default function VesselDetailPage() {
                             {[
                                 { label: 'Speed Over Ground', value: vessel.speed != null ? `${vessel.speed.toFixed(1)} KTS` : 'OFFLINE', icon: <Activity size={16} /> },
                                 { label: 'True Heading', value: vessel.heading != null ? `${vessel.heading}°` : 'OFFLINE', icon: <Navigation size={16} /> },
-                                { label: 'Declared Destination', value: vessel.destination ? vessel.destination.toUpperCase() : 'CLASSIFIED', icon: <MapPin size={16} /> },
+                                { label: 'Declared Destination', value: (vessel.destination && vessel.destination.toLowerCase() !== 'unknown') ? vessel.destination.toUpperCase() : 'NOT BROADCASTED', icon: <MapPin size={16} /> },
                                 { label: 'Last Signal Update', value: vessel.last_update ? new Date(vessel.last_update).toLocaleTimeString() : 'UNKNOWN', icon: <Database size={16} /> },
                             ].map((stat) => (
                                 <div key={stat.label} style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem', backdropFilter: 'blur(12px)' }}>

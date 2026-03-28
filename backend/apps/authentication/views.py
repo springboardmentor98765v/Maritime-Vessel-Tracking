@@ -9,6 +9,7 @@ from django.utils import timezone
 import logging
 import random
 import string
+import requests as http_requests
 
 logger = logging.getLogger(__name__)
 
@@ -235,15 +236,16 @@ class PasswordResetView(APIView):
                         fail_silently=False,
                     )
                 except Exception as exc:
-                    # Log the exception so SMTP/auth issues are visible in the console
                     logger.exception("Failed to send password reset email: %s", exc)
+                    return Response(
+                        {"error": "Failed to send reset email. Please try again later."},
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    )
             except User.DoesNotExist:
-                pass  # Don't reveal if user exists
-            
-            return Response(
-                {"detail": "If that email exists, reset instructions will be sent."},
-                status=status.HTTP_200_OK
-            )
+                return Response(
+                    {"error": "No user found with this email address."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
         
         return Response(
             serializer.errors,
@@ -334,29 +336,43 @@ class SendOTPView(APIView):
             OTP.objects.create(email=email, otp=otp, expires_at=expires_at)
             
             # Send email with OTP
-            subject = "Your Password Reset OTP"
-            message = f"Your OTP for password reset is: {otp}\n\nThis OTP is valid for 10 minutes."
+            subject = "Your Maritime Vista OTP Code"
+            html_message = f"""
+            <div style="font-family: sans-serif; max-width: 480px; margin: auto; padding: 2rem;">
+              <h2 style="color: #22d3ee;">Your OTP Code</h2>
+              <p>Use the following one-time password to reset your Maritime Vista account password:</p>
+              <div style="font-size: 2.5rem; font-weight: 800; letter-spacing: 0.3em; color: #1e293b; background: #f1f5f9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; text-align: center;">{otp}</div>
+              <p style="color: #64748b; font-size: 0.85rem;">This code is valid for <strong>10 minutes</strong>. If you did not request this, you can safely ignore this email.</p>
+            </div>
+            """
+            plain_message = f"Your OTP for password reset is: {otp}\n\nThis OTP is valid for 10 minutes."
             
             try:
                 send_mail(
                     subject,
-                    message,
+                    plain_message,
                     settings.DEFAULT_FROM_EMAIL,
                     [email],
+                    html_message=html_message,
                     fail_silently=False,
                 )
             except Exception as e:
                 logger.exception("Failed to send OTP email: %s", e)
+                # Delete the OTP we created since we couldn't deliver it
+                OTP.objects.filter(email=email).delete()
+                return Response(
+                    {"error": "Failed to send OTP email. Please check the email address and try again."},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
             
             return Response(
                 {"detail": "OTP sent to email"},
                 status=status.HTTP_200_OK
             )
         except User.DoesNotExist:
-            # Don't reveal if user exists
             return Response(
-                {"detail": "If that email exists, an OTP will be sent."},
-                status=status.HTTP_200_OK
+                {"error": "No user found with this email address."},
+                status=status.HTTP_404_NOT_FOUND
             )
 
 
@@ -440,4 +456,45 @@ class ResetPasswordOTPView(APIView):
                 {"error": "User not found"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+# =========================
+# CAPTCHA VERIFICATION
+# =========================
+
+class VerifyCaptchaView(APIView):
+    """Verify a Google reCAPTCHA v2 token server-side."""
+
+    def post(self, request):
+        token = request.data.get("token")
+        if not token:
+            return Response(
+                {"error": "CAPTCHA token is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        secret = getattr(settings, "RECAPTCHA_SECRET_KEY", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
+
+        try:
+            resp = http_requests.post(
+                "https://www.google.com/recaptcha/api/siteverify",
+                data={"secret": secret, "response": token},
+                timeout=5,
+            )
+            result = resp.json()
+        except Exception as exc:
+            logger.exception("reCAPTCHA verification request failed: %s", exc)
+            return Response(
+                {"error": "CAPTCHA service unavailable. Please try again."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        if result.get("success"):
+            return Response({"success": True}, status=status.HTTP_200_OK)
+
+        error_codes = result.get("error-codes", [])
+        return Response(
+            {"error": "CAPTCHA verification failed.", "codes": error_codes},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 

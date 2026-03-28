@@ -101,10 +101,10 @@ export default function PortsPage() {
     )
 
     return (
-        <motion.div initial="hidden" animate="show" variants={containerVariants} style={{ padding: '1rem 1.5rem', paddingBottom: '3rem' }}>
+        <motion.div initial="hidden" animate="show" variants={containerVariants} style={{ padding: '1.5rem 2rem', paddingBottom: '4rem' }}>
             
             {/* Header */}
-            <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem' }}>
+            <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '1.5rem' }}>
                 <div>
                     <h1 className="page-title">
                         <Anchor color="var(--brand-cyan)" size={32} /> Global Terminal Congestion
@@ -134,7 +134,7 @@ export default function PortsPage() {
             ) : (
                 <>
                     {/* Summary Matrix */}
-                    <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                    <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
                         {['critical', 'high', 'moderate', 'low'].map(level => {
                             const count = ports.filter(p => p.congestion_level === level).length;
                             const isActive = levelFilter === level;
@@ -164,7 +164,7 @@ export default function PortsPage() {
                     </motion.div>
 
                     {/* Analytics Charts */}
-                    <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                    <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
                         <div className="card">
                             <h2 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <BarChart3 size={18} color="var(--brand-cyan)" /> Top 15 Operations Bottlenecks
@@ -272,55 +272,55 @@ export default function PortsPage() {
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '900px' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(0,0,0,0.2)' }}>
-                                    <th onClick={() => handleSort('name')} style={{ padding: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Terminal <SortIcon col="name" /></th>
-                                    <th onClick={() => handleSort('country')} style={{ padding: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Territory <SortIcon col="country" /></th>
-                                    <th onClick={() => handleSort('congestion_level')} style={{ padding: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Status <SortIcon col="congestion_level" /></th>
-                                    <th onClick={() => handleSort('congestion_score')} style={{ padding: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Congestion Index <SortIcon col="congestion_score" /></th>
-                                    <th onClick={() => handleSort('avg_wait_time')} style={{ padding: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Avg Delay (H) <SortIcon col="avg_wait_time" /></th>
-                                    <th onClick={() => handleSort('arrivals')} style={{ padding: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'right' }}>In <SortIcon col="arrivals" /></th>
-                                    <th onClick={() => handleSort('departures')} style={{ padding: '0.75rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'right' }}>Out <SortIcon col="departures" /></th>
+                                    <th onClick={() => handleSort('name')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Terminal <SortIcon col="name" /></th>
+                                    <th onClick={() => handleSort('country')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Territory <SortIcon col="country" /></th>
+                                    <th onClick={() => handleSort('congestion_level')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Status <SortIcon col="congestion_level" /></th>
+                                    <th onClick={() => handleSort('congestion_score')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Congestion Index <SortIcon col="congestion_score" /></th>
+                                    <th onClick={() => handleSort('avg_wait_time')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}>Avg Delay (H) <SortIcon col="avg_wait_time" /></th>
+                                    <th onClick={() => handleSort('arrivals')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'right' }}>In <SortIcon col="arrivals" /></th>
+                                    <th onClick={() => handleSort('departures')} style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-2)', letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'right' }}>Out <SortIcon col="departures" /></th>
                                 </tr>
                             </thead>
                             <motion.tbody variants={containerVariants} initial="hidden" animate="show">
                                 {paginated.map((port) => (
                                     <motion.tr variants={itemVariants} key={port.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }} onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }} onMouseOut={(e) => { e.currentTarget.style.background = 'transparent' }}>
-                                        <td style={{ padding: '0.75rem' }}>
+                                        <td style={{ padding: '1rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', display: 'grid', placeItems: 'center', color: LEVEL_COLORS[port.congestion_level] }}>
-                                                    <Database size={14} />
+                                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'grid', placeItems: 'center', color: LEVEL_COLORS[port.congestion_level] }}>
+                                                    <Database size={16} />
                                                 </div>
                                                 <div>
-                                                    <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.85rem' }}>{port.name}</div>
+                                                    <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.9rem' }}>{port.name}</div>
                                                     <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', opacity: 0.8 }}>{port.location || 'Coordinates unavailable'}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-1)' }}>
-                                                <Globe size={12} opacity={0.5} /> {port.country}
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-1)' }}>
+                                                <Globe size={14} opacity={0.5} /> {port.country}
                                             </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem' }}>
-                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: `${LEVEL_COLORS[port.congestion_level]}15`, color: LEVEL_COLORS[port.congestion_level], border: `1px solid ${LEVEL_COLORS[port.congestion_level]}40`, padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                                                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: LEVEL_COLORS[port.congestion_level], boxShadow: `0 0 4px ${LEVEL_COLORS[port.congestion_level]}` }} />
+                                        <td style={{ padding: '1rem' }}>
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: `${LEVEL_COLORS[port.congestion_level]}15`, color: LEVEL_COLORS[port.congestion_level], border: `1px solid ${LEVEL_COLORS[port.congestion_level]}40`, padding: '0.25rem 0.6rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: LEVEL_COLORS[port.congestion_level], boxShadow: `0 0 6px ${LEVEL_COLORS[port.congestion_level]}` }} />
                                                 {port.congestion_level}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '0.75rem' }}>
+                                        <td style={{ padding: '1rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                <div style={{ width: '60px', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
-                                                    <div style={{ width: `${port.congestion_score}%`, height: '100%', background: LEVEL_COLORS[port.congestion_level] }} />
+                                                <div style={{ width: '80px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                                                    <div style={{ width: `${port.congestion_score}%`, height: '100%', background: LEVEL_COLORS[port.congestion_level], boxShadow: `0 0 10px ${LEVEL_COLORS[port.congestion_level]}` }} />
                                                 </div>
-                                                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>{port.congestion_score ?? '—'}</span>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>{port.congestion_score ?? '—'}</span>
                                             </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-1)', fontFamily: 'monospace' }}>
-                                                <Clock size={12} opacity={0.5} /> {port.avg_wait_time ?? '—'}
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-1)', fontFamily: 'monospace' }}>
+                                                <Clock size={14} opacity={0.5} /> {port.avg_wait_time ?? '—'}
                                             </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600, color: '#38bdf8', fontSize: '0.8rem' }}>{port.arrivals ?? '—'}</td>
-                                        <td style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600, color: '#8b5cf6', fontSize: '0.8rem' }}>{port.departures ?? '—'}</td>
+                                        <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: '#38bdf8' }}>{port.arrivals ?? '—'}</td>
+                                        <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: '#8b5cf6' }}>{port.departures ?? '—'}</td>
                                     </motion.tr>
                                 ))}
                             </motion.tbody>

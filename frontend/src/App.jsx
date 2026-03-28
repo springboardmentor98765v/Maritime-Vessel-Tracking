@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage'
 import UpdateProfilePage from './pages/UpdateProfilePage'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 
 import MapPage from './pages/MapPage'
 import VesselsPage from './pages/VesselsPage'
@@ -39,6 +40,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password/:uid/:token" element={<ResetPasswordPage />} />
           <Route path="/" element={<HomePage />} />
 
           {/* All other pages: wrapped in container */}

@@ -1,8 +1,13 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import ReCAPTCHA from 'react-google-recaptcha'
 import { useAuth } from '../hooks/useAuth'
+import api from '../services/api'
 import { Eye, EyeOff, Ship, Lock, User, ChevronRight, Shield, Globe, Activity, Anchor } from 'lucide-react'
+
+// Google reCAPTCHA v2 test site key
+const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
 
 const FEATURES = [
     { icon: Globe, color: '#22d3ee', label: 'Global Vessel Tracking', desc: 'Live AIS positions across all ocean regions' },
@@ -20,18 +25,45 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [focusedField, setFocusedField] = useState(null)
+    const [captchaToken, setCaptchaToken] = useState(null)
+    
+    // Proper ref
+    const realCaptchaRef = React.useRef(null)
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+
+    const handleCaptchaChange = (token) => {
+        setCaptchaToken(token)
+        setError('')
+    }
+
+    const handleCaptchaExpired = () => {
+        setCaptchaToken(null)
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
+
+        if (!captchaToken) {
+            setError('Please complete the CAPTCHA verification.')
+            return
+        }
+
         setLoading(true)
         try {
+            // Verify CAPTCHA server-side first
+            await api.post('/auth/verify-captcha/', { token: captchaToken })
+
+            // Proceed with login
             await login(form)
             navigate('/dashboard')
-        } catch {
-            setError('Invalid credentials or role. Please try again.')
+        } catch (err) {
+            const msg = err.response?.data?.error || err.response?.data?.detail || 'Invalid credentials or role. Please try again.'
+            setError(msg)
+            // Reset CAPTCHA on failure
+            realCaptchaRef.current?.reset()
+            setCaptchaToken(null)
         } finally {
             setLoading(false)
         }
@@ -208,6 +240,17 @@ export default function LoginPage() {
                                 </div>
                             </div>
 
+                            {/* CAPTCHA Widget */}
+                            <div style={{ display: 'flex', justifyContent: 'center', margin: '0.5rem 0' }}>
+                                <ReCAPTCHA
+                                    ref={realCaptchaRef}
+                                    sitekey={RECAPTCHA_SITE_KEY}
+                                    onChange={handleCaptchaChange}
+                                    onExpired={handleCaptchaExpired}
+                                    theme="dark"
+                                />
+                            </div>
+
                             {/* Error */}
                             <AnimatePresence>
                                 {error && (
@@ -226,10 +269,10 @@ export default function LoginPage() {
                             {/* Submit */}
                             <motion.button
                                 type="submit"
-                                disabled={loading}
-                                whileHover={!loading ? { y: -2, boxShadow: '0 12px 32px rgba(34,211,238,0.45)' } : {}}
-                                whileTap={!loading ? { scale: 0.98 } : {}}
-                                style={{ width: '100%', background: loading ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, #22d3ee, #3b82f6)', border: 'none', borderRadius: '12px', padding: '0.95rem', fontSize: '0.95rem', fontWeight: 700, color: loading ? 'rgba(255,255,255,0.4)' : '#040914', cursor: loading ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', boxShadow: loading ? 'none' : '0 4px 20px rgba(34,211,238,0.3)', transition: 'all 0.2s', marginTop: '0.25rem' }}
+                                disabled={loading || !captchaToken}
+                                whileHover={(!loading && captchaToken) ? { y: -2, boxShadow: '0 12px 32px rgba(34,211,238,0.45)' } : {}}
+                                whileTap={(!loading && captchaToken) ? { scale: 0.98 } : {}}
+                                style={{ width: '100%', background: (loading || !captchaToken) ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, #22d3ee, #3b82f6)', border: 'none', borderRadius: '12px', padding: '0.95rem', fontSize: '0.95rem', fontWeight: 700, color: (loading || !captchaToken) ? 'rgba(255,255,255,0.4)' : '#040914', cursor: (loading || !captchaToken) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', boxShadow: (loading || !captchaToken) ? 'none' : '0 4px 20px rgba(34,211,238,0.3)', transition: 'all 0.2s', marginTop: '0.25rem' }}
                             >
                                 {loading ? (
                                     <>

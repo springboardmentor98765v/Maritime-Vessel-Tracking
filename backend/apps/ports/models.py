@@ -15,13 +15,13 @@ class Port(models.Model):
         db_index=True
     )
 
-    congestion_score = models.FloatField()
-    avg_wait_time = models.FloatField()
+    congestion_score = models.FloatField(default=0.0)
+    avg_wait_time = models.FloatField(default=0.0)
 
-    arrivals = models.PositiveIntegerField()
-    departures = models.PositiveIntegerField()
+    arrivals = models.PositiveIntegerField(default=0)
+    departures = models.PositiveIntegerField(default=0)
 
-    last_update = models.DateTimeField(db_index=True)
+    last_update = models.DateTimeField(auto_now=True, db_index=True)
     last_analytics_update = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

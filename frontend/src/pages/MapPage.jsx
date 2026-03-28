@@ -169,12 +169,6 @@ export default function MapPage() {
         [criticalAlerts]
     )
 
-    // Find if a vessel is actively in a critical alert
-    const getVesselIcon = (vesselName) => {
-        if (criticalVesselNames.has(vesselName)) return alertShipIcon;
-        return shipIcon;
-    }
-
     return (
         <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 120px)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
             
