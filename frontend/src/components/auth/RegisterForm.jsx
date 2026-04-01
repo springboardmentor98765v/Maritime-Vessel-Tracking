@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../hooks/useAuth'
@@ -79,7 +79,7 @@ function RegisterForm() {
             <motion.div 
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                style={{ background: 'linear-gradient(160deg, rgba(16,26,52,0.95) 0%, rgba(8,14,30,0.98) 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '2.25rem', boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(34,211,238,0.06)', backdropFilter: 'blur(24px)', position: 'relative', overflow: 'hidden' }}>
+                style={{ background: 'linear-gradient(160deg, rgba(16,26,52,0.95) 0%, rgba(8,14,30,0.98) 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '2.25rem', boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(34,211,238,0.06)', position: 'relative', overflow: 'hidden' }}>
                 {/* Top glow line */}
                 <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), transparent)' }} />
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '200px', height: '200px', background: 'radial-gradient(circle at top left, rgba(34,211,238,0.07), transparent 60%)', pointerEvents: 'none' }} />
@@ -223,3 +223,4 @@ function RegisterForm() {
 }
 
 export default RegisterForm
+

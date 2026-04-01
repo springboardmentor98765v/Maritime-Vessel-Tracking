@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+﻿import React, { useState, memo } from "react";
 
 // RadarDisplay uses pure CSS animations for the sweep — zero JS animation overhead
 const RadarDisplay = memo(function RadarDisplay({
@@ -108,7 +108,7 @@ const RadarDisplay = memo(function RadarDisplay({
       </div>
 
       {/* Range label */}
-      <div style={{ position: "absolute", left: "50%", bottom: "14%", transform: "translateX(-50%)", color: radarColor, fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.14em", background: "rgba(4,9,20,0.65)", padding: "2px 8px", borderRadius: 4, backdropFilter: "blur(4px)", border: `1px solid ${radarColor}40` }}>
+      <div style={{ position: "absolute", left: "50%", bottom: "14%", transform: "translateX(-50%)", color: radarColor, fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.14em", background: "rgba(4,9,20,0.65)", padding: "2px 8px", borderRadius: 4, border: `1px solid ${radarColor}40` }}>
         RANGE: 120 NM
       </div>
     </div>
@@ -116,3 +116,4 @@ const RadarDisplay = memo(function RadarDisplay({
 });
 
 export default RadarDisplay;
+

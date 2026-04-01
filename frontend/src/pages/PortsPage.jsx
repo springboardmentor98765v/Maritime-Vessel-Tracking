@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { fetchPortCongestion } from '../services/portService'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell
@@ -78,7 +78,7 @@ export default function PortsPage() {
         if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
         else { setSortBy(col); setSortDir('desc') }
     }
-    const SortIcon = ({ col }) => sortBy === col ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''
+    const SortIcon = ({ col }) => sortBy === col ? (sortDir === 'asc' ? ' â–²' : ' â–¼') : ''
 
     useEffect(() => setPage(1), [search, countryFilter, levelFilter, sortBy, sortDir])
 
@@ -193,7 +193,7 @@ export default function PortsPage() {
                                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                                         <XAxis dataKey="name" stroke="var(--text-2)" fontSize={11} angle={-30} textAnchor="end" interval={0} tickLine={false} axisLine={false} dx={-10} dy={10} />
                                         <YAxis stroke="var(--text-2)" fontSize={11} domain={[0, 100]} tickLine={false} axisLine={false} />
-                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ background: 'rgba(8, 17, 38, 0.95)', border: '1px solid var(--border-hi)', borderRadius: '12px', backdropFilter: 'blur(16px)', color: '#fff', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }} itemStyle={{ color: '#22d3ee' }} />
+                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ background: 'rgba(8, 17, 38, 0.95)', border: '1px solid var(--border-hi)', borderRadius: '12px', color: '#fff', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }} itemStyle={{ color: '#22d3ee' }} />
                                         <Bar dataKey="congestion_score" name="Congestion Index" radius={[6, 6, 0, 0]}>
                                             {chartData.map((entry, index) => {
                                                 const lvl = entry.congestion_level;
@@ -226,7 +226,7 @@ export default function PortsPage() {
                                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                                         <XAxis dataKey="name" stroke="var(--text-2)" fontSize={11} angle={-30} textAnchor="end" interval={0} tickLine={false} axisLine={false} dx={-10} dy={10} />
                                         <YAxis stroke="var(--text-2)" fontSize={11} tickLine={false} axisLine={false} />
-                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ background: 'rgba(8, 17, 38, 0.95)', border: '1px solid var(--border-hi)', borderRadius: '12px', backdropFilter: 'blur(16px)', color: '#fff', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }} />
+                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ background: 'rgba(8, 17, 38, 0.95)', border: '1px solid var(--border-hi)', borderRadius: '12px', color: '#fff', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }} />
                                         <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} iconType="circle" />
                                         <Bar dataKey="arrivals" name="Inbound" fill="url(#colorArr)" radius={[6, 6, 0, 0]} />
                                         <Bar dataKey="departures" name="Outbound" fill="url(#colorDep)" radius={[6, 6, 0, 0]} />
@@ -330,7 +330,7 @@ export default function PortsPage() {
                     {/* Matrix Pagination Controls */}
                     {totalPages > 1 && (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.25rem', marginTop: '1.5rem', padding: '0 0.5rem' }}>
-                            <button style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', color: 'var(--text-1)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1 }} onClick={() => setPage(1)} disabled={page === 1}>«</button>
+                            <button style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', color: 'var(--text-1)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1 }} onClick={() => setPage(1)} disabled={page === 1}>Â«</button>
                             <button style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', color: 'var(--text-1)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1 }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>PREV</button>
                             
                             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -353,3 +353,4 @@ export default function PortsPage() {
         </motion.div>
     )
 }
+

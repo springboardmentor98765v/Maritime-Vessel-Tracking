@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { fetchProfile } from '../services/authService'
@@ -104,8 +104,7 @@ export default function ProfilePage() {
           }
           {/* camera hover overlay */}
           <div style={{
-            position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(2px)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             opacity: 0, transition: 'opacity .2s',
           }} className="avatar-cam-overlay">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
@@ -192,3 +191,4 @@ export default function ProfilePage() {
     </motion.div>
   )
 }
+

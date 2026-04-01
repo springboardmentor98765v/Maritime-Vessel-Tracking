@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import api from '../services/api'
@@ -85,7 +85,7 @@ export default function DashboardPage() {
       variants={containerVariants}
       style={{ display: 'grid', gap: '2.5rem', paddingBottom: '3rem' }}
     >
-      {/* ── Welcome Header ── */}
+      {/* â”€â”€ Welcome Header â”€â”€ */}
       <motion.div
         variants={cardVariants}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '1.75rem', position: 'relative', flexWrap: 'wrap', gap: '1rem' }}
@@ -109,14 +109,14 @@ export default function DashboardPage() {
           <motion.button
             whileHover={{ y: -2, background: 'rgba(255,255,255,0.1)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
             whileTap={{ scale: 0.96 }}
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0.7rem 1.4rem', borderRadius: '12px', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.25s' }}
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0.7rem 1.4rem', borderRadius: '12px', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.25s' }}
           >
             <Settings size={15} /> Edit Profile <ArrowUpRight size={14} style={{ opacity: 0.5 }} />
           </motion.button>
         </Link>
       </motion.div>
 
-      {/* ── KPI Cards ── */}
+      {/* â”€â”€ KPI Cards â”€â”€ */}
       <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))', gap: '1.25rem' }}>
         {KPI_DATA.map((kpi, i) => (
           <motion.div key={i} variants={cardVariants} className="kpi-card" style={{ '--accent-color': kpi.color }}>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
         ))}
       </motion.div>
 
-      {/* ── Port Analytics Preview ── */}
+      {/* â”€â”€ Port Analytics Preview â”€â”€ */}
       {portData && (
         <motion.div variants={cardVariants} className="card" style={{ padding: '1.75rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.5), rgba(99,102,241,0.5), transparent)' }} />
@@ -193,7 +193,7 @@ export default function DashboardPage() {
         </motion.div>
       )}
 
-      {/* ── Feature Cards Matrix ── */}
+      {/* â”€â”€ Feature Cards Matrix â”€â”€ */}
       <div>
         <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 className="text-subheading" style={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* ── Bottom Row: Intelligence Feed + Monitored Assets ── */}
+      {/* â”€â”€ Bottom Row: Intelligence Feed + Monitored Assets â”€â”€ */}
       <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
 
         {/* Intelligence Feed */}
@@ -355,3 +355,4 @@ export default function DashboardPage() {
     </motion.div>
   )
 }
+

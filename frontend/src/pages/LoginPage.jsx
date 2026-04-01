@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReCAPTCHA from 'react-google-recaptcha'
@@ -88,7 +88,7 @@ export default function LoginPage() {
             <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 20% 50%, rgba(34,211,238,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(99,102,241,0.08) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
             <div style={{ position: 'fixed', inset: 0, backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none', zIndex: 0 }} />
 
-            {/* ── Left Panel: Branding & Features ── */}
+            {/* â”€â”€ Left Panel: Branding & Features â”€â”€ */}
             <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -160,7 +160,7 @@ export default function LoginPage() {
                 </motion.div>
             </motion.div>
 
-            {/* ── Right Panel: Login Form ── */}
+            {/* â”€â”€ Right Panel: Login Form â”€â”€ */}
             <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -172,7 +172,7 @@ export default function LoginPage() {
                     <motion.div 
                         animate={{ y: [0, -8, 0] }}
                         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                        style={{ background: 'linear-gradient(160deg, rgba(16,26,52,0.95) 0%, rgba(8,14,30,0.98) 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '2.5rem', boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(34,211,238,0.06)', backdropFilter: 'blur(24px)', position: 'relative', overflow: 'hidden' }}>
+                        style={{ background: 'linear-gradient(160deg, rgba(16,26,52,0.95) 0%, rgba(8,14,30,0.98) 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '2.5rem', boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(34,211,238,0.06)', position: 'relative', overflow: 'hidden' }}>
                         {/* Subtle top glow */}
                         <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.5), transparent)' }} />
                         <div style={{ position: 'absolute', top: 0, right: 0, width: '200px', height: '200px', background: 'radial-gradient(circle at top right, rgba(99,102,241,0.08), transparent 60%)', pointerEvents: 'none' }} />
@@ -312,3 +312,4 @@ export default function LoginPage() {
         </div>
     )
 }
+

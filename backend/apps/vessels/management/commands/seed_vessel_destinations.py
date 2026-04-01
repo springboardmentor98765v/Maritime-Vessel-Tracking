@@ -43,7 +43,7 @@ class Command(BaseCommand):
     help = "Seeds realistic destination port names for vessels with missing destinations."
 
     def handle(self, *args, **options):
-        vessels = Vessel.objects.filter(destination__isnull=True) | Vessel.objects.filter(destination='')
+        vessels = Vessel.objects.filter(destination__isnull=True) | Vessel.objects.filter(destination='') | Vessel.objects.filter(destination__iexact='unknown')
         count = vessels.count()
         self.stdout.write(f"Updating {count} vessels with missing destinations...")
 

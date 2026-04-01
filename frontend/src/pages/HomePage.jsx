@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+﻿import { NavLink } from 'react-router-dom'
 import { Activity, Anchor, ShieldAlert, Navigation, ChevronRight, Zap, Target, Globe, User, Shield, Map, Ship, PlayCircle, BarChart3, ArrowUpRight, Lock } from 'lucide-react'
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import { useEffect } from 'react'
@@ -45,18 +45,18 @@ function HomePage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', minHeight: '100vh', background: '#020617', overflow: 'hidden' }}>
 
-      {/* ── Ambient Background Layers ── */}
+      {/* â”€â”€ Ambient Background Layers â”€â”€ */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '900px', background: 'radial-gradient(ellipse 90% 70% at 50% -15%, rgba(34,211,238,0.14), transparent)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', top: 0, right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(99,102,241,0.1), transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', top: '40%', left: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(34,211,238,0.06), transparent 65%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '48px 48px', pointerEvents: 'none', maskImage: 'linear-gradient(to bottom, black 0%, transparent 70%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 70%)' }} />
 
-      {/* ── Live Ticker ── */}
+      {/* â”€â”€ Live Ticker â”€â”€ */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        style={{ background: 'rgba(2,6,23,0.7)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '0.45rem 0', overflow: 'hidden', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', backdropFilter: 'blur(12px)', position: 'relative', zIndex: 10 }}
+        style={{ background: 'rgba(2,6,23,0.7)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '0.45rem 0', overflow: 'hidden', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', position: 'relative', zIndex: 10 }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '3rem', animation: 'marquee 45s linear infinite', minWidth: '200%' }}>
           {[1, 2].map(repeat => (
@@ -77,7 +77,7 @@ function HomePage() {
         <style>{`@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } @keyframes shimmerText { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; }}`}</style>
       </motion.div>
 
-      {/* ── HERO SECTION ── */}
+      {/* â”€â”€ HERO SECTION â”€â”€ */}
       <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: 'clamp(4rem,10vh,8rem) 2rem clamp(3rem,6vh,6rem)', display: 'grid', gridTemplateColumns: 'minmax(380px, 1.15fr) 0.85fr', gap: '5rem', alignItems: 'center', position: 'relative', zIndex: 10 }}>
 
         {/* Left: Copy */}
@@ -118,7 +118,7 @@ function HomePage() {
               <motion.button
                 whileHover={{ scale: 1.03, y: -3, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.25)' }}
                 whileTap={{ scale: 0.97 }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255,255,255,0.03)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', padding: '1.05rem 2.25rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(24px)', boxShadow: '0 4px 16px rgba(0,0,0,0.25)', transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255,255,255,0.03)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', padding: '1.05rem 2.25rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.25)', transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)' }}
               >
                 <Map size={18} /> Explore Live Map
               </motion.button>
@@ -168,7 +168,7 @@ function HomePage() {
               initial={{ opacity: 0, scale: 0.8, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ delay: 0.8 + i * 0.15, type: 'spring', stiffness: 280, damping: 24 }}
-              style={{ position: 'absolute', ...b, background: 'rgba(4,10,24,0.85)', backdropFilter: 'blur(24px)', border: `1px solid ${b.color}30`, borderRadius: '12px', padding: '0.55rem 0.9rem', zIndex: 20, pointerEvents: 'none' }}
+              style={{ position: 'absolute', ...b, background: 'rgba(4,10,24,0.85)', border: `1px solid ${b.color}30`, borderRadius: '12px', padding: '0.55rem 0.9rem', zIndex: 20, pointerEvents: 'none' }}
             >
               <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>{b.label}</div>
               <div style={{ fontSize: '1.1rem', fontWeight: 800, color: b.color, fontFamily: '"Space Grotesk", sans-serif', letterSpacing: '-0.02em' }}>{b.value}</div>
@@ -178,15 +178,15 @@ function HomePage() {
           <motion.div
             whileHover={{ rotateY: -3, rotateX: 2, scale: 1.02 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            style={{ background: 'rgba(4,10,24,0.5)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '32px', padding: 'clamp(2rem,4vw,3.5rem) clamp(1.5rem,3vw,2.5rem)', boxShadow: '0 40px 100px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.08)', backdropFilter: 'blur(48px)', position: 'relative', transformStyle: 'preserve-3d' }}
+            style={{ background: 'rgba(4,10,24,0.5)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '32px', padding: 'clamp(2rem,4vw,3.5rem) clamp(1.5rem,3vw,2.5rem)', boxShadow: '0 40px 100px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.08)', position: 'relative', transformStyle: 'preserve-3d' }}
           >
             <RadarDisplay radarColor="#00E5FF" alertColor="#ef4444" targetCount={14} />
           </motion.div>
         </motion.div>
       </div>
 
-      {/* ── STATS STRIP ── */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(2,6,23,0.5)', backdropFilter: 'blur(24px)', position: 'relative', zIndex: 10 }}>
+      {/* â”€â”€ STATS STRIP â”€â”€ */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(2,6,23,0.5)', position: 'relative', zIndex: 10 }}>
         <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '3rem 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(12.5rem, 1fr))', gap: '2rem' }}>
           {[
             { icon: <Target size={22} color="#22d3ee" />, value: '12,450+', label: 'Vessels Tracked Live', color: '#22d3ee' },
@@ -216,7 +216,7 @@ function HomePage() {
         </div>
       </div>
 
-      {/* ── FEATURES GRID SECTION ── */}
+      {/* â”€â”€ FEATURES GRID SECTION â”€â”€ */}
       <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: 'clamp(5rem,10vh,8rem) 2rem', position: 'relative', zIndex: 10 }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -246,7 +246,7 @@ function HomePage() {
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ delay: i * 0.06, duration: 0.55, ease: [0.16,1,0.3,1] }}
                 whileHover={{ y: -8, borderColor: `${f.color}50` }}
-                style={{ background: 'rgba(8,16,38,0.85)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.1rem', height: '100%', backdropFilter: 'blur(24px)', position: 'relative', overflow: 'hidden', transition: 'border-color 0.3s, transform 0.3s', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+                style={{ background: 'rgba(8,16,38,0.85)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.1rem', height: '100%', position: 'relative', overflow: 'hidden', transition: 'border-color 0.3s, transform 0.3s', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
               >
                 {/* Corner glow */}
                 <div style={{ position: 'absolute', top: 0, right: 0, width: 180, height: 180, background: `radial-gradient(circle at top right, ${f.color}14, transparent 60%)`, pointerEvents: 'none' }} />
@@ -277,8 +277,8 @@ function HomePage() {
         </div>
       </div>
 
-      {/* ── BOTTOM CTA BAND ── */}
-      <div style={{ position: 'relative', zIndex: 10, background: 'rgba(2,6,23,0.6)', backdropFilter: 'blur(24px)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      {/* â”€â”€ BOTTOM CTA BAND â”€â”€ */}
+      <div style={{ position: 'relative', zIndex: 10, background: 'rgba(2,6,23,0.6)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(4rem,8vh,6rem) 2rem', textAlign: 'center' }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -299,7 +299,7 @@ function HomePage() {
                 </motion.button>
               </NavLink>
               <NavLink to="/login" style={{ textDecoration: 'none' }}>
-                <motion.button whileHover={{ scale: 1.04, y: -3 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', padding: '1.05rem 2.25rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(24px)', transition: 'all 0.25s' }}>
+                <motion.button whileHover={{ scale: 1.04, y: -3 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', padding: '1.05rem 2.25rem', borderRadius: '14px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.25s' }}>
                   Sign in to dashboard
                 </motion.button>
               </NavLink>
@@ -322,3 +322,4 @@ function HomePage() {
 }
 
 export default HomePage
+

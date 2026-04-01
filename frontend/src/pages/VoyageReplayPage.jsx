@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react'
+﻿import { useState, useEffect, memo } from 'react'
 import { Anchor, Ship, ArrowRight, Clock, Calendar, Play, Pause, SkipForward, SkipBack, PlayCircle, Navigation, MapPin, Crosshair } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../services/api'
@@ -37,7 +37,6 @@ const VoyageCard = memo(function VoyageCard({ voyage, isSelected, onClick }) {
                 padding: '1.25rem 1.5rem',
                 position: 'relative',
                 overflow: 'hidden',
-                backdropFilter: 'blur(12px)',
                 boxShadow: isSelected ? '0 12px 36px rgba(34,211,238,0.2), 0 4px 12px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.3)',
                 transition: 'all 0.2s',
             }}
@@ -233,7 +232,7 @@ function ReplayPanel({ voyage, onClose }) {
             {replay.vessel_last_lat && (
                 <div style={{ padding: '0 1.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>
                     <Crosshair size={12} color="#22d3ee" />
-                    Last known: {Number(replay.vessel_last_lat).toFixed(4)}°, {Number(replay.vessel_last_lon).toFixed(4)}°
+                    Last known: {Number(replay.vessel_last_lat).toFixed(4)}Â°, {Number(replay.vessel_last_lon).toFixed(4)}Â°
                 </div>
             )}
         </motion.div>
@@ -304,7 +303,7 @@ export default function VoyageReplayPage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             whileHover={{ y: -3, borderColor: `${stat.color}40` }}
-                            style={{ background: 'rgba(8,17,38,0.85)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', backdropFilter: 'blur(12px)', cursor: 'default', transition: 'all 0.2s' }}
+                            style={{ background: 'rgba(8,17,38,0.85)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'default', transition: 'all 0.2s' }}
                         >
                             <div style={{ width: 4, height: 36, borderRadius: 99, background: stat.color, flexShrink: 0, boxShadow: `0 0 12px ${stat.color}80` }} />
                             <div>
@@ -360,3 +359,4 @@ export default function VoyageReplayPage() {
         </div>
     )
 }
+

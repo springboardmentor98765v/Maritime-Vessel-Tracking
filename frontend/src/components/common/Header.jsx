@@ -1,4 +1,4 @@
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+﻿import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { useAuthContext } from '../../context/AuthContext'
 import api from '../../services/api'
@@ -137,7 +137,7 @@ function Header() {
 
                 {/* Center: Navigation */}
                 <div style={{ flex: '0 1 auto', display: 'flex', justifyContent: 'center' }}>
-                    <nav className="nav" aria-label="Main navigation" style={{ display: 'none', gap: '0.35rem', background: 'rgba(255,255,255,0.03)', padding: '5px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(24px)' }}>
+                    <nav className="nav" aria-label="Main navigation" style={{ display: 'none', gap: '0.35rem', background: 'rgba(255,255,255,0.03)', padding: '5px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', }}>
                     <style>{`@media(min-width: 1100px) { .nav { display: flex !important; } }`}</style>
                     {links.map(({ to, label, end }) => {
                         const isActive = end ? location.pathname === to : location.pathname.startsWith(to)
@@ -190,7 +190,7 @@ function Header() {
                         >
                             <Command size={14} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} /> 
                             <span style={{ marginRight: 'auto' }}>Search...</span> 
-                            <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', color: '#fff', fontFamily: 'monospace', flexShrink: 0 }}>⌘K</kbd>
+                            <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', color: '#fff', fontFamily: 'monospace', flexShrink: 0 }}>âŒ˜K</kbd>
                         </motion.button>
                     </div>
 
@@ -222,7 +222,7 @@ function Header() {
                                             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
                                             exit={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
                                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                            style={{ position: 'absolute', right: 0, top: '50px', width: '360px', background: 'rgba(8,17,38,0.95)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)', overflow: 'hidden' }}
+                                            style={{ position: 'absolute', right: 0, top: '50px', width: '360px', background: 'rgba(8,17,38,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)', overflow: 'hidden' }}
                                         >
                                             <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)', fontWeight: '700', fontSize: '0.9rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.03), transparent)' }}>
                                                 Notifications
@@ -270,7 +270,7 @@ function Header() {
                                             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
                                             exit={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
                                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                            style={{ position: 'absolute', right: 0, top: '50px', width: '240px', background: 'rgba(8,17,38,0.95)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)', padding: '0.5rem', overflow: 'hidden' }}
+                                            style={{ position: 'absolute', right: 0, top: '50px', width: '240px', background: 'rgba(8,17,38,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)', padding: '0.5rem', overflow: 'hidden' }}
                                         >
                                             <div style={{ padding: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--brand-grad)', padding: 1 }}>
@@ -375,3 +375,4 @@ function Header() {
 }
 
 export default Header
+

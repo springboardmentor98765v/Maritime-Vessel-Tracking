@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { fetchExtraProfile, updateExtraProfile } from '../services/authService'
@@ -104,7 +104,7 @@ export default function UpdateProfilePage() {
         <p style={{ color: 'var(--text-2)', fontSize: '.9rem', marginBottom: '2rem' }}>Update your personal information and profile photo.</p>
 
         <form onSubmit={handleSubmit}>
-          {/* ── Avatar picker ── */}
+          {/* â”€â”€ Avatar picker â”€â”€ */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
             <div
               onClick={() => fileInputRef.current?.click()}
@@ -127,8 +127,7 @@ export default function UpdateProfilePage() {
               {/* camera overlay */}
               <div style={{
                 position: 'absolute', inset: 0, borderRadius: '50%',
-                background: 'rgba(0,0,0,.6)', backdropFilter: 'blur(2px)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,.6)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 opacity: 0, transition: 'opacity .2s',
               }}
                 className="avatar-overlay"
@@ -152,7 +151,7 @@ export default function UpdateProfilePage() {
             )}
           </div>
 
-          {/* ── Fields ── */}
+          {/* â”€â”€ Fields â”€â”€ */}
           <div style={{ display: 'grid', gap: '1.25rem' }}>
             <div className="field">
               <label htmlFor="company">Company</label>
@@ -200,7 +199,7 @@ export default function UpdateProfilePage() {
             </div>
           </div>
 
-          {/* ── Feedback ── */}
+          {/* â”€â”€ Feedback â”€â”€ */}
           {error && (
             <div style={{
               background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5',
@@ -218,7 +217,7 @@ export default function UpdateProfilePage() {
             </div>
           )}
 
-          {/* ── Actions ── */}
+          {/* â”€â”€ Actions â”€â”€ */}
           <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
             <button type="submit" className="btn btn--primary" disabled={saving} style={{ flex: 1 }}>
               {saving ? 'Saving...' : 'Save Changes'}
@@ -238,3 +237,4 @@ export default function UpdateProfilePage() {
     </motion.div>
   )
 }
+

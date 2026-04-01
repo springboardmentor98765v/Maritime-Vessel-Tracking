@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 
@@ -128,7 +128,6 @@ export default function NotFoundPage() {
           borderRadius: '50%',
           border: '1px solid rgba(34,211,238,0.2)',
           background: 'rgba(8,17,38,0.7)',
-          backdropFilter: 'blur(10px)',
           boxShadow: '0 0 60px rgba(34,211,238,0.15), inset 0 0 40px rgba(34,211,238,0.04)',
           overflow: 'hidden',
           marginBottom: '2.5rem',
@@ -227,7 +226,7 @@ export default function NotFoundPage() {
             onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(34,211,238,0.5)'; e.currentTarget.style.color = '#fff' }}
             onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border-hi)'; e.currentTarget.style.color = 'var(--text-1)' }}
           >
-            ← Go Back
+            â† Go Back
           </motion.button>
         </div>
 
@@ -252,3 +251,4 @@ export default function NotFoundPage() {
     </div>
   )
 }
+

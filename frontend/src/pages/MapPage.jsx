@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, memo } from 'react'
+﻿import React, { useState, useEffect, useMemo, memo } from 'react'
 import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, Circle, ZoomControl } from 'react-leaflet'
 import L from 'leaflet'
@@ -172,9 +172,8 @@ export default function MapPage() {
     return (
         <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 120px)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
             
-            {/* Dark Map Base (Standard OSM with CSS inversion trick for dark mode) */}
+            {/* Dark Map Base (CartoDB Dark Matter) */}
             <style>{`
-                .leaflet-layer,
                 .leaflet-control-zoom-in,
                 .leaflet-control-zoom-out,
                 .leaflet-control-attribution {
@@ -210,7 +209,8 @@ export default function MapPage() {
 
             <MapContainer center={[15, 0]} zoom={3} style={{ height: '100%', width: '100%', zIndex: 1 }} scrollWheelZoom zoomControl={false} preferCanvas={true}>
                 <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 />
                 <ZoomControl position="bottomright" />
 
@@ -299,7 +299,7 @@ export default function MapPage() {
                 style={{ position: 'absolute', top: '16px', left: '16px', right: '16px', zIndex: 1000, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', pointerEvents: 'none' }}
             >
                 {/* Status Panel left */}
-                <div style={{ background: 'rgba(4, 9, 20, 0.85)', backdropFilter: 'blur(16px)', border: '1px solid var(--border-hi)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', pointerEvents: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                <div style={{ background: 'rgba(4, 9, 20, 0.85)', border: '1px solid var(--border-hi)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', pointerEvents: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <Command color="var(--brand-cyan)" size={20} />
                         <div>
@@ -315,14 +315,14 @@ export default function MapPage() {
                         <motion.button 
                             whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                             onClick={() => setShowAlertPanel(!showAlertPanel)}
-                            style={{ background: showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.15)', color: showAlertPanel ? '#fff' : '#fca5a5', border: `1px solid ${showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.4)'}`, borderRadius: '8px', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', backdropFilter: 'blur(8px)', boxShadow: showAlertPanel ? '0 0 20px rgba(239,68,68,0.4)' : '0 4px 12px rgba(239,68,68,0.1)' }}
+                            style={{ background: showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.15)', color: showAlertPanel ? '#fff' : '#fca5a5', border: `1px solid ${showAlertPanel ? '#ef4444' : 'rgba(239, 68, 68, 0.4)'}`, borderRadius: '8px', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', boxShadow: showAlertPanel ? '0 0 20px rgba(239,68,68,0.4)' : '0 4px 12px rgba(239,68,68,0.1)' }}
                         >
                             <ShieldAlert size={16} /> {criticalAlerts.length} PROTOCOL BREACHES
                         </motion.button>
                     )}
                     <button 
                         onClick={loadInitial} disabled={loading}
-                        style={{ background: 'rgba(34, 211, 238, 0.1)', color: 'var(--brand-cyan)', border: '1px solid rgba(34, 211, 238, 0.3)', borderRadius: '8px', width: '40px', height: '40px', display: 'grid', placeItems: 'center', cursor: loading ? 'wait' : 'pointer', backdropFilter: 'blur(8px)' }}
+                        style={{ background: 'rgba(34, 211, 238, 0.1)', color: 'var(--brand-cyan)', border: '1px solid rgba(34, 211, 238, 0.3)', borderRadius: '8px', width: '40px', height: '40px', display: 'grid', placeItems: 'center', cursor: loading ? 'wait' : 'pointer', }}
                     >
                         <RefreshCw size={18} className={loading ? 'spinning' : ''} />
                     </button>
@@ -333,7 +333,7 @@ export default function MapPage() {
             <motion.div 
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                style={{ position: 'absolute', bottom: '16px', left: '16px', zIndex: 1000, background: 'rgba(4, 9, 20, 0.85)', backdropFilter: 'blur(16px)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1rem', width: '280px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}
+                style={{ position: 'absolute', bottom: '16px', left: '16px', zIndex: 1000, background: 'rgba(4, 9, 20, 0.85)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1rem', width: '280px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}
             >
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Layers size={14} color="var(--brand-cyan)" /> TACTICAL OVERLAYS
@@ -362,7 +362,7 @@ export default function MapPage() {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: 300, opacity: 0 }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        style={{ position: 'absolute', top: '70px', right: '16px', zIndex: 1000, background: 'rgba(8, 17, 38, 0.95)', backdropFilter: 'blur(16px)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '12px', width: '320px', boxShadow: '0 12px 40px rgba(0,0,0,0.6)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 200px)' }}
+                        style={{ position: 'absolute', top: '70px', right: '16px', zIndex: 1000, background: 'rgba(8, 17, 38, 0.95)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '12px', width: '320px', boxShadow: '0 12px 40px rgba(0,0,0,0.6)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 200px)' }}
                     >
                         <div style={{ background: 'rgba(239, 68, 68, 0.1)', borderBottom: '1px solid rgba(239, 68, 68, 0.3)', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -391,3 +391,4 @@ export default function MapPage() {
         </div>
     )
 }
+

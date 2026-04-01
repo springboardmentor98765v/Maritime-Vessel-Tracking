@@ -30,7 +30,9 @@ function App() {
   return (
     <div className="app-shell">
       <div className="mesh-bg" />
-      <div className="app-bg-grid" />
+      <div className="app-bg-grid-wrapper">
+        <div className="app-bg-grid" />
+      </div>
       <Header />
       <LiveTicker />
 

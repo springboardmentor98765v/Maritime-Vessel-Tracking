@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Ship, Anchor, LayoutDashboard, Map, Settings, PlayCircle, BarChart3, Database } from 'lucide-react'
@@ -129,8 +129,7 @@ export default function CommandPalette({ isOpen, onClose }) {
                         onClick={onClose}
                         style={{
                             position: 'fixed', inset: 0, zIndex: 9999,
-                            background: 'rgba(4, 9, 20, 0.7)', backdropFilter: 'blur(8px)'
-                        }}
+                            background: 'rgba(4, 9, 20, 0.7)', }}
                     />
 
                     {/* Modal */}
@@ -142,8 +141,7 @@ export default function CommandPalette({ isOpen, onClose }) {
                         style={{
                             position: 'fixed', top: '15%', left: '50%', zIndex: 10000,
                             width: '100%', maxWidth: '640px',
-                            background: 'rgba(8, 17, 38, 0.95)', backdropFilter: 'blur(20px)',
-                            border: '1px solid var(--border-hi)', borderRadius: '16px',
+                            background: 'rgba(8, 17, 38, 0.95)', border: '1px solid var(--border-hi)', borderRadius: '16px',
                             boxShadow: '0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(34,211,238,0.1) inset',
                             overflow: 'hidden', display: 'flex', flexDirection: 'column'
                         }}
@@ -223,3 +221,4 @@ export default function CommandPalette({ isOpen, onClose }) {
         </AnimatePresence>
     )
 }
+

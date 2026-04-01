@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     fetchVessel,
@@ -229,11 +229,11 @@ export default function VesselDetailPage() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                             {[
                                 { label: 'Speed Over Ground', value: vessel.speed != null ? `${vessel.speed.toFixed(1)} KTS` : 'OFFLINE', icon: <Activity size={16} /> },
-                                { label: 'True Heading', value: vessel.heading != null ? `${vessel.heading}°` : 'OFFLINE', icon: <Navigation size={16} /> },
+                                { label: 'True Heading', value: vessel.heading != null ? `${vessel.heading}Â°` : 'OFFLINE', icon: <Navigation size={16} /> },
                                 { label: 'Declared Destination', value: (vessel.destination && vessel.destination.toLowerCase() !== 'unknown') ? vessel.destination.toUpperCase() : 'NOT BROADCASTED', icon: <MapPin size={16} /> },
                                 { label: 'Last Signal Update', value: vessel.last_update ? new Date(vessel.last_update).toLocaleTimeString() : 'UNKNOWN', icon: <Database size={16} /> },
                             ].map((stat) => (
-                                <div key={stat.label} style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem', backdropFilter: 'blur(12px)' }}>
+                                <div key={stat.label} style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem', }}>
                                     <div style={{ color: 'var(--text-2)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                                         {React.cloneElement(stat.icon, { color: 'var(--brand-cyan)' })} {stat.label}
                                     </div>
@@ -248,7 +248,7 @@ export default function VesselDetailPage() {
                         <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', fontFamily: '"Space Grotesk", sans-serif' }}>
                             <Box size={18} color="var(--brand-indigo)" /> Asset Specifications
                         </h2>
-                        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', backdropFilter: 'blur(12px)', overflow: 'hidden' }}>
+                        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <tbody>
                                     {[
@@ -273,7 +273,7 @@ export default function VesselDetailPage() {
                     
                     {/* Tactical Map Preview — embedded Leaflet */}
                     <motion.div variants={itemVariants} style={{ border: '1px solid var(--border-hi)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(8,17,38,0.85)', backdropFilter: 'blur(12px)' }}>
+                        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(8,17,38,0.85)', }}>
                             <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Space Grotesk", sans-serif', margin: 0 }}>
                                 <Map size={16} color="var(--brand-primary)" /> Tactical Position
                             </h2>
@@ -322,7 +322,7 @@ export default function VesselDetailPage() {
                                 ) : (
                                     <div style={{ padding: '0.6rem 1.25rem', background: 'rgba(4,9,20,0.9)', display: 'flex', gap: '2rem', alignItems: 'center' }}>
                                         <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--brand-cyan)', fontWeight: 600 }}>
-                                            {Number(vessel.last_position_lat).toFixed(5)}° N &nbsp; {Number(vessel.last_position_lon).toFixed(5)}° E
+                                            {Number(vessel.last_position_lat).toFixed(5)}Â° N &nbsp; {Number(vessel.last_position_lon).toFixed(5)}Â° E
                                         </span>
                                         <a
                                             href={`https://www.openstreetmap.org/?mlat=${vessel.last_position_lat}&mlon=${vessel.last_position_lon}&zoom=10`}
@@ -331,7 +331,7 @@ export default function VesselDetailPage() {
                                             onMouseOver={e => e.currentTarget.style.color = 'var(--brand-cyan)'}
                                             onMouseOut={e => e.currentTarget.style.color = 'var(--text-2)'}
                                         >
-                                            Open OSM ↗
+                                            Open OSM â†—
                                         </a>
                                     </div>
                                 )}
@@ -438,3 +438,4 @@ export default function VesselDetailPage() {
         </motion.div>
     );
 }
+

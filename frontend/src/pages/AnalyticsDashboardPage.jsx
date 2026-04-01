@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend,
@@ -20,7 +20,6 @@ const CustomTooltip = ({ active, payload, label }) => {
                     transition={{ duration: 0.15 }}
                     style={{
                         background: 'rgba(8, 17, 38, 0.97)',
-                        backdropFilter: 'blur(16px)',
                         border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '12px',
                         padding: '0.85rem 1.1rem',
@@ -68,7 +67,6 @@ function HeroKPI({ label, value, icon: Icon, accent, suffix = '' }) {
                 borderRadius: '20px',
                 padding: '1.5rem 1.75rem',
                 overflow: 'hidden',
-                backdropFilter: 'blur(16px)',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
             }}
         >
@@ -187,7 +185,7 @@ export default function AnalyticsDashboardPage() {
                             <p style={{ fontSize: '0.8rem', color: 'var(--text-2)', margin: 0 }}>Measured by operational congestion index (0–100)</p>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {[{ label: '≥80 CRITICAL', color: '#ef4444' }, { label: '≥60 HIGH', color: '#f59e0b' }, { label: 'NORMAL', color: '#38bdf8' }].map(t => (
+                            {[{ label: 'â‰¥80 CRITICAL', color: '#ef4444' }, { label: 'â‰¥60 HIGH', color: '#f59e0b' }, { label: 'NORMAL', color: '#38bdf8' }].map(t => (
                                 <span key={t.label} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.7rem', fontWeight: 700, color: t.color, background: `${t.color}12`, border: `1px solid ${t.color}30`, borderRadius: '99px', padding: '0.25rem 0.65rem' }}>
                                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: t.color }} />{t.label}
                                 </span>
@@ -298,3 +296,4 @@ export default function AnalyticsDashboardPage() {
         </div>
     )
 }
+

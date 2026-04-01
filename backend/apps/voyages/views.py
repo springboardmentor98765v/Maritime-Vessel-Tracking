@@ -66,10 +66,24 @@ class VoyageHistoryAPIView(APIView):
             positions = positions.filter(timestamp__gte=voyage.departure_time)
         positions = positions.order_by('timestamp')
         
+        import re
+        def parse_loc(loc_str):
+            if not loc_str: return 0.0, 0.0
+            try:
+                lat_part, lon_part = loc_str.split(',')
+                lat = float(re.sub(r'[^\d.-]', '', lat_part))
+                if 'S' in lat_part: lat = -lat
+                lon = float(re.sub(r'[^\d.-]', '', lon_part))
+                if 'W' in lon_part: lon = -lon
+                return lat, lon
+            except Exception:
+                return 0.0, 0.0
+        
         waypoints = []
         if voyage.port_from:
+            plat, plon = parse_loc(voyage.port_from.location)
             waypoints.append({
-                "lat": float(voyage.port_from.latitude), "lon": float(voyage.port_from.longitude),
+                "lat": plat, "lon": plon,
                 "type": "departure", "label": f"Depart {voyage.port_from.name}", 
                 "time": voyage.departure_time.isoformat() if voyage.departure_time else ""
             })
@@ -101,8 +115,9 @@ class VoyageHistoryAPIView(APIView):
         waypoints.sort(key=lambda x: x['time'])
         
         if voyage.port_to and voyage.status == 'completed':
+            plat, plon = parse_loc(voyage.port_to.location)
             waypoints.append({
-                "lat": float(voyage.port_to.latitude), "lon": float(voyage.port_to.longitude),
+                "lat": plat, "lon": plon,
                 "type": "arrival", "label": f"Arrive {voyage.port_to.name}", 
                 "time": voyage.arrival_time.isoformat() if voyage.arrival_time else ""
             })
