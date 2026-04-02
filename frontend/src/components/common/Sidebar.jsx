@@ -29,7 +29,8 @@ export default function Sidebar() {
   const role = user?.role || "viewer"
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
+    localStorage.removeItem(import.meta.env.VITE_JWT_TOKEN_KEY)
+    localStorage.removeItem(import.meta.env.VITE_REFRESH_TOKEN_KEY)
     dispatch(logout())
     navigate("/", { replace: true })
   }
@@ -62,6 +63,13 @@ export default function Sidebar() {
       icon: <Ship size={18} />,
       label: "Voyage History",
       roles: ["admin", "operator"]
+    },
+
+    {
+      to: "/vessels",
+      icon: <Ship size={18} />,
+      label: "Vessels",
+      roles: ["admin", "operator", "viewer"]
     },
 
     {
@@ -109,17 +117,17 @@ export default function Sidebar() {
   return (
 
     <div
-      className={`h-screen bg-[#0f172a] text-white flex flex-col transition-all duration-300
+      className={`h-screen bg-[#0b1220] text-white flex flex-col transition-all duration-300
       ${collapsed ? "w-20" : "w-64"}`}
     >
 
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+      <div className="p-4 border-b border-white/10 flex items-center justify-between">
 
         {!collapsed && (
           <div>
-            <h2 className="text-lg font-bold">🚢 Maritime</h2>
-            <p className="text-xs text-gray-400">
+            <h2 className="text-lg font-semibold tracking-tight">Maritime</h2>
+            <p className="text-xs text-white/60">
               Tracking Platform
             </p>
           </div>
@@ -127,7 +135,7 @@ export default function Sidebar() {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="text-gray-300 hover:text-white"
+          className="text-white/70 hover:text-white"
         >
           <Menu size={20} />
         </button>
@@ -153,11 +161,11 @@ export default function Sidebar() {
 
       {/* User Info */}
       {!collapsed && user && (
-        <div className="p-3 border-t border-gray-700 text-xs text-gray-400">
+        <div className="p-3 border-t border-white/10 text-xs text-white/60">
 
           Logged in as:
           <div className="text-white font-semibold">
-            {user.name}
+            {user.username || user.name}
           </div>
 
           <div className="capitalize">
@@ -168,11 +176,11 @@ export default function Sidebar() {
       )}
 
       {/* Logout */}
-      <div className="p-3 border-t border-gray-700">
+      <div className="p-3 border-t border-white/10">
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-red-600 transition"
+          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-red-600/90 transition"
         >
 
           <LogOut size={18} />
@@ -203,10 +211,10 @@ function SidebarLink({ to, icon, label, collapsed }) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200
+        `flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200
         ${isActive
-          ? "bg-blue-600 text-white"
-          : "text-gray-300 hover:bg-gray-700 hover:text-white"}`
+          ? "bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-sm"
+          : "text-white/75 hover:bg-white/10 hover:text-white"}`
       }
     >
 

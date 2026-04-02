@@ -1,128 +1,125 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import api from "../api/axios"
+import { Clock3, Ship } from "lucide-react"
 
 export default function VoyageHistoryPage() {
 
-  // Dummy voyage history data
-  const [voyages] = useState([
-    {
-      id: 1,
-      vessel: "MV Ocean Queen",
-      origin: "Mumbai",
-      destination: "Dubai",
-      departure: "2026-02-10 08:30",
-      arrival: "2026-02-14 16:45",
-      status: "Completed"
-    },
-    {
-      id: 2,
-      vessel: "MT Sea Explorer",
-      origin: "Chennai",
-      destination: "Singapore",
-      departure: "2026-02-12 10:15",
-      arrival: "2026-02-18 09:00",
-      status: "In Progress"
-    },
-    {
-      id: 3,
-      vessel: "MV Global Carrier",
-      origin: "Kolkata",
-      destination: "Colombo",
-      departure: "2026-02-08 14:00",
-      arrival: "2026-02-12 20:30",
-      status: "Completed"
-    },
-    {
-      id: 4,
-      vessel: "MV Arabian Star",
-      origin: "Kochi",
-      destination: "Doha",
-      departure: "2026-02-15 06:00",
-      arrival: "2026-02-19 11:30",
-      status: "In Progress"
+  const [voyages, setVoyages] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    const fetchVoyages = async () => {
+      try {
+        const resp = await api.get("/voyages/")
+        setVoyages(resp.data || [])
+      } catch (err) {
+        console.error("Failed to load voyages", err?.response?.data || err.message)
+        setError("Failed to load voyage history")
+      } finally {
+        setLoading(false)
+      }
     }
-  ])
+
+    fetchVoyages()
+  }, [])
+
+  const statusClasses = (status) => {
+    if (status === "COMPLETED") {
+      return "bg-emerald-900/60 text-emerald-200 border border-emerald-700/60"
+    }
+    return "bg-amber-900/60 text-amber-200 border border-amber-700/60"
+  }
 
   return (
 
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="page-shell">
 
-      {/* Heading */}
-      <h1 className="text-3xl font-bold mb-6">
-        Voyage History
-      </h1>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="page-title">Voyage history</h1>
+          <p className="page-subtitle">
+            Completed and ongoing voyages from the tracking engine.
+          </p>
+        </div>
+        <span className="pill">
+          <Clock3 size={14} />
+          {voyages.length} voyages
+        </span>
+      </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
+      <div className="card">
+        <div className="card-body">
+          {loading && (
+            <div className="text-sm text-emerald-100/80">
+              Loading voyage history…
+            </div>
+          )}
+          {error && !loading && (
+            <div className="text-sm text-red-400">
+              {error}
+            </div>
+          )}
+          {!loading && !error && (
+            <div className="overflow-x-auto">
 
-        <table className="w-full">
+              <table className="w-full text-left">
 
-          <thead className="bg-blue-600 text-white">
+                <thead>
+                  <tr className="border-b border-emerald-900/60 text-xs uppercase tracking-wide text-emerald-200/80">
+                    <th className="py-3 pr-4">Vessel</th>
+                    <th className="py-3 pr-4">Origin</th>
+                    <th className="py-3 pr-4">Destination</th>
+                    <th className="py-3 pr-4">Start time</th>
+                    <th className="py-3 pr-4">End time</th>
+                    <th className="py-3 pr-4">Status</th>
+                  </tr>
+                </thead>
 
-            <tr>
-              <th className="p-3 text-left">Vessel</th>
-              <th className="p-3 text-left">Origin</th>
-              <th className="p-3 text-left">Destination</th>
-              <th className="p-3 text-left">Departure</th>
-              <th className="p-3 text-left">Arrival</th>
-              <th className="p-3 text-left">Status</th>
-            </tr>
+                <tbody>
+                  {voyages.map((v) => (
+                    <tr
+                      key={v.id}
+                      className="border-b border-emerald-950/60 hover:bg-emerald-950/70 transition"
+                    >
+                      <td className="py-3 pr-4">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700/70 text-emerald-50">
+                            <Ship size={12} />
+                          </span>
+                          <span className="font-medium text-emerald-50">
+                            {v.vessel}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 pr-4 text-sm text-emerald-100/90">
+                        {v.start_port}
+                      </td>
+                      <td className="py-3 pr-4 text-sm text-emerald-100/90">
+                        {v.end_port}
+                      </td>
+                      <td className="py-3 pr-4 text-sm text-emerald-100/80">
+                        {v.start_time}
+                      </td>
+                      <td className="py-3 pr-4 text-sm text-emerald-100/80">
+                        {v.end_time || "—"}
+                      </td>
+                      <td className="py-3 pr-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ${statusClasses(v.status)}`}
+                        >
+                          {v.status === "COMPLETED" ? "Completed" : "Ongoing"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
 
-          </thead>
+              </table>
 
-          <tbody>
-
-            {voyages.map((voyage) => (
-
-              <tr
-                key={voyage.id}
-                className="border-b hover:bg-gray-50"
-              >
-
-                <td className="p-3 font-semibold">
-                  {voyage.vessel}
-                </td>
-
-                <td className="p-3">
-                  {voyage.origin}
-                </td>
-
-                <td className="p-3">
-                  {voyage.destination}
-                </td>
-
-                <td className="p-3">
-                  {voyage.departure}
-                </td>
-
-                <td className="p-3">
-                  {voyage.arrival}
-                </td>
-
-                <td className="p-3">
-
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold
-                    ${
-                      voyage.status === "Completed"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-
-                    {voyage.status}
-
-                  </span>
-
-                </td>
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
-
+            </div>
+          )}
+        </div>
       </div>
 
     </div>

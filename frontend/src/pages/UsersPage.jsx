@@ -1,82 +1,106 @@
 import { useEffect, useState } from "react"
+import api from "../api/axios"
+import { Users as UsersIcon } from "lucide-react"
 
 export default function UsersPage() {
 
   const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   useEffect(() => {
 
-    const storedUsers =
-      JSON.parse(localStorage.getItem("users")) || []
+    const fetchUsers = async () => {
+      try {
+        const response = await api.get("/auth/users/")
+        setUsers(response.data)
+      } catch (err) {
+        console.error("Failed to load users", err)
+        setError("Failed to load users")
+      } finally {
+        setLoading(false)
+      }
+    }
 
-    setUsers(storedUsers)
+    fetchUsers()
 
   }, [])
 
   return (
 
-    <div className="p-6 text-white">
+    <div className="page-shell">
 
-      <h1 className="text-3xl font-bold mb-6">
-        Users Management
-      </h1>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="page-title">Users</h1>
+          <p className="page-subtitle">
+            Admin-only user directory for roles and access management.
+          </p>
+        </div>
+        <span className="pill border-slate-200 text-slate-700 bg-white">
+          <UsersIcon size={14} />
+          {users.length} users
+        </span>
+      </div>
 
-      {users.length === 0 ? (
+      {loading && (
+        <div className="text-sm text-slate-600">
+          Loading users…
+        </div>
+      )}
 
-        <p className="text-gray-400">
+      {error && !loading && (
+        <div className="text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && users.length === 0 && (
+        <div className="text-sm text-slate-600">
           No users found
-        </p>
+        </div>
+      )}
 
-      ) : (
+      {!loading && !error && users.length > 0 && (
 
-        <div className="bg-slate-800 rounded-lg overflow-hidden">
-
-          <table className="w-full">
-
-            <thead className="bg-slate-700">
-
-              <tr>
-                <th className="p-3 text-left">ID</th>
-                <th className="p-3 text-left">Username</th>
-                <th className="p-3 text-left">Email</th>
-                <th className="p-3 text-left">Role</th>
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {users.map((user) => (
-
-                <tr
-                  key={user.id}
-                  className="border-t border-gray-700"
-                >
-
-                  <td className="p-3">
-                    {user.id}
-                  </td>
-
-                  <td className="p-3">
-                    {user.username}
-                  </td>
-
-                  <td className="p-3">
-                    {user.email}
-                  </td>
-
-                  <td className="p-3 capitalize">
-                    {user.role}
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-
+        <div className="card">
+          <div className="card-body">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+                    <th className="py-3 pr-4">ID</th>
+                    <th className="py-3 pr-4">Username</th>
+                    <th className="py-3 pr-4">Email</th>
+                    <th className="py-3 pr-4">Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr
+                      key={user.id}
+                      className="border-b border-slate-100 hover:bg-slate-50 transition"
+                    >
+                      <td className="py-3 pr-4 font-mono text-sm text-slate-700">
+                        {user.id}
+                      </td>
+                      <td className="py-3 pr-4 font-medium text-slate-900">
+                        {user.username}
+                      </td>
+                      <td className="py-3 pr-4 text-sm text-slate-700">
+                        {user.email || "-"}
+                      </td>
+                      <td className="py-3 pr-4">
+                        <span className="pill border-slate-200 bg-white text-slate-700 capitalize">
+                          {user.role}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
       )}

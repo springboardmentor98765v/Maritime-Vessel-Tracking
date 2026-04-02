@@ -21,7 +21,10 @@ body {
 
   min-height: 100vh;
 
-  background-color: black;
+  background:
+    radial-gradient(1200px 800px at 20% -10%, rgba(34, 197, 94, 0.16), transparent 60%),
+    radial-gradient(900px 600px at 90% 0%, rgba(22, 101, 52, 0.32), transparent 55%),
+    #020617;
 
   overflow-x: hidden;
 
@@ -235,7 +238,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: black;
+  background: #020617;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -275,6 +278,82 @@ body,
 .leaflet-container {
   height: 100%;
   width: 100%;
-  background: #0b0f19;
+  background: #020617;
 }
 
+/* ============================= */
+/* APP UI PRIMITIVES (Tailwind)  */
+/* ============================= */
+
+@layer components {
+  .app-surface {
+    @apply bg-[#020617] text-emerald-50;
+  }
+
+  .page-shell {
+    @apply space-y-6;
+  }
+
+  .page-title {
+    @apply text-2xl md:text-3xl font-semibold tracking-tight text-emerald-50;
+  }
+
+  .page-subtitle {
+    @apply text-sm md:text-base text-emerald-200/80;
+  }
+
+  .card {
+    @apply bg-emerald-950/60 backdrop-blur rounded-2xl border border-emerald-900/60 shadow-[0_18px_45px_rgba(0,0,0,0.6)];
+  }
+
+  .card-body {
+    @apply p-5 md:p-6;
+  }
+
+  .stat-card {
+    @apply bg-emerald-950/70 backdrop-blur rounded-2xl border border-emerald-900/70 shadow-[0_18px_45px_rgba(0,0,0,0.7)];
+  }
+
+  .stat-card-inner {
+    @apply p-5 md:p-6 flex items-center justify-between gap-4;
+  }
+
+  .stat-kpi {
+    @apply text-2xl font-semibold text-emerald-50;
+  }
+
+  .stat-label {
+    @apply text-sm text-emerald-200/80;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border border-emerald-700/70 bg-emerald-950/70 text-emerald-100;
+  }
+}
+
+/* Hover & motion for cards */
+.card,
+.stat-card {
+  transition:
+    transform 180ms ease-out,
+    box-shadow 180ms ease-out,
+    border-color 180ms ease-out,
+    background-color 180ms ease-out;
+}
+
+.card:hover,
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.65);
+}
+
+/* ============================= */
+/* SHIP SMOOTH TRANSITION */
+/* ============================= */
+
+.ship-smooth-transition {
+  transition: transform 2s linear;
+}

@@ -1,13 +1,17 @@
 import random
-from vessels.models import Vessel
+
+from ..models import Vessel
 from .event_engine import detect_events
+from .safety_detection_service import detect_safety_violations
 
 
 def update_vessels():
+
     vessels = Vessel.objects.all()
 
+    # First run → create demo vessels
     if not vessels.exists():
-        # Create demo vessels first time
+
         for i in range(5):
             Vessel.objects.create(
                 imo_number=f"IMO100{i}",
@@ -18,12 +22,20 @@ def update_vessels():
                 course=random.randint(0, 360),
                 vessel_type="Cargo"
             )
+
         return
 
+    # Update vessel positions
     for vessel in vessels:
+
         vessel.latitude += random.uniform(-0.1, 0.1)
         vessel.longitude += random.uniform(-0.1, 0.1)
         vessel.speed = random.randint(0, 20)
+
         vessel.save()
 
+        # Detect events
         detect_events(vessel)
+
+        # Detect safety violations
+        detect_safety_violations(vessel)

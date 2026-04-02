@@ -16,11 +16,14 @@ import SafetyPage from "./pages/SafetyPage"
 import SettingsPage from "./pages/SettingsPage"
 import VoyageHistoryPage from "./pages/VoyageHistoryPage"
 import PortAnalyticsPage from "./pages/PortAnalyticsPage"
+import VesselsPage from "./pages/VesselsPage"
+import VesselDetailsPage from "./pages/VesselDetailsPage"
 import PortDetail from "./components/ports/PortDetail"
 import NotFoundPage from "./pages/NotFoundPage"
 
 // Components
 import PrivateRoute from "./components/auth/PrivateRoute"
+import RoleRoute from "./components/auth/RoleRoute"
 import PortStatistics from "./components/ports/PortStatistics"
 import MainLayout from "./layouts/MainLayout"
 
@@ -98,7 +101,9 @@ export default function App() {
           element={
             <PrivateRoute>
               <MainLayout>
-                <AdminPage />
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminPage />
+                </RoleRoute>
               </MainLayout>
             </PrivateRoute>
           }
@@ -109,7 +114,9 @@ export default function App() {
           element={
             <PrivateRoute>
               <MainLayout>
-                <UsersPage />
+                <RoleRoute allowedRoles={['admin']}>
+                  <UsersPage />
+                </RoleRoute>
               </MainLayout>
             </PrivateRoute>
           }
@@ -131,7 +138,9 @@ export default function App() {
           element={
             <PrivateRoute>
               <MainLayout>
-                <ReportPage />
+                <RoleRoute allowedRoles={['admin', 'analyst']}>
+                  <ReportPage />
+                </RoleRoute>
               </MainLayout>
             </PrivateRoute>
           }
@@ -160,11 +169,35 @@ export default function App() {
         />
 
         <Route
+          path="/vessels"
+          element={
+            <PrivateRoute>
+              <MainLayout>
+                <VesselsPage />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/vessels/:vessel_id"
+          element={
+            <PrivateRoute>
+              <MainLayout>
+                <VesselDetailsPage />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
           path="/safety"
           element={
             <PrivateRoute>
               <MainLayout>
-                <SafetyPage />
+                <RoleRoute allowedRoles={['admin', 'analyst']}>
+                  <SafetyPage />
+                </RoleRoute>
               </MainLayout>
             </PrivateRoute>
           }
@@ -175,7 +208,9 @@ export default function App() {
           element={
             <PrivateRoute>
               <MainLayout>
-                <PortAnalyticsPage />
+                <RoleRoute allowedRoles={['admin', 'analyst']}>
+                  <PortAnalyticsPage />
+                </RoleRoute>
               </MainLayout>
             </PrivateRoute>
           }
@@ -186,7 +221,9 @@ export default function App() {
           element={
             <PrivateRoute>
               <MainLayout>
-                <PortDetail />
+                <RoleRoute allowedRoles={['admin', 'analyst']}>
+                  <PortDetail />
+                </RoleRoute>
               </MainLayout>
             </PrivateRoute>
           }
@@ -197,7 +234,9 @@ export default function App() {
           element={
             <PrivateRoute>
               <MainLayout>
-                <PortStatistics />
+                <RoleRoute allowedRoles={['admin', 'analyst']}>
+                  <PortStatistics />
+                </RoleRoute>
               </MainLayout>
             </PrivateRoute>
           }

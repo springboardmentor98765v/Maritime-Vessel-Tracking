@@ -20,5 +20,8 @@ class User(AbstractUser):
     is_locked = models.BooleanField(default=False)
     lock_time = models.DateTimeField(null=True, blank=True)
 
+    otp = models.CharField(max_length=6, null=True, blank=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
+
     def __str__(self):
         return self.username

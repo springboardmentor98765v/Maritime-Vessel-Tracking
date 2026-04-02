@@ -1,12 +1,18 @@
-from vessels.models import Vessel, VesselEvent
+from vessels.models import Vessel
 
 
-def detect_events(vessel):
+def get_all_vessels():
 
-    if vessel.speed == 0:
+    vessels = Vessel.objects.all()
 
-        VesselEvent.objects.create(
-            vessel=vessel,
-            event_type="STOPPED",
-            description="Vessel stopped moving"
-        )
+    data = []
+
+    for v in vessels:
+        data.append({
+            "name": v.vessel_name,
+            "latitude": v.latitude,
+            "longitude": v.longitude,
+            "speed": v.speed
+        })
+
+    return data

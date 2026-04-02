@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react"
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { useEffect, useMemo, useState } from "react"
+import { MapContainer, TileLayer, Popup, Circle, CircleMarker, useMapEvents, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png"
 import markerIcon from "leaflet/dist/images/marker-icon.png"
 import markerShadow from "leaflet/dist/images/marker-shadow.png"
+import api from "../../api/axios"
 
 delete L.Icon.Default.prototype._getIconUrl
 
@@ -15,105 +16,203 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 })
 
-export default function VesselMap() {
+export default function VesselMap({ initialView, onViewChange, selectedVesselId }) {
 
-  // Initial vessel positions (India)
-  const [vessels, setVessels] = useState([
-    {
-      id: 1,
-      name: "Mumbai Vessel",
-      lat: 19.0760,
-      lng: 72.8777,
-      speed: 0.02
-    },
-    {
-      id: 2,
-      name: "Chennai Vessel",
-      lat: 13.0827,
-      lng: 80.2707,
-      speed: 0.015
-    },
-    {
-      id: 3,
-      name: "Kolkata Vessel",
-      lat: 22.5726,
-      lng: 88.3639,
-      speed: 0.01
-    },
-    {
-      id: 4,
-      name: "Kochi Vessel",
-      lat: 9.9312,
-      lng: 76.2673,
-      speed: 0.018
-    }
-  ])
+  const [vessels, setVessels] = useState([])
+  const [loadingVessels, setLoadingVessels] = useState(true)
 
-  // Animate vessels every second
+  const [zones, setZones] = useState([])
+  const [showZones, setShowZones] = useState(true)
+
+  const selectedVessel = useMemo(() => {
+    if (!selectedVesselId) return null
+    return vessels.find((v) => v.id === selectedVesselId) || null
+  }, [vessels, selectedVesselId])
+
+  // Fetch vessels from backend (poll every 30s)
   useEffect(() => {
+    let mounted = true
 
-    const interval = setInterval(() => {
+    const fetchVessels = async () => {
+      try {
+        const resp = await api.get("/vessels/")
+        if (!mounted) return
+        setVessels(resp.data || [])
+      } catch (err) {
+        console.error("Failed to load vessels", err?.response?.data || err.message)
+      } finally {
+        if (mounted) setLoadingVessels(false)
+      }
+    }
 
-      setVessels(prev =>
-        prev.map(vessel => ({
-
-          ...vessel,
-
-          lat: vessel.lat + (Math.random() - 0.5) * vessel.speed,
-          lng: vessel.lng + (Math.random() - 0.5) * vessel.speed
-
-        }))
-      )
-
-    }, 1000)
-
-    return () => clearInterval(interval)
-
+    fetchVessels()
+    const interval = setInterval(fetchVessels, 30000)
+    return () => {
+      mounted = false
+      clearInterval(interval)
+    }
   }, [])
+
+  // Fetch safety zones from backend
+  useEffect(() => {
+    const fetchZones = async () => {
+      try {
+        const resp = await api.get("/vessels/safety/zones/")
+        setZones(resp.data || [])
+      } catch (err) {
+        console.error("Failed to load safety zones", err?.response?.data || err.message)
+      }
+    }
+
+    fetchZones()
+  }, [])
+
+  const getZoneColor = (severity) => {
+    if (!severity) return "green"
+    const level = severity.toUpperCase()
+    if (level === "HIGH" || level === "DANGER") return "red"
+    if (level === "MEDIUM") return "yellow"
+    if (level === "SAFE") return "green"
+    return "green"
+  }
+
+  const severityRank = (severity) => {
+    if (!severity) return 0
+    const s = severity.toUpperCase()
+    if (s === "HIGH" || s === "DANGER") return 3
+    if (s === "MEDIUM") return 2
+    if (s === "SAFE") return 1
+    return 0
+  }
+
+  const haversineKm = (lat1, lon1, lat2, lon2) => {
+    const toRad = (v) => (v * Math.PI) / 180
+    const R = 6371
+    const dLat = toRad(lat2 - lat1)
+    const dLon = toRad(lon2 - lon1)
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) ** 2
+    return 2 * R * Math.asin(Math.sqrt(a))
+  }
+
+  const zoneByRank = useMemo(() => {
+    const sorted = [...zones].sort((a, b) => severityRank(b.severity) - severityRank(a.severity))
+    return sorted
+  }, [zones])
+
+  const vesselColor = (v) => {
+    const lat = v.latitude
+    const lon = v.longitude
+    for (const z of zoneByRank) {
+      const d = haversineKm(lat, lon, z.latitude, z.longitude)
+      if (d <= z.radius_km) {
+        return getZoneColor(z.severity)
+      }
+    }
+    return "green"
+  }
 
   return (
 
     <div className="h-125 w-full rounded-lg shadow">
 
+      <div className="flex items-center gap-4 mb-2 text-sm">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={showZones}
+            onChange={(e) => setShowZones(e.target.checked)}
+          />
+          <span className="text-emerald-100">Show safety zones</span>
+        </label>
+
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1">
+            <span className="inline-block h-3 w-3 rounded-full bg-green-500" />{" "}
+            <span className="text-emerald-100 text-xs">Safe</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block h-3 w-3 rounded-full bg-yellow-400" />{" "}
+            <span className="text-emerald-100 text-xs">Medium</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block h-3 w-3 rounded-full bg-red-500" />{" "}
+            <span className="text-emerald-100 text-xs">Danger</span>
+          </span>
+        </div>
+      </div>
+
       <MapContainer
-        center={[20.5937, 78.9629]}
-        zoom={5}
+        center={initialView?.center || [20.5937, 78.9629]}
+        zoom={initialView?.zoom || 5}
         className="h-full w-full"
       >
+        <MapViewTracker onViewChange={onViewChange} />
+        <SelectedVesselController selectedVessel={selectedVessel} />
 
         <TileLayer
           attribution="© OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {vessels.map(vessel => (
-
-          <Marker
-            key={vessel.id}
-            position={[vessel.lat, vessel.lng]}
+        {showZones && zones.map((zone) => (
+          <Circle
+            key={zone.id}
+            center={[zone.latitude, zone.longitude]}
+            radius={zone.radius_km * 1000}
+            pathOptions={{
+              color: getZoneColor(zone.severity),
+              fillColor: getZoneColor(zone.severity),
+              fillOpacity: 0.25,
+            }}
           >
-
             <Popup>
-
               <div>
-                <h3 className="font-bold text-blue-600">
-                  🚢 {vessel.name}
+                <h3 className="font-bold">
+                  {zone.name}
                 </h3>
-
-                <p>Latitude: {vessel.lat.toFixed(4)}</p>
-                <p>Longitude: {vessel.lng.toFixed(4)}</p>
-
-                <p className="text-green-600 font-semibold">
-                  ● Moving
-                </p>
-
+                <p>Type: {zone.zone_type}</p>
+                <p>Severity: {zone.severity}</p>
+                <p>Radius: {zone.radius_km} km</p>
               </div>
-
             </Popup>
-
-          </Marker>
-
+          </Circle>
         ))}
+
+        {!loadingVessels && vessels.map((v) => {
+          const color = vesselColor(v)
+          const isSelected = selectedVesselId && v.id === selectedVesselId
+          const radius = isSelected ? 9 : 4
+          return (
+            <CircleMarker
+              key={v.id}
+              center={[v.latitude, v.longitude]}
+              radius={radius}
+              pathOptions={{
+                color,
+                fillColor: color,
+                fillOpacity: isSelected ? 1 : 0.9,
+                weight: isSelected ? 2 : 1,
+              }}
+            >
+              <Popup>
+                <div>
+                  <h3 className={`font-bold ${isSelected ? "text-emerald-50" : "text-slate-900"}`}>
+                    🚢 {v.vessel_name}
+                  </h3>
+                  <p className="text-sm text-slate-700">IMO: {v.imo_number}</p>
+                  <p className="text-sm text-slate-700">Type: {v.vessel_type}</p>
+                  <p className="text-sm text-slate-700">Flag: {v.flag || "-"}</p>
+                  <p className="text-sm text-slate-700">Speed: {v.speed}</p>
+                  <p className="text-sm text-slate-700">Destination: {v.destination || "-"}</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          )
+        })}
 
       </MapContainer>
 
@@ -121,4 +220,36 @@ export default function VesselMap() {
 
   )
 
+}
+
+function MapViewTracker({ onViewChange }) {
+  useMapEvents({
+    moveend: (e) => {
+      if (!onViewChange) return
+      const map = e.target
+      const c = map.getCenter()
+      onViewChange({ center: [c.lat, c.lng], zoom: map.getZoom() })
+    },
+    zoomend: (e) => {
+      if (!onViewChange) return
+      const map = e.target
+      const c = map.getCenter()
+      onViewChange({ center: [c.lat, c.lng], zoom: map.getZoom() })
+    },
+  })
+  return null
+}
+
+function SelectedVesselController({ selectedVessel }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!selectedVessel) return
+    if (typeof selectedVessel.latitude !== "number" || typeof selectedVessel.longitude !== "number") return
+
+    const zoom = Math.max(map.getZoom(), 8)
+    map.setView([selectedVessel.latitude, selectedVessel.longitude], zoom, { animate: true })
+  }, [selectedVessel?.id])
+
+  return null
 }

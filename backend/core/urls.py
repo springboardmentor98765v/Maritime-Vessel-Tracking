@@ -16,10 +16,28 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from vessels.views import CompanyDashboardView, PortDashboardView, AdminApiStatusView, AdminLogsView, AdminVoyageExportView
+from voyages.views import VesselVoyageHistoryView, VoyageAuditView
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
+
     path('api/auth/', include('authentication.urls')),
+
     path('api/vessels/', include('vessels.urls')),
+
+    path('api-auth/', include('rest_framework.urls')),
+    
+    path('api/voyages/', include('voyages.urls')),
+
+    # Milestone 4 aliases
+    path("api/dashboard/company/", CompanyDashboardView.as_view()),
+    path("api/dashboard/port/", PortDashboardView.as_view()),
+    path("api/admin/api-status/", AdminApiStatusView.as_view()),
+    path("api/admin/logs/", AdminLogsView.as_view()),
+    path("api/admin/export/voyages/", AdminVoyageExportView.as_view()),
+    path("api/voyage/<int:vessel_id>/history/", VesselVoyageHistoryView.as_view()),
+    path("api/voyage/<int:voyage_id>/audit/", VoyageAuditView.as_view()),
+
 ]

@@ -65,22 +65,18 @@ export default function SafetyPage() {
   ]
 
   const getSeverityColor = (severity) => {
-    if (severity === "High") return "text-red-600 bg-red-100"
-    if (severity === "Medium") return "text-yellow-600 bg-yellow-100"
-    return "text-green-600 bg-green-100"
+    if (severity === "High") return "bg-red-900/60 text-red-100 border border-red-700/70"
+    if (severity === "Medium") return "bg-amber-900/60 text-amber-100 border border-amber-700/70"
+    return "bg-emerald-900/60 text-emerald-100 border border-emerald-700/70"
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="page-shell">
 
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">
-          Safety Monitoring
-        </h1>
-        <p className="text-gray-500">
-          Monitor vessel safety, alerts, and risk levels
-        </p>
+        <h1 className="page-title">Safety monitoring</h1>
+        <p className="page-subtitle">Risk zones, alerts, and compliance signals.</p>
       </div>
 
       {/* Safety Stats Cards */}
@@ -92,20 +88,17 @@ export default function SafetyPage() {
           return (
             <div
               key={index}
-              className="bg-white rounded-xl shadow p-5 flex items-center justify-between"
+              className="stat-card"
             >
-              <div>
-                <p className="text-gray-500 text-sm">
-                  {stat.title}
-                </p>
+              <div className="stat-card-inner">
+                <div>
+                  <p className="stat-label">{stat.title}</p>
+                  <h2 className="stat-kpi mt-1">{stat.value}</h2>
+                </div>
 
-                <h2 className="text-xl font-bold mt-1">
-                  {stat.value}
-                </h2>
-              </div>
-
-              <div className={`${stat.color} p-3 rounded-lg`}>
-                <Icon className="text-white" size={22} />
+                <div className={`${stat.color} p-3 rounded-xl shadow-sm`}>
+                  <Icon className="text-white" size={22} />
+                </div>
               </div>
             </div>
           )
@@ -114,67 +107,72 @@ export default function SafetyPage() {
       </div>
 
       {/* Alerts Table */}
-      <div className="bg-white shadow rounded-xl p-6">
+      <div className="card">
+        <div className="card-body">
 
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Activity size={20} />
-          Recent Safety Alerts
-        </h2>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-50">
+            <Activity size={18} />
+            Recent safety alerts
+          </h2>
 
-        <div className="overflow-x-auto">
+          <div className="overflow-x-auto">
 
-          <table className="w-full text-left">
+            <table className="w-full text-left">
 
-            <thead>
-              <tr className="border-b text-gray-600 text-sm">
-                <th className="py-3">Vessel</th>
-                <th>Alert Type</th>
-                <th>Location</th>
-                <th>Severity</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-              {alerts.map((alert) => (
-                <tr key={alert.id} className="border-b hover:bg-gray-50">
-
-                  <td className="py-3 font-medium">
-                    {alert.vessel}
-                  </td>
-
-                  <td>
-                    {alert.type}
-                  </td>
-
-                  <td>
-                    {alert.location}
-                  </td>
-
-                  <td>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(alert.severity)}`}
-                    >
-                      {alert.severity}
-                    </span>
-                  </td>
-
-                  <td className="text-gray-500 text-sm">
-                    {alert.time}
-                  </td>
-
+              <thead>
+                <tr className="border-b border-emerald-900/60 text-xs uppercase tracking-wide text-emerald-200/80">
+                  <th className="py-3 pr-4">Vessel</th>
+                  <th className="py-3 pr-4">Alert type</th>
+                  <th className="py-3 pr-4">Location</th>
+                  <th className="py-3 pr-4">Severity</th>
+                  <th className="py-3 pr-4">Time</th>
                 </tr>
-              ))}
+              </thead>
 
-            </tbody>
+              <tbody>
 
-          </table>
+                {alerts.map((alert) => (
+                  <tr
+                    key={alert.id}
+                    className="border-b border-emerald-950/60 hover:bg-emerald-950/70 transition"
+                  >
+
+                    <td className="py-3 pr-4 font-medium text-emerald-50">
+                      {alert.vessel}
+                    </td>
+
+                    <td className="py-3 pr-4 text-sm text-emerald-100/90">
+                      {alert.type}
+                    </td>
+
+                    <td className="py-3 pr-4 text-sm text-emerald-100/90">
+                      {alert.location}
+                    </td>
+
+                    <td className="py-3 pr-4">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${getSeverityColor(alert.severity)}`}
+                      >
+                        {alert.severity}
+                      </span>
+                    </td>
+
+                    <td className="py-3 pr-4 text-emerald-200/80 text-sm">
+                      {alert.time}
+                    </td>
+
+                  </tr>
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
 
       </div>
-
     </div>
   )
 }
