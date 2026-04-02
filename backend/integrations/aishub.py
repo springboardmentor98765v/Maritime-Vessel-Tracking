@@ -55,8 +55,12 @@ def fetch_vessel_positions(mmsi_list: list[str]) -> list[dict]:
 
     except requests.RequestException as e:
         print(f"[AIS Hub] Request error: {e}")
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="AIS Hub", error_message=f"Request error: {str(e)}")
     except (ValueError, IndexError, KeyError) as e:
         print(f"[AIS Hub] Parse error: {e}")
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="AIS Hub", error_message=f"Parse error: {str(e)}")
 
     return []
 

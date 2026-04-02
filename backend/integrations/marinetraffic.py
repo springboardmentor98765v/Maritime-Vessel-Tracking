@@ -87,14 +87,24 @@ def fetch_vessel_positions(mmsi_list: list[str] | None = None) -> list[dict]:
     except requests.HTTPError as e:
         if e.response is not None and e.response.status_code == 402:
             logger.warning("[MarineTraffic] HTTP 402 – API quota exhausted or invalid key.")
+            from apps.admin.models import ApiLog
+            ApiLog.objects.create(source="MarineTraffic", error_message="HTTP 402 API quota exhausted")
         else:
             logger.error("[MarineTraffic] HTTP error: %s", e)
+            from apps.admin.models import ApiLog
+            ApiLog.objects.create(source="MarineTraffic", error_message=f"HTTP error: {str(e)}")
     except requests.ConnectionError:
         logger.error("[MarineTraffic] Could not connect to MarineTraffic API.")
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="MarineTraffic", error_message="Could not connect to API")
     except requests.Timeout:
         logger.error("[MarineTraffic] Request timed out after 15 s.")
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="MarineTraffic", error_message="Request timed out")
     except (ValueError, KeyError) as e:
         logger.error("[MarineTraffic] JSON parse error: %s", e)
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="MarineTraffic", error_message=f"Parse error: {str(e)}")
 
     return []
 

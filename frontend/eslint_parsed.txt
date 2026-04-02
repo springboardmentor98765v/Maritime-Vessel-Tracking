@@ -1,0 +1,3 @@
+C:\Users\LENOVO\Desktop\teamm3\frontend\remove_backdrop.js
+Line 1: 'require' is not defined.
+Line 2: 'require' is not defined.

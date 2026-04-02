@@ -26,6 +26,7 @@ class Vessel(models.Model):
     speed = models.FloatField(null=True, blank=True, db_index=True)
     heading = models.FloatField(null=True, blank=True)
     destination = models.CharField(max_length=255, null=True, blank=True, db_index=True)
+    status = models.CharField(max_length=50, default='active', db_index=True)
 
     last_update = models.DateTimeField(null=True, blank=True)
 

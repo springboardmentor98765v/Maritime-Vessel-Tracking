@@ -75,8 +75,12 @@ def fetch_marine_alerts(area_codes: list[str] = None) -> list[dict]:
 
     except requests.RequestException as e:
         print(f"[NOAA] Request error: {e}")
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="NOAA", error_message=f"Request error: {str(e)}")
     except (ValueError, KeyError) as e:
         print(f"[NOAA] Parse error: {e}")
+        from apps.admin.models import ApiLog
+        ApiLog.objects.create(source="NOAA", error_message=f"Parse error: {str(e)}")
 
     return []
 
