@@ -1,1 +1,0 @@
-# MarineTraffic API client
