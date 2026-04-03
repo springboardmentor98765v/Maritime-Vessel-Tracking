@@ -1,0 +1,307 @@
+🚢 Maritime Vessel Tracking System
+
+A high-performance, enterprise-grade maritime tracking and analytics platform designed to deliver real-time vessel intelligence, predictive weather insights, and global maritime traffic analytics.
+
+This system integrates AIS data processing, WebSocket streaming, and advanced analytics to provide a comprehensive maritime monitoring solution.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+📑 Table of Contents
+🌟 Key Features
+🏗 Architecture
+🚀 Getting Started
+🛠 Running the Application
+🐳 Docker Deployment
+📡 API Documentation
+🧪 Testing
+🏗 Technology Stack
+📁 Project Structure
+🤝 Contributing
+📄 License
+🆘 Troubleshooting
+________________________________________________________________________________________________________________________________________________________________________
+
+🌟 Key Features
+🔴 Real-time Vessel Streaming
+Live vessel updates via WebSockets
+Powered by Django Channels + Redis
+Low-latency, high-throughput data streaming
+
+____________________________________________________________________________________________________________________________________________________________________
+
+📡 AIS Data Stream Parser
+Parses NMEA 0183 AIS messages
+Extracts:
+  Vessel position (lat/lon)
+  Speed & course
+  Vessel metadata
+____________________________________________________________________________________________________________________________________________________________________
+
+🌪 Storm Path Forecast Modeling
+Predicts storm trajectories using numerical models
+Calculates risk zones using the Cone of Uncertainty
+Helps vessels avoid dangerous weather
+____________________________________________________________________________________________________________________________________________________________________
+
+🌍 Maritime Heatmap & Traffic Analytics
+Aggregates large-scale vessel data
+Generates:
+Traffic density maps
+Maritime congestion zones
+Global shipping patterns
+____________________________________________________________________________________________________________________________________________________________________
+
+⚓ Port Analytics
+Port congestion analysis
+Arrival predictions
+Operational insights
+____________________________________________________________________________________________________________________________________________________________________
+
+🧭 Voyage Management
+Route optimization
+ETA calculation
+Fuel consumption tracking
+____________________________________________________________________________________________________________________________________________________________________
+
+🚨 Safety & Emergency Management
+Storm tracking
+Risk assessment tools
+Real-time alerts & notifications
+____________________________________________________________________________________________________________________________________________________________________
+
+🏗 Architecture
+Frontend (React / Vue)
+        │
+        ▼
+Django REST API Server
+ ├── Authentication
+ ├── Vessel Tracking
+ ├── Voyages
+ ├── Ports
+ └── Safety & Weather
+        │
+ ┌──────┼──────────────┐
+ ▼      ▼              ▼
+Channels  Celery     External APIs
+(WebSocket) Workers   (AIS, NOAA, MarineTraffic)
+        │
+        ▼
+   Redis (Pub/Sub)
+        │
+        ▼
+ PostgreSQL / SQLite
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🚀 Getting Started
+✅ Prerequisites
+Requirement	Version
+|Python    -	3.10+
+|Redis	   -  Latest
+|PostgreSQL-	14+ (Optional)
+____________________________________________________________________________________________________________________________________________________________________
+
+⚙️ Installation
+1. Clone Repository
+git clone <repository-url>
+cd maritime-vessel-tracking/backend
+
+
+2. Create Virtual Environment
+python -m venv venv
+
+Activate:
+
+# Windows
+venv\Scripts\activate
+
+# Linux/Mac
+source venv/bin/activate
+
+
+3. Configure Environment
+copy .env.example .env
+
+Update .env with your configuration.
+
+
+4. Install Dependencies
+pip install -r requirements.txt
+
+
+5. Run Migrations
+python manage.py makemigrations
+python manage.py migrate
+
+
+6. Create Superuser
+python manage.py createsuperuser
+
+
+7. Start Redis
+
+Make sure Redis is running:
+
+redis-server
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🛠 Running the Application
+▶ Start Django Server
+python manage.py runserver
+
+
+⚙️ Start Celery Worker
+celery -A core worker --loglevel=info
+
+
+⏱ Start Celery Beat
+celery -A core beat --loglevel=info
+
+
+🌐 Service URLs
+Service       	URL
+App           	http://localhost:8000
+
+Admin	          http://localhost:8000/admin/
+
+Swagger	        http://localhost:8000/swagger/
+
+ReDoc	          http://localhost:8000/redoc/
+
+WebSocket	      ws://localhost:8000/ws/vessels/
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🐳 Docker Deployment
+🚀 Run with Docker Compose
+
+cd backend/docker
+docker-compose up -d
+
+____________________________________________________________________________________________________________________________________________________________________
+
+📦 Services Included
+Django App
+Redis
+Celery Worker
+Celery Beat
+
+____________________________________________________________________________________________________________________________________________________________________
+📡 API Documentation
+🔗 Core Endpoints
+Endpoint	                             Method	            Description
+/api/vessels/	                        GET/POST	           Manage vessels
+/api/vessels/{id}/	               GET/PUT/DELETE	         Vessel details
+/api/vessels/analytics_heatmap/       	GET	               Traffic heatmap
+/api/voyages/	                        GET/POST	           Voyage management
+/api/ports/	                          GET/POST	           Port management
+/api/safety/storm_forecast/	            GET	               Storm predictions
+/api/auth/register/                    	POST	             Register
+/api/auth/login/	                      POST	             Login
+____________________________________________________________________________________________________________________________________________________________________
+
+🧪 Example API Calls
+# Heatmap
+curl "http://localhost:8000/api/vessels/analytics_heatmap/?grid_size=0.5"
+
+# Storm forecast
+curl "http://localhost:8000/api/safety/storm_forecast/?lat=25&lon=-80"
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🔌 WebSocket Example
+const ws = new WebSocket("ws://localhost:8000/ws/vessels/");
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log("Vessel Update:", data);
+};
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🧪 Testing
+▶ Run Tests
+python manage.py test
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🔬 Simulation Tools
+Script	                        Purpose
+utils/simulation.py	            Generate vessel + storm data
+utils/ais_parser.py	            Parse AIS messages
+storm_modeling.py	              Forecast storms
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🏗 Technology Stack
+🔧 Backend
+Django
+Django REST Framework
+Django Channels
+
+____________________________________________________________________________________________________________________________________________________________________
+
+⚡ Real-time & Tasks
+Redis
+Celery
+
+____________________________________________________________________________________________________________________________________________________________________
+
+📊 Data & Analytics
+PostgreSQL / SQLite
+NumPy, Pandas, SciPy
+PyAIS
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🌐 Integrations
+AIS Hub
+NOAA
+MarineTraffic
+UNCTAD
+📁 Project Structure
+backend/
+├── core/
+├── apps/
+│   ├── authentication/
+│   ├── vessels/
+│   ├── voyages/
+│   ├── ports/
+│   ├── safety/
+│   └── notifications/
+├── integrations/
+├── utils/
+└── docker/
+
+____________________________________________________________________________________________________________________________________________________________________
+
+🤝 Contributing
+git checkout -b feature/your-feature
+git commit -m "Add feature"
+git push origin feature/your-feature
+
+____________________________________________________________________________________________________________________________________________________________________
+
+📌 Guidelines
+Follow PEP 8
+Write clean code
+Add docstrings
+Include tests
+
+____________________________________________________________________________________________________________________________________________________________________
+🆘 Troubleshooting
+Issue	Solution
+Redis not working	redis-cli ping
+Celery not running	Check worker logs
+WebSocket failed	Verify Redis + Channels
+Migration errors	Reset DB and migrate
+
+____________________________________________________________________________________________________________________________________________________________________
+
+📄 License
+
+MIT License
+____________________________________________________________________________________________________________________________________________________________________
+👨‍💻 Author
+
+B.MANOJRAJIVEE
