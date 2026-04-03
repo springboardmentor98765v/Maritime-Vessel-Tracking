@@ -1,0 +1,108 @@
+/*body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f9;
+}*/
+
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 3px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  /*background: #d7d9db;*/
+}
+
+/* Login Page */
+.login-container {
+  width: 350px;
+  margin: 120px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.login-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 10px;
+  background: #0077b6;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Dashboard Layout */
+.dashboard {
+  display: flex;
+}
+
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: #023e8a;
+  color: white;
+  padding: 20px;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+
+
+/* ===== GLOBAL APP BACKGROUND ===== */
+
+/*.app-background {
+  min-height: 100vh;
+  background-image: url("/src/assets/backgrounds/ship-login.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+}*/
+
+/* dark professional overlay */
+.app-background::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 40, 0.65);
+  z-index: 0;
+}
+
+/* content always above overlay */
+.layout,
+.content {
+  position: relative;
+  z-index: 2;
+}
+
+
+.online { color: #22c55e; }
+.offline { color: #ef4444; }
+
+.kpi-card {
+  transition: 0.25s;
+}
+.kpi-card:hover {
+  transform: translateY(-5px);
+}
