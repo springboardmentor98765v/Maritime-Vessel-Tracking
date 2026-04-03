@@ -3,6 +3,13 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
 from .models import Vessel
+from .models import VesselRoute
+
+admin.site.register(VesselRoute)
+
+from .models import VesselAlert
+
+admin.site.register(VesselAlert)
 
 @admin.action(description='Edit ship details')
 def edit_ship_details(modeladmin, request, queryset):
@@ -25,8 +32,8 @@ def edit_ship_details(modeladmin, request, queryset):
 from django.utils.html import format_html
 
 class VesselAdmin(admin.ModelAdmin):
-    list_display = ('name', 'imo_number', 'vessel_type', 'status', 'last_updated', 'view_on_map')
-    list_filter = ('vessel_type', 'status')
+    list_display = ('name', 'imo_number', 'vessel_type', 'view_on_map')
+    list_filter = ('vessel_type',)
     search_fields = ('name', 'imo_number')
     actions = [edit_ship_details]
 

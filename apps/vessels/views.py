@@ -1,10 +1,10 @@
-from rest_framework import generics
-from .serializers import VesselSerializer
+from rest_framework import viewsets
 from .models import Vessel
+from .serializers import VesselSerializer
 from django.shortcuts import render
 
-class VesselList(generics.ListCreateAPIView):
-    queryset = Vessel.objects.all()
+class VesselViewSet(viewsets.ModelViewSet):
+    queryset = Vessel.objects.all().prefetch_related("positions").order_by("-id")
     serializer_class = VesselSerializer
 
 def vessel_map(request):

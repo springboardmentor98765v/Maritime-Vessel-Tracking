@@ -1,0 +1,21 @@
+# Secrets
+.env
+
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+db.sqlite3
+
+# Logs and test output
+*.log
+test_log.txt
+test_output*.txt
+makemigrations_error.txt
+test_results.log

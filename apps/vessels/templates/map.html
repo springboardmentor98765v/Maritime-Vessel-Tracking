@@ -1,19 +1,45 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Vessel Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
         #map {
-            height: 600px;
+            height: 650px;
             width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        .btn-subscribe {
+            background: #5cb85c;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-unsubscribe {
+            background: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
     <h1>Real-Time Vessel Visualization</h1>
+
     <form action="{% url 'logout' %}" method="post" style="margin: 20px 0;">
         {% csrf_token %}
         <button type="submit"
@@ -21,34 +47,339 @@
             Logout from System
         </button>
     </form>
+
     <div id="map"></div>
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        var map = L.map('map').setView([20, 0], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        const map = L.map('map').setView([15, 40], 3);
 
-        // Function to get query parameter
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const CURRENT_USER_ID = 1;   // change if needed
+
+        let vesselMarkers = {};
+        let safetyLayer = L.layerGroup().addTo(map);
+        let portLayer = L.layerGroup().addTo(map);
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
 
-        const targetVesselId = getQueryParam('vessel_id');
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
-        fetch('/api/vessels/')
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(ship => {
-                    var marker = L.marker([ship.latitude, ship.longitude]).addTo(map)
-                        .bindPopup("<b>" + ship.name + "</b><br>Type: " + ship.vessel_type);
+        async function createNotification(vesselId, message) {
+            try {
+                const response = await fetch('/api/notifications/notification-list/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user: CURRENT_USER_ID,
+                        vessel: vesselId,
+                        type: 'info',
+                        message: message,
+                        is_read: false
+                    })
+                });
 
-                    if (targetVesselId && ship.id == targetVesselId) {
-                        map.setView([ship.latitude, ship.longitude], 10); // Zoom in on the vessel
-                        marker.openPopup();
+                if (!response.ok) {
+                    const txt = await response.text();
+                    console.error('Notification create failed:', response.status, txt);
+                }
+            } catch (e) {
+                console.error('Notification create failed:', e);
+            }
+        }
+
+        async function getSubscriptions() {
+            const res = await fetch('/api/notifications/subscriptions/?format=json');
+            if (!res.ok) {
+                throw new Error('Failed to fetch subscriptions');
+            }
+
+            const data = await res.json();
+            return data.results || data;
+        }
+
+        async function toggleSubscription(vesselId, isSubscribing, vesselName, imoNumber) {
+            try {
+                if (isSubscribing) {
+                    const subscribeResponse = await fetch('/api/notifications/subscriptions/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user: CURRENT_USER_ID,
+                            vessel: vesselId
+                        })
+                    });
+
+                    if (subscribeResponse.ok) {
+                        await createNotification(
+                            vesselId,
+                            `You have subscribed to Vessel ${vesselName} (IMO: ${imoNumber})`
+                        );
+                        alert('Subscribed!');
+                        await fetchVessels();
+                    } else {
+                        const errText = await subscribeResponse.text();
+                        console.error('Subscribe failed:', errText);
+                        alert('Subscribe failed.');
+                    }
+
+                } else {
+                    const subscriptions = await getSubscriptions();
+
+                    const match = subscriptions.find(sub =>
+                        Number(sub.user) === Number(CURRENT_USER_ID) &&
+                        Number(sub.vessel) === Number(vesselId)
+                    );
+
+                    if (!match) {
+                        alert('Subscription not found.');
+                        return;
+                    }
+
+                    const deleteRes = await fetch(`/api/notifications/subscriptions/${match.id}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+
+                    if (deleteRes.ok) {
+                        await createNotification(
+                            vesselId,
+                            `You have unsubscribed from Vessel ${vesselName} (IMO: ${imoNumber})`
+                        );
+                        alert('Unsubscribed!');
+                        await fetchVessels();
+                    } else {
+                        const errText = await deleteRes.text();
+                        console.error('Unsubscribe failed:', errText);
+                        alert('Unsubscribe failed.');
+                    }
+                }
+            } catch (e) {
+                console.error('Toggle subscription error:', e);
+                alert('Action failed.');
+            }
+        }
+
+        async function fetchVessels() {
+            try {
+                let subscribedIds = new Set();
+
+                try {
+                    const subscriptions = await getSubscriptions();
+                    subscriptions.forEach(sub => {
+                        if (Number(sub.user) === Number(CURRENT_USER_ID)) {
+                            subscribedIds.add(Number(sub.vessel));
+                        }
+                    });
+                } catch (e) {
+                    console.error('Subscription fetch error:', e);
+                }
+
+                const vesselsRes = await fetch('/api/vessels/?format=json');
+                if (!vesselsRes.ok) {
+                    console.error('Vessels API returned status:', vesselsRes.status);
+                    return;
+                }
+
+                const vesselsData = await vesselsRes.json();
+                const vessels = vesselsData.results || vesselsData;
+                const currentIds = new Set();
+
+                vessels.forEach(vessel => {
+                    if (vessel.last_position_lat === null || vessel.last_position_lon === null) return;
+
+                    currentIds.add(vessel.id);
+
+                    const isSubscribed = subscribedIds.has(Number(vessel.id));
+                    const color = '#2f80ed';
+                    const pos = [vessel.last_position_lat, vessel.last_position_lon];
+
+                    const safeName = String(vessel.name || '').replace(/'/g, "\\'");
+                    const safeImo = String(vessel.imo_number || '').replace(/'/g, "\\'");
+
+                    const subBtn = isSubscribed
+                        ? `<button class="btn-unsubscribe" onclick="toggleSubscription(${vessel.id}, false, '${safeName}', '${safeImo}')">Unsubscribe</button>`
+                        : `<button class="btn-subscribe" onclick="toggleSubscription(${vessel.id}, true, '${safeName}', '${safeImo}')">Subscribe</button>`;
+
+                    const popupHtml = `
+                        <b>${escapeHtml(vessel.name)}</b><br>
+                        IMO: ${escapeHtml(vessel.imo_number)}<br>
+                        Status: Normal<br><br>
+                        ${subBtn}
+                    `;
+
+                    if (vesselMarkers[vessel.id]) {
+                        vesselMarkers[vessel.id].setLatLng(pos);
+                        vesselMarkers[vessel.id].setStyle({
+                            color: color,
+                            fillColor: color
+                        });
+                        vesselMarkers[vessel.id].bindPopup(popupHtml);
+                    } else {
+                        vesselMarkers[vessel.id] = L.circleMarker(pos, {
+                            radius: 8,
+                            color: color,
+                            fillColor: color,
+                            fillOpacity: 0.9,
+                            weight: 2
+                        }).addTo(map).bindPopup(popupHtml);
                     }
                 });
-            });
+
+                Object.keys(vesselMarkers).forEach(id => {
+                    if (!currentIds.has(Number(id))) {
+                        map.removeLayer(vesselMarkers[id]);
+                        delete vesselMarkers[id];
+                    }
+                });
+
+            } catch (e) {
+                console.error("Error fetching vessels:", e);
+            }
+        }
+
+        async function fetchSafetyZones() {
+            try {
+                const res = await fetch('/api/safety/zones/?format=json');
+                if (!res.ok) {
+                    console.warn("Safety zones API returned status:", res.status);
+                    return;
+                }
+
+                const data = await res.json();
+                const zones = data.results || data;
+
+                safetyLayer.clearLayers();
+
+                zones.forEach(zone => {
+                    const lat = Number(zone.latitude);
+                    const lon = Number(zone.longitude);
+                    const radius = Number(zone.radius || 0);
+
+                    const zoneType = zone.zone_type || 'Safety Alert';
+                    const severity = String(zone.severity || 'medium').toLowerCase();
+
+                    let color = 'yellow';
+                    if (severity === 'high') color = 'red';
+                    else if (severity === 'medium') color = 'yellow';
+                    else if (severity === 'low') color = 'green';
+
+                    L.circle([lat, lon], {
+                        radius: radius * 1000,
+                        color: color,
+                        weight: 3,
+                        fillOpacity: 0.05
+                    }).addTo(safetyLayer).bindPopup(`
+                        <b>${escapeHtml(zoneType)} Alert Zone</b><br>
+                        Severity: <b>${escapeHtml(severity)}</b>
+                    `);
+
+                    L.circleMarker([lat, lon], {
+                        radius: 7,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.9,
+                        weight: 2
+                    }).addTo(safetyLayer).bindPopup(`
+                        <b>${escapeHtml(zoneType)} Alert Zone</b><br>
+                        Severity: <b>${escapeHtml(severity)}</b>
+                    `);
+                });
+
+            } catch (e) {
+                console.error("Error fetching safety zones:", e);
+            }
+        }
+
+        async function fetchPortCongestion() {
+            try {
+                const res = await fetch('/api/ports/?format=json');
+                if (!res.ok) {
+                    console.warn("Ports API returned status:", res.status);
+                    return;
+                }
+
+                const data = await res.json();
+                const ports = data.results || data;
+                portLayer.clearLayers();
+
+                ports.forEach((port, index) => {
+                    // visible spread for demo
+                    const row = Math.floor(index / 10);
+                    const col = index % 10;
+
+                    const lat = 55 - (row * 15);
+                    const lon = -120 + (col * 28);
+
+                    const score = Math.round(Number(port.congestion_score || 0));
+
+                    let color = 'green';
+                    if (score > 70) color = 'red';
+                    else if (score > 40) color = 'yellow';
+
+                    L.circleMarker([lat, lon], {
+                        radius: 9,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.9,
+                        weight: 2
+                    }).addTo(portLayer).bindPopup(`
+                        <b>Port: ${escapeHtml(port.name)}</b><br>
+                        Location: ${escapeHtml(port.location || '')}<br>
+                        Country: ${escapeHtml(port.country || '')}<br>
+                        Congestion Score: <b>${score}</b>
+                    `);
+                });
+
+            } catch (e) {
+                console.error("Error fetching port congestion:", e);
+            }
+        }
+
+        async function loadAllMapData() {
+            await fetchVessels();
+            await fetchSafetyZones();
+            await fetchPortCongestion();
+        }
+
+        loadAllMapData();
+
+        setInterval(fetchVessels, 10000);
+        setInterval(fetchSafetyZones, 60000);
+        setInterval(fetchPortCongestion, 60000);
     </script>
 </body>
-
 </html>

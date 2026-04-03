@@ -52,3 +52,7 @@ except admin.sites.NotRegistered:
 
 admin.site.register(User, CustomUserAdmin)
 print("ACCOUNTS ADMIN LOADED SUCCESSFULLY")
+
+from .models import UserProfile
+
+admin.site.register(UserProfile)
