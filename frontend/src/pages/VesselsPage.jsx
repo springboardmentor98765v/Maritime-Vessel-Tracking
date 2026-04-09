@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useMemo, memo } from 'react'
+import { useState, useEffect, useCallback, useMemo, memo } from 'react'
 import { formatFlagCountry } from '../utils/flags'
 import { Link } from 'react-router-dom'
 import { fetchVessels, fetchSubscriptions, subscribeVessel, unsubscribeVessel } from '../services/vesselService'
@@ -69,7 +69,7 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
                     <div style={{ fontSize: '10px', color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: '4px' }}>Destination</div>
                     <div style={{ fontSize: '12px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {v.destination && v.destination.toLowerCase() !== 'unknown'
-                            ? <><span style={{ color: 'var(--brand-cyan)', fontSize: '10px' }}>â–¶</span>{v.destination}</>
+                            ? <><span style={{ color: 'var(--brand-cyan)', fontSize: '10px' }}>▶</span>{v.destination}</>
                             : <span style={{ color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', fontWeight: 500 }}>Not Broadcasted</span>
                         }
                     </div>
@@ -87,7 +87,7 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
                     <div style={{ fontSize: '10px', color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: '2px' }}>Heading</div>
                     <div style={{ fontSize: '13px', color: '#fff', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}>
                         <Navigation size={12} color="#38bdf8" style={{ transform: `rotate(${v.heading || 0}deg)` }} />
-                        {v.heading != null ? `${Number(v.heading).toFixed(0)}Â°` : '—'}
+                        {v.heading != null ? `${Number(v.heading).toFixed(0)}°` : '—'}
                     </div>
                 </div>
             </div>
@@ -96,7 +96,7 @@ const VesselCard = memo(function VesselCard({ vessel: v, isSubscribed, isTogglin
             <div style={{ fontSize: '11px', color: 'var(--text-2)', fontFamily: 'monospace', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(90deg, rgba(34,211,238,0.1), transparent)', padding: '6px 10px', borderRadius: '6px', borderLeft: '2px solid var(--brand-cyan)' }}>
                 <Crosshair size={12} color="var(--brand-cyan)" />
                 {v.last_position_lat != null
-                    ? `${Number(v.last_position_lat).toFixed(4)}Â°, ${Number(v.last_position_lon).toFixed(4)}Â°`
+                    ? `${Number(v.last_position_lat).toFixed(4)}°, ${Number(v.last_position_lon).toFixed(4)}°`
                     : 'Position unavailable'}
             </div>
 
@@ -332,7 +332,7 @@ export default function VesselsPage() {
                         </span>
                         {totalPages > 1 && (
                             <div style={{ display: 'flex', gap: '6px' }}>
-                                <button style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-1)', padding: '0.4rem 0.85rem', borderRadius: '8px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '13px' }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>â† Prev</button>
+                                <button style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-1)', padding: '0.4rem 0.85rem', borderRadius: '8px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '13px' }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>← Prev</button>
                                 {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
                                     let p = page <= 4 ? i + 1 : page >= totalPages - 3 ? totalPages - 6 + i : page - 3 + i;
                                     if (p < 1) p = 1; if (p > totalPages) p = totalPages;

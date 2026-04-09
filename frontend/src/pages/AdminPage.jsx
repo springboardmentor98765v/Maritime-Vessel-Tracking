@@ -151,42 +151,7 @@ export default function AdminPage() {
                 </div>
             </div>
 
-            {/* System Logs table */}
-            <div>
-                <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '.85rem', color: 'var(--brand-cyan)' }}>
-                    System Error Logs {logs.length > 0 && <span className="badge badge--red" style={{ marginLeft: '.5rem' }}>{logs.length}</span>}
-                </h2>
-                {loading ? (
-                    <div style={{ marginTop: '1rem' }}>
-                        <SkeletonLoader type="row" count={4} />
-                    </div>
-                ) : logs.length === 0 ? (
-                    <div className="vessels-empty" style={{ background: 'rgba(34,211,238,0.05)', borderColor: 'rgba(34,211,238,0.2)', color: 'var(--brand-cyan)' }}>No recent errors. System operates at optimal efficiency.</div>
-                ) : (
-                    <div className="vessels-table-wrap" style={{ border: '1px solid rgba(239,68,68,0.2)' }}>
-                        <table className="vessels-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Source</th>
-                                    <th>Error Message</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {logs.map(log => (
-                                    <tr key={log.id}>
-                                        <td className="mono" style={{ fontSize: '.78rem', color: 'var(--text-2)' }}>{new Date(log.timestamp).toLocaleString()}</td>
-                                        <td><span className="badge badge--type" style={{ background: 'rgba(239,68,68,0.15)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)' }}>{log.source}</span></td>
-                                        <td style={{ fontSize: '.82rem', fontFamily: 'monospace', color: '#fca5a5' }}>
-                                            {log.error_message}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
+
 
             {/* Active Safety Events table */}
             <div>

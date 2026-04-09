@@ -45,13 +45,13 @@ function HomePage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', minHeight: '100vh', background: '#020617', overflow: 'hidden' }}>
 
-      {/* â”€â”€ Ambient Background Layers â”€â”€ */}
+      {/* ── Ambient Background Layers ── */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '900px', background: 'radial-gradient(ellipse 90% 70% at 50% -15%, rgba(34,211,238,0.14), transparent)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', top: 0, right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(99,102,241,0.1), transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', top: '40%', left: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(34,211,238,0.06), transparent 65%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '48px 48px', pointerEvents: 'none', maskImage: 'linear-gradient(to bottom, black 0%, transparent 70%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 70%)' }} />
 
-      {/* â”€â”€ Live Ticker â”€â”€ */}
+      {/* ── Live Ticker ── */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -77,7 +77,7 @@ function HomePage() {
         <style>{`@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } } @keyframes shimmerText { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; }}`}</style>
       </motion.div>
 
-      {/* â”€â”€ HERO SECTION â”€â”€ */}
+      {/* ── HERO SECTION ── */}
       <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: 'clamp(4rem,10vh,8rem) 2rem clamp(3rem,6vh,6rem)', display: 'grid', gridTemplateColumns: 'minmax(380px, 1.15fr) 0.85fr', gap: '5rem', alignItems: 'center', position: 'relative', zIndex: 10 }}>
 
         {/* Left: Copy */}
@@ -185,7 +185,7 @@ function HomePage() {
         </motion.div>
       </div>
 
-      {/* â”€â”€ STATS STRIP â”€â”€ */}
+      {/* ── STATS STRIP ── */}
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(2,6,23,0.5)', position: 'relative', zIndex: 10 }}>
         <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '3rem 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(12.5rem, 1fr))', gap: '2rem' }}>
           {[
@@ -216,7 +216,7 @@ function HomePage() {
         </div>
       </div>
 
-      {/* â”€â”€ FEATURES GRID SECTION â”€â”€ */}
+      {/* ── FEATURES GRID SECTION ── */}
       <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: 'clamp(5rem,10vh,8rem) 2rem', position: 'relative', zIndex: 10 }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -277,7 +277,7 @@ function HomePage() {
         </div>
       </div>
 
-      {/* â”€â”€ BOTTOM CTA BAND â”€â”€ */}
+      {/* ── BOTTOM CTA BAND ── */}
       <div style={{ position: 'relative', zIndex: 10, background: 'rgba(2,6,23,0.6)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(4rem,8vh,6rem) 2rem', textAlign: 'center' }}>
           <motion.div

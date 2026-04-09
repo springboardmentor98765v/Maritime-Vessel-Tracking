@@ -85,7 +85,7 @@ export default function DashboardPage() {
       variants={containerVariants}
       style={{ display: 'grid', gap: '2.5rem', paddingBottom: '3rem' }}
     >
-      {/* â”€â”€ Welcome Header â”€â”€ */}
+      {/* ── Welcome Header ── */}
       <motion.div
         variants={cardVariants}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '1.75rem', position: 'relative', flexWrap: 'wrap', gap: '1rem' }}
@@ -116,7 +116,7 @@ export default function DashboardPage() {
         </Link>
       </motion.div>
 
-      {/* â”€â”€ KPI Cards â”€â”€ */}
+      {/* ── KPI Cards ── */}
       <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))', gap: '1.25rem' }}>
         {KPI_DATA.map((kpi, i) => (
           <motion.div key={i} variants={cardVariants} className="kpi-card" style={{ '--accent-color': kpi.color }}>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
         ))}
       </motion.div>
 
-      {/* â”€â”€ Port Analytics Preview â”€â”€ */}
+      {/* ── Port Analytics Preview ── */}
       {portData && (
         <motion.div variants={cardVariants} className="card" style={{ padding: '1.75rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.5), rgba(99,102,241,0.5), transparent)' }} />
@@ -193,7 +193,7 @@ export default function DashboardPage() {
         </motion.div>
       )}
 
-      {/* â”€â”€ Feature Cards Matrix â”€â”€ */}
+      {/* ── Feature Cards Matrix ── */}
       <div>
         <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 className="text-subheading" style={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* â”€â”€ Bottom Row: Intelligence Feed + Monitored Assets â”€â”€ */}
+      {/* ── Bottom Row: Intelligence Feed + Monitored Assets ── */}
       <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
 
         {/* Intelligence Feed */}

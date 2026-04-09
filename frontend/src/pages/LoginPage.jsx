@@ -88,7 +88,7 @@ export default function LoginPage() {
             <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 20% 50%, rgba(34,211,238,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(99,102,241,0.08) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
             <div style={{ position: 'fixed', inset: 0, backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none', zIndex: 0 }} />
 
-            {/* â”€â”€ Left Panel: Branding & Features â”€â”€ */}
+            {/* ── Left Panel: Branding & Features ── */}
             <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -160,7 +160,7 @@ export default function LoginPage() {
                 </motion.div>
             </motion.div>
 
-            {/* â”€â”€ Right Panel: Login Form â”€â”€ */}
+            {/* ── Right Panel: Login Form ── */}
             <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}

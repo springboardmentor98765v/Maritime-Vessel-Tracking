@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     fetchVessel,
@@ -229,7 +229,7 @@ export default function VesselDetailPage() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                             {[
                                 { label: 'Speed Over Ground', value: vessel.speed != null ? `${vessel.speed.toFixed(1)} KTS` : 'OFFLINE', icon: <Activity size={16} /> },
-                                { label: 'True Heading', value: vessel.heading != null ? `${vessel.heading}Â°` : 'OFFLINE', icon: <Navigation size={16} /> },
+                                { label: 'True Heading', value: vessel.heading != null ? `${vessel.heading}°` : 'OFFLINE', icon: <Navigation size={16} /> },
                                 { label: 'Declared Destination', value: (vessel.destination && vessel.destination.toLowerCase() !== 'unknown') ? vessel.destination.toUpperCase() : 'NOT BROADCASTED', icon: <MapPin size={16} /> },
                                 { label: 'Last Signal Update', value: vessel.last_update ? new Date(vessel.last_update).toLocaleTimeString() : 'UNKNOWN', icon: <Database size={16} /> },
                             ].map((stat) => (
@@ -322,7 +322,7 @@ export default function VesselDetailPage() {
                                 ) : (
                                     <div style={{ padding: '0.6rem 1.25rem', background: 'rgba(4,9,20,0.9)', display: 'flex', gap: '2rem', alignItems: 'center' }}>
                                         <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--brand-cyan)', fontWeight: 600 }}>
-                                            {Number(vessel.last_position_lat).toFixed(5)}Â° N &nbsp; {Number(vessel.last_position_lon).toFixed(5)}Â° E
+                                            {Number(vessel.last_position_lat).toFixed(5)}° N &nbsp; {Number(vessel.last_position_lon).toFixed(5)}° E
                                         </span>
                                         <a
                                             href={`https://www.openstreetmap.org/?mlat=${vessel.last_position_lat}&mlon=${vessel.last_position_lon}&zoom=10`}
@@ -331,7 +331,7 @@ export default function VesselDetailPage() {
                                             onMouseOver={e => e.currentTarget.style.color = 'var(--brand-cyan)'}
                                             onMouseOut={e => e.currentTarget.style.color = 'var(--text-2)'}
                                         >
-                                            Open OSM â†—
+                                            Open OSM ↗
                                         </a>
                                     </div>
                                 )}

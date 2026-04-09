@@ -15,7 +15,7 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-MARINETRAFFIC_BASE = "https://services.marinetraffic.com/api/getvessel"
+MARINETRAFFIC_BASE = "https://services.marinetraffic.com/api/exportvessel"
 MARINETRAFFIC_API_KEY = os.getenv("MARINETRAFFIC_API_KEY", "")
 
 

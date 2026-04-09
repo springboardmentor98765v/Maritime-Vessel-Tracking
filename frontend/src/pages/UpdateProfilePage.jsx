@@ -104,7 +104,7 @@ export default function UpdateProfilePage() {
         <p style={{ color: 'var(--text-2)', fontSize: '.9rem', marginBottom: '2rem' }}>Update your personal information and profile photo.</p>
 
         <form onSubmit={handleSubmit}>
-          {/* â”€â”€ Avatar picker â”€â”€ */}
+          {/* ── Avatar picker ── */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
             <div
               onClick={() => fileInputRef.current?.click()}
@@ -151,7 +151,7 @@ export default function UpdateProfilePage() {
             )}
           </div>
 
-          {/* â”€â”€ Fields â”€â”€ */}
+          {/* ── Fields ── */}
           <div style={{ display: 'grid', gap: '1.25rem' }}>
             <div className="field">
               <label htmlFor="company">Company</label>
@@ -199,7 +199,7 @@ export default function UpdateProfilePage() {
             </div>
           </div>
 
-          {/* â”€â”€ Feedback â”€â”€ */}
+          {/* ── Feedback ── */}
           {error && (
             <div style={{
               background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5',
@@ -217,7 +217,7 @@ export default function UpdateProfilePage() {
             </div>
           )}
 
-          {/* â”€â”€ Actions â”€â”€ */}
+          {/* ── Actions ── */}
           <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
             <button type="submit" className="btn btn--primary" disabled={saving} style={{ flex: 1 }}>
               {saving ? 'Saving...' : 'Save Changes'}

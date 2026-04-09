@@ -78,7 +78,7 @@ export default function PortsPage() {
         if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
         else { setSortBy(col); setSortDir('desc') }
     }
-    const SortIcon = ({ col }) => sortBy === col ? (sortDir === 'asc' ? ' â–²' : ' â–¼') : ''
+    const SortIcon = ({ col }) => sortBy === col ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''
 
     useEffect(() => setPage(1), [search, countryFilter, levelFilter, sortBy, sortDir])
 

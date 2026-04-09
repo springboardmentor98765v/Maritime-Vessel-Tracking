@@ -185,7 +185,7 @@ export default function AnalyticsDashboardPage() {
                             <p style={{ fontSize: '0.8rem', color: 'var(--text-2)', margin: 0 }}>Measured by operational congestion index (0–100)</p>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {[{ label: 'â‰¥80 CRITICAL', color: '#ef4444' }, { label: 'â‰¥60 HIGH', color: '#f59e0b' }, { label: 'NORMAL', color: '#38bdf8' }].map(t => (
+                            {[{ label: '≥80 CRITICAL', color: '#ef4444' }, { label: '≥60 HIGH', color: '#f59e0b' }, { label: 'NORMAL', color: '#38bdf8' }].map(t => (
                                 <span key={t.label} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.7rem', fontWeight: 700, color: t.color, background: `${t.color}12`, border: `1px solid ${t.color}30`, borderRadius: '99px', padding: '0.25rem 0.65rem' }}>
                                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: t.color }} />{t.label}
                                 </span>

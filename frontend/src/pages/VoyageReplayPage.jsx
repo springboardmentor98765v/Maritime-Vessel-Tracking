@@ -232,7 +232,7 @@ function ReplayPanel({ voyage, onClose }) {
             {replay.vessel_last_lat && (
                 <div style={{ padding: '0 1.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>
                     <Crosshair size={12} color="#22d3ee" />
-                    Last known: {Number(replay.vessel_last_lat).toFixed(4)}Â°, {Number(replay.vessel_last_lon).toFixed(4)}Â°
+                    Last known: {Number(replay.vessel_last_lat).toFixed(4)}°, {Number(replay.vessel_last_lon).toFixed(4)}°
                 </div>
             )}
         </motion.div>

@@ -44,6 +44,7 @@ class Command(BaseCommand):
                 flag=random.choice(flags),
                 cargo_type="General Cargo" if i % 2 == 0 else "Crude Oil",
                 operator=f"TransGlobal Line {chr(65 + i % 5)}",
+                destination=random.choice(ports).name,
                 last_position_lat=round(random.uniform(-60, 60), 4),
                 last_position_lon=round(random.uniform(-180, 180), 4),
                 speed=round(random.uniform(10.0, 22.0), 1),

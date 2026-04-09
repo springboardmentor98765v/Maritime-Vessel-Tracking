@@ -190,7 +190,7 @@ function Header() {
                         >
                             <Command size={14} color="rgba(255,255,255,0.4)" style={{ flexShrink: 0 }} /> 
                             <span style={{ marginRight: 'auto' }}>Search...</span> 
-                            <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', color: '#fff', fontFamily: 'monospace', flexShrink: 0 }}>âŒ˜K</kbd>
+                            <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', color: '#fff', fontFamily: 'monospace', flexShrink: 0 }}>⌘K</kbd>
                         </motion.button>
                     </div>
 
